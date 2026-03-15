@@ -440,7 +440,7 @@
             <div class="rounds-header">
               <div class="header-left">
                 <span class="section-title">Simulation Rounds Setting</span>
-                <span class="section-desc">MiroFish auto-plans real-world simulation over <span class="desc-highlight">{{ simulationConfig?.time_config?.total_simulation_hours || '-' }}</span> 小时，per round, 代表现实 <span class="desc-highlight">{{ simulationConfig?.time_config?.minutes_per_round || '-' }}</span> 分钟时间流逝</span>
+                <span class="section-desc">NemoFish auto-plans real-world simulation over <span class="desc-highlight">{{ simulationConfig?.time_config?.total_simulation_hours || '-' }}</span> 小时，per round, 代表现实 <span class="desc-highlight">{{ simulationConfig?.time_config?.minutes_per_round || '-' }}</span> 分钟时间流逝</span>
               </div>
               <label class="switch-control">
                 <input type="checkbox" v-model="useCustomRounds">

@@ -20,7 +20,7 @@ from ..utils.logger import get_logger
 from ..utils.llm_client import LLMClient
 from ..utils.zep_paging import fetch_all_nodes, fetch_all_edges
 
-logger = get_logger('mirofish.zep_tools')
+logger = get_logger('nemofish.zep_tools')
 
 
 @dataclass

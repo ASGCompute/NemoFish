@@ -17,7 +17,7 @@ from zep_cloud.client import Zep
 from ..config import Config
 from ..utils.logger import get_logger
 
-logger = get_logger('mirofish.zep_graph_memory_updater')
+logger = get_logger('nemofish.zep_graph_memory_updater')
 
 
 @dataclass

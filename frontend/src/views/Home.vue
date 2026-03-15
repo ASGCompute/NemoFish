@@ -2,9 +2,9 @@
   <div class="home-container">
     <!-- Top Navigation Bar -->
     <nav class="navbar">
-      <div class="nav-brand">MIROFISH</div>
+      <div class="nav-brand">NEMOFISH</div>
       <div class="nav-links">
-        <a href="https://github.com/666ghj/MiroFish" target="_blank" class="github-link">
+        <a href="https://github.com/666ghj/NemoFish" target="_blank" class="github-link">
           Visit our GitHub <span class="arrow">↗</span>
         </a>
       </div>
@@ -26,7 +26,7 @@
           
           <div class="hero-desc">
             <p>
-              Even with just a single paragraph, <span class="highlight-bold">MiroFish</span> can extract real-world seeds and automatically generate a parallel world with up to <span class="highlight-orange">millions of Agents</span>. Inject variables from a God's-eye view to find <span class="highlight-code">"local optima"</span> in complex group interactions.
+              Even with just a single paragraph, <span class="highlight-bold">NemoFish</span> can extract real-world seeds and automatically generate a parallel world with up to <span class="highlight-orange">millions of Agents</span>. Inject variables from a God's-eye view to find <span class="highlight-code">"local optima"</span> in complex group interactions.
             </p>
             <p class="slogan-text">
               Rehearse the future in Agent swarms, win decisions after countless simulations<span class="blinking-cursor">_</span>
@@ -39,7 +39,7 @@
         <div class="hero-right">
           <!-- Logo Area -->
           <div class="logo-container">
-            <img src="../assets/logo/MiroFish_logo_left.jpeg" alt="MiroFish Logo" class="hero-logo" />
+            <img src="../assets/logo/NemoFish_logo_left.jpeg" alt="NemoFish Logo" class="hero-logo" />
           </div>
           
           <button class="scroll-down-btn" @click="scrollToBottom">
@@ -180,7 +180,7 @@
                   rows="6"
                   :disabled="loading"
                 ></textarea>
-                <div class="model-badge">Engine: MiroFish-V1.0</div>
+                <div class="model-badge">Engine: NemoFish-V1.0</div>
               </div>
             </div>
 

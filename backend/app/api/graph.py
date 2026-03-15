@@ -19,7 +19,7 @@ from ..models.task import TaskManager, TaskStatus
 from ..models.project import ProjectManager, ProjectStatus
 
 # 获取日志器
-logger = get_logger('mirofish.api')
+logger = get_logger('nemofish.api')
 
 
 def allowed_file(filename: str) -> bool:
@@ -336,7 +336,7 @@ def build_graph():
             project.error = None
         
         # 获取配置
-        graph_name = data.get('graph_name', project.name or 'MiroFish Graph')
+        graph_name = data.get('graph_name', project.name or 'NemoFish Graph')
         chunk_size = data.get('chunk_size', project.chunk_size or Config.DEFAULT_CHUNK_SIZE)
         chunk_overlap = data.get('chunk_overlap', project.chunk_overlap or Config.DEFAULT_CHUNK_OVERLAP)
         
@@ -372,7 +372,7 @@ def build_graph():
         
         # 启动后台任务
         def build_task():
-            build_logger = get_logger('mirofish.build')
+            build_logger = get_logger('nemofish.build')
             try:
                 build_logger.info(f"[{task_id}] 开始构建图谱...")
                 task_manager.update_task(

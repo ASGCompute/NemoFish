@@ -1,5 +1,5 @@
 # ===========================================
-# MiroFish Backend Dependencies
+# NemoFish Backend Dependencies
 # ===========================================
 # Python 3.11+ required
 # Install: pip install -r requirements.txt

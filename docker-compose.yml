@@ -1,9 +1,9 @@
 services:
-  mirofish:
-    image: ghcr.io/666ghj/mirofish:latest
+  nemofish:
+    image: ghcr.io/666ghj/nemofish:latest
     # Mirror for faster pulling (replace above address if download is slow)
-    # image: ghcr.nju.edu.cn/666ghj/mirofish:latest
-    container_name: mirofish
+    # image: ghcr.nju.edu.cn/666ghj/nemofish:latest
+    container_name: nemofish
     env_file:
       - .env
     ports:

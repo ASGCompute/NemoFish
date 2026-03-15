@@ -1,5 +1,5 @@
 """
-MiroFish Backend 启动入口
+NemoFish Backend 启动入口
 """
 
 import os
