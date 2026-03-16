@@ -88,7 +88,7 @@ def delete_project(project_id: str):
 @graph_bp.route('/project/<project_id>/reset', methods=['POST'])
 def reset_project(project_id: str):
     """
-    重置项目状态（用于重新构建图谱）
+    重置Project status（用于重新构建图谱）
     """
     project = ProjectManager.get_project(project_id)
     
@@ -287,10 +287,10 @@ def build_graph():
         if not Config.ZEP_API_KEY:
             errors.append("ZEP_API_KEY未配置")
         if errors:
-            logger.error(f"配置错误: {errors}")
+            logger.error(f"Configuration error: {errors}")
             return jsonify({
                 "success": False,
-                "error": "配置错误: " + "; ".join(errors)
+                "error": "Configuration error: " + "; ".join(errors)
             }), 500
         
         # 解析请求
@@ -312,7 +312,7 @@ def build_graph():
                 "error": f"项目不存在: {project_id}"
             }), 404
         
-        # 检查项目状态
+        # 检查Project status
         force = data.get('force', False)  # 强制重新构建
         
         if project.status == ProjectStatus.CREATED:
@@ -365,7 +365,7 @@ def build_graph():
         task_id = task_manager.create_task(f"构建图谱: {graph_name}")
         logger.info(f"创建图谱构建任务: task_id={task_id}, project_id={project_id}")
         
-        # 更新项目状态
+        # 更新Project status
         project.status = ProjectStatus.GRAPH_BUILDING
         project.graph_build_task_id = task_id
         ProjectManager.save_project(project)
@@ -378,10 +378,10 @@ def build_graph():
                 task_manager.update_task(
                     task_id, 
                     status=TaskStatus.PROCESSING,
-                    message="初始化图谱构建服务..."
+                    message="初始化Graph building service..."
                 )
                 
-                # 创建图谱构建服务
+                # 创建Graph building service
                 builder = GraphBuilderService(api_key=Config.ZEP_API_KEY)
                 
                 # 分块
@@ -464,7 +464,7 @@ def build_graph():
                 )
                 graph_data = builder.get_graph_data(graph_id)
                 
-                # 更新项目状态
+                # 更新Project status
                 project.status = ProjectStatus.GRAPH_COMPLETED
                 ProjectManager.save_project(project)
                 
@@ -488,7 +488,7 @@ def build_graph():
                 )
                 
             except Exception as e:
-                # 更新项目状态为失败
+                # 更新Project status为失败
                 build_logger.error(f"[{task_id}] 图谱构建失败: {str(e)}")
                 build_logger.debug(traceback.format_exc())
                 

@@ -1,6 +1,6 @@
 """
-日志配置模块
-提供统一的日志管理，同时输出到控制台和文件
+Logging configuration module
+Unified logging to console and file
 """
 
 import os
@@ -12,7 +12,7 @@ from logging.handlers import RotatingFileHandler
 
 def _ensure_utf8_stdout():
     """
-    确保 stdout/stderr 使用 UTF-8 编码
+    Ensure stdout/stderr use UTF-8 encoding
     解决 Windows 控制台中文乱码问题
     """
     if sys.platform == 'win32':
@@ -23,16 +23,16 @@ def _ensure_utf8_stdout():
             sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
 
-# 日志目录
+# Log directory
 LOG_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'logs')
 
 
 def setup_logger(name: str = 'nemofish', level: int = logging.DEBUG) -> logging.Logger:
     """
-    设置日志器
+    Set up logger
     
     Args:
-        name: 日志器名称
+        name: Logger name
         level: 日志级别
         
     Returns:
@@ -93,7 +93,7 @@ def get_logger(name: str = 'nemofish') -> logging.Logger:
     获取日志器（如果不存在则创建）
     
     Args:
-        name: 日志器名称
+        name: Logger name
         
     Returns:
         日志器实例

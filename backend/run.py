@@ -1,5 +1,5 @@
 """
-NemoFish Backend 启动入口
+NemoFish Backend entry point
 """
 
 import os
@@ -15,7 +15,7 @@ if sys.platform == 'win32':
     if hasattr(sys.stderr, 'reconfigure'):
         sys.stderr.reconfigure(encoding='utf-8', errors='replace')
 
-# 添加项目根目录到路径
+# Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app import create_app
@@ -23,11 +23,11 @@ from app.config import Config
 
 
 def main():
-    """主函数"""
-    # 验证配置
+    """Main function"""
+    # Validate configuration
     errors = Config.validate()
     if errors:
-        print("配置错误:")
+        print("Configuration error:")
         for err in errors:
             print(f"  - {err}")
         print("\n请检查 .env 文件中的配置")

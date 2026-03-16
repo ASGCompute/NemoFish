@@ -15,13 +15,13 @@ OASIS 双平台并行模拟预设脚本
     python run_parallel_simulation.py --config simulation_config.json --twitter-only
     python run_parallel_simulation.py --config simulation_config.json --reddit-only
 
-日志结构:
+Log structure:
     sim_xxx/
     ├── twitter/
-    │   └── actions.jsonl    # Twitter 平台动作日志
+    │   └── actions.jsonl    # Twitter platform action log
     ├── reddit/
-    │   └── actions.jsonl    # Reddit 平台动作日志
-    ├── simulation.log       # 主模拟进程日志
+    │   └── actions.jsonl    # Reddit platform action log
+    ├── simulation.log       # Main simulation process log
     └── run_state.json       # 运行状态（API 查询用）
 """
 
@@ -208,7 +208,7 @@ IPC_RESPONSES_DIR = "ipc_responses"
 ENV_STATUS_FILE = "env_status.json"
 
 class CommandType:
-    """命令类型常量"""
+    """Command type常量"""
     INTERVIEW = "interview"
     BATCH_INTERVIEW = "batch_interview"
     CLOSE_ENV = "close_env"
@@ -597,7 +597,7 @@ class ParallelIPCHandler:
             return False
         
         else:
-            self.send_response(command_id, "failed", error=f"未知命令类型: {command_type}")
+            self.send_response(command_id, "failed", error=f"未知Command type: {command_type}")
             return True
 
 
@@ -992,7 +992,7 @@ def create_model(config: Dict[str, Any], use_boost: bool = False):
     如果配置了加速 LLM，并行模拟时可以让不同平台使用不同的 API 服务商，提高并发能力。
     
     Args:
-        config: 模拟配置字典
+        config: Simulation configuration字典
         use_boost: 是否使用加速 LLM 配置（如果可用）
     """
     # 检查是否有加速配置
@@ -1108,9 +1108,9 @@ async def run_twitter_simulation(
     """运行Twitter模拟
     
     Args:
-        config: 模拟配置
+        config: Simulation configuration
         simulation_dir: 模拟目录
-        action_logger: 动作日志记录器
+        action_logger: Action logger
         main_logger: 主日志管理器
         max_rounds: 最大模拟轮数（可选，用于截断过长的模拟）
         
@@ -1229,7 +1229,7 @@ async def run_twitter_simulation(
         # 检查是否收到退出信号
         if _shutdown_event and _shutdown_event.is_set():
             if main_logger:
-                main_logger.info(f"收到退出信号，在第 {round_num + 1} 轮停止模拟")
+                main_logger.info(f"收到退出信号，在第 {round_num + 1} 轮Stop simulation")
             break
         
         simulated_minutes = round_num * minutes_per_round
@@ -1300,9 +1300,9 @@ async def run_reddit_simulation(
     """运行Reddit模拟
     
     Args:
-        config: 模拟配置
+        config: Simulation configuration
         simulation_dir: 模拟目录
-        action_logger: 动作日志记录器
+        action_logger: Action logger
         main_logger: 主日志管理器
         max_rounds: 最大模拟轮数（可选，用于截断过长的模拟）
         
@@ -1428,7 +1428,7 @@ async def run_reddit_simulation(
         # 检查是否收到退出信号
         if _shutdown_event and _shutdown_event.is_set():
             if main_logger:
-                main_logger.info(f"收到退出信号，在第 {round_num + 1} 轮停止模拟")
+                main_logger.info(f"收到退出信号，在第 {round_num + 1} 轮Stop simulation")
             break
         
         simulated_minutes = round_num * minutes_per_round
@@ -1564,7 +1564,7 @@ async def main():
             log_manager.info(f"  - 实际执行轮数: {args.max_rounds} (已截断)")
     log_manager.info(f"  - Agent数量: {len(config.get('agent_configs', []))}")
     
-    log_manager.info("日志结构:")
+    log_manager.info("Log structure:")
     log_manager.info(f"  - 主日志: simulation.log")
     log_manager.info(f"  - Twitter动作: twitter/actions.jsonl")
     log_manager.info(f"  - Reddit动作: reddit/actions.jsonl")

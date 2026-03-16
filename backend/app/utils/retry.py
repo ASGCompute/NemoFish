@@ -1,6 +1,6 @@
 """
-API调用重试机制
-用于处理LLM等外部API调用的重试逻辑
+API call retry mechanism
+Retry logic for external API calls
 """
 
 import time
@@ -22,14 +22,14 @@ def retry_with_backoff(
     on_retry: Optional[Callable[[Exception, int], None]] = None
 ):
     """
-    带指数退避的重试装饰器
+    Retry decorator with exponential backoff
     
     Args:
-        max_retries: 最大重试次数
-        initial_delay: 初始延迟（秒）
-        max_delay: 最大延迟（秒）
-        backoff_factor: 退避因子
-        jitter: 是否添加随机抖动
+        max_retries: Max retries
+        initial_delay: Initial delay (seconds)
+        max_delay: Max delay (seconds)
+        backoff_factor: Backoff factor
+        jitter: Whether to add random jitter
         exceptions: 需要重试的异常类型
         on_retry: 重试时的回调函数 (exception, retry_count)
     

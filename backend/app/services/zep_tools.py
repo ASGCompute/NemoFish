@@ -424,16 +424,16 @@ class ZepToolsService:
     def __init__(self, api_key: Optional[str] = None, llm_client: Optional[LLMClient] = None):
         self.api_key = api_key or Config.ZEP_API_KEY
         if not self.api_key:
-            raise ValueError("ZEP_API_KEY 未配置")
+            raise ValueError("ZEP_API_KEY not configured")
         
         self.client = Zep(api_key=self.api_key)
-        # LLM客户端用于InsightForge生成子问题
+        # LLM client用于InsightForge生成子问题
         self._llm_client = llm_client
         logger.info("ZepToolsService 初始化完成")
     
     @property
     def llm(self) -> LLMClient:
-        """延迟初始化LLM客户端"""
+        """延迟初始化LLM client"""
         if self._llm_client is None:
             self._llm_client = LLMClient()
         return self._llm_client
@@ -951,7 +951,7 @@ class ZepToolsService:
         max_sub_queries: int = 5
     ) -> InsightForgeResult:
         """
-        【InsightForge - 深度洞察检索】
+        【InsightForge - Deep Insight Retrieval】
         
         最强大的混合检索函数，自动分解问题并多维度检索：
         1. 使用LLM将问题分解为多个子问题
@@ -1521,7 +1521,7 @@ class ZepToolsService:
             try:
                 with open(reddit_profile_path, 'r', encoding='utf-8') as f:
                     profiles = json.load(f)
-                logger.info(f"从 reddit_profiles.json 加载了 {len(profiles)} 个人设")
+                logger.info(f"从 reddit_profiles.json 加载了 {len(profiles)} individual设")
                 return profiles
             except Exception as e:
                 logger.warning(f"读取 reddit_profiles.json 失败: {e}")
@@ -1541,7 +1541,7 @@ class ZepToolsService:
                             "persona": row.get("user_char", ""),
                             "profession": "未知"
                         })
-                logger.info(f"从 twitter_profiles.csv 加载了 {len(profiles)} 个人设")
+                logger.info(f"从 twitter_profiles.csv 加载了 {len(profiles)} individual设")
                 return profiles
             except Exception as e:
                 logger.warning(f"读取 twitter_profiles.csv 失败: {e}")
@@ -1676,7 +1676,7 @@ class ZepToolsService:
             logger.warning(f"生成采访问题失败: {e}")
             return [
                 f"关于{interview_requirement}，您的观点是什么？",
-                "这件事对您或您所代表的群体有什么影响？",
+                "这件事对您或您所代表的group有什么影响？",
                 "您认为应该如何解决或改进这个问题？"
             ]
     

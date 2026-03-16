@@ -372,7 +372,7 @@ def prepare_simulation():
     1. 检查是否已有完成的准备工作
     2. 从Zep图谱读取并过滤实体
     3. 为每个实体生成OASIS Agent Profile（带重试机制）
-    4. LLM智能生成模拟配置（带重试机制）
+    4. LLM智能生成Simulation configuration（带重试机制）
     5. 保存配置文件和预设脚本
     
     请求（JSON）：
@@ -484,7 +484,7 @@ def prepare_simulation():
             logger.info(f"预期实体数量: {filtered_preview.filtered_count}, 类型: {filtered_preview.entity_types}")
         except Exception as e:
             logger.warning(f"同步获取实体数量失败（将在后台任务中重试）: {e}")
-            # 失败不影响后续流程，后台任务会重新获取
+            # Failed不影响后续流程，后台任务会重新获取
         
         # 创建异步任务
         task_manager = TaskManager()
@@ -530,7 +530,7 @@ def prepare_simulation():
                     stage_names = {
                         "reading": "读取图谱实体",
                         "generating_profiles": "生成Agent人设",
-                        "generating_config": "生成模拟配置",
+                        "generating_config": "生成Simulation configuration",
                         "copying_scripts": "准备模拟脚本"
                     }
                     
@@ -749,7 +749,7 @@ def get_prepare_status():
 
 @simulation_bp.route('/<simulation_id>', methods=['GET'])
 def get_simulation(simulation_id: str):
-    """获取模拟状态"""
+    """Get simulation status"""
     try:
         manager = SimulationManager()
         state = manager.get_simulation(simulation_id)
@@ -772,7 +772,7 @@ def get_simulation(simulation_id: str):
         })
         
     except Exception as e:
-        logger.error(f"获取模拟状态失败: {str(e)}")
+        logger.error(f"Get simulation status失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -914,7 +914,7 @@ def get_simulation_history():
         for sim in simulations:
             sim_dict = sim.to_dict()
             
-            # 获取模拟配置信息（从 simulation_config.json 读取 simulation_requirement）
+            # 获取Simulation configuration信息（从 simulation_config.json 读取 simulation_requirement）
             config = manager.get_simulation_config(sim.simulation_id)
             if config:
                 sim_dict["simulation_requirement"] = config.get("simulation_requirement", "")
@@ -1133,7 +1133,7 @@ def get_simulation_profiles_realtime(simulation_id: str):
 @simulation_bp.route('/<simulation_id>/config/realtime', methods=['GET'])
 def get_simulation_config_realtime(simulation_id: str):
     """
-    实时获取模拟配置（用于在生成过程中实时查看进度）
+    实时获取Simulation configuration（用于在生成过程中实时查看进度）
     
     与 /config 接口的区别：
     - 直接读取文件，不经过 SimulationManager
@@ -1253,7 +1253,7 @@ def get_simulation_config_realtime(simulation_id: str):
 @simulation_bp.route('/<simulation_id>/config', methods=['GET'])
 def get_simulation_config(simulation_id: str):
     """
-    获取模拟配置（LLM智能生成的完整配置）
+    获取Simulation configuration（LLM智能生成的完整配置）
     
     返回包含：
         - time_config: 时间配置（模拟时长、轮次、高峰/低谷时段）
@@ -1269,7 +1269,7 @@ def get_simulation_config(simulation_id: str):
         if not config:
             return jsonify({
                 "success": False,
-                "error": f"模拟配置不存在，请先调用 /prepare 接口"
+                "error": f"Simulation configuration不存在，请先调用 /prepare 接口"
             }), 404
         
         return jsonify({
@@ -1288,7 +1288,7 @@ def get_simulation_config(simulation_id: str):
 
 @simulation_bp.route('/<simulation_id>/config/download', methods=['GET'])
 def download_simulation_config(simulation_id: str):
-    """下载模拟配置文件"""
+    """下载Simulation configuration文件"""
     try:
         manager = SimulationManager()
         sim_dir = manager._get_simulation_dir(simulation_id)
@@ -1550,7 +1550,7 @@ def start_simulation():
                             try:
                                 SimulationRunner.stop_simulation(simulation_id)
                             except Exception as e:
-                                logger.warning(f"停止模拟时出现警告: {str(e)}")
+                                logger.warning(f"Stop simulation时出现警告: {str(e)}")
                         else:
                             return jsonify({
                                 "success": False,
@@ -1595,7 +1595,7 @@ def start_simulation():
             
             logger.info(f"启用图谱记忆更新: simulation_id={simulation_id}, graph_id={graph_id}")
         
-        # 启动模拟
+        # Start simulation
         run_state = SimulationRunner.start_simulation(
             simulation_id=simulation_id,
             platform=platform,
@@ -1628,7 +1628,7 @@ def start_simulation():
         }), 400
         
     except Exception as e:
-        logger.error(f"启动模拟失败: {str(e)}")
+        logger.error(f"Start simulation失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),
@@ -1639,7 +1639,7 @@ def start_simulation():
 @simulation_bp.route('/stop', methods=['POST'])
 def stop_simulation():
     """
-    停止模拟
+    Stop simulation
     
     请求（JSON）：
         {
@@ -1687,7 +1687,7 @@ def stop_simulation():
         }), 400
         
     except Exception as e:
-        logger.error(f"停止模拟失败: {str(e)}")
+        logger.error(f"Stop simulation失败: {str(e)}")
         return jsonify({
             "success": False,
             "error": str(e),

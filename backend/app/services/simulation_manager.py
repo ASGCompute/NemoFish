@@ -71,7 +71,7 @@ class SimulationState:
     created_at: str = field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     
-    # 错误信息
+    # Error info
     error: Optional[str] = None
     
     def to_dict(self) -> Dict[str, Any]:
@@ -118,7 +118,7 @@ class SimulationManager:
     核心功能：
     1. 从Zep图谱读取实体并过滤
     2. 生成OASIS Agent Profile
-    3. 使用LLM智能生成模拟配置参数
+    3. 使用LLM智能生成Simulation configuration参数
     4. 准备预设脚本所需的所有文件
     """
     
@@ -242,7 +242,7 @@ class SimulationManager:
         步骤：
         1. 从Zep图谱读取并过滤实体
         2. 为每个实体生成OASIS Agent Profile（可选LLM增强，支持并行）
-        3. 使用LLM智能生成模拟配置参数（时间、活跃度、发言频率等）
+        3. 使用LLM智能生成Simulation configuration参数（时间、活跃度、发言频率等）
         4. 保存配置文件和Profile文件
         5. 复制预设脚本到模拟目录
         
@@ -380,7 +380,7 @@ class SimulationManager:
                     total=len(profiles)
                 )
             
-            # ========== 阶段3: LLM智能生成模拟配置 ==========
+            # ========== 阶段3: LLM智能生成Simulation configuration ==========
             if progress_callback:
                 progress_callback(
                     "generating_config", 0, 
@@ -418,7 +418,7 @@ class SimulationManager:
                     total=3
                 )
             
-            # 保存配置文件
+            # Save configuration文件
             config_path = os.path.join(sim_dir, "simulation_config.json")
             with open(config_path, 'w', encoding='utf-8') as f:
                 f.write(sim_params.to_json())
@@ -435,9 +435,9 @@ class SimulationManager:
                 )
             
             # 注意：运行脚本保留在 backend/scripts/ 目录，不再复制到模拟目录
-            # 启动模拟时，simulation_runner 会从 scripts/ 目录运行脚本
+            # Start simulation时，simulation_runner 会从 scripts/ 目录运行脚本
             
-            # 更新状态
+            # Update status
             state.status = SimulationStatus.READY
             self._save_simulation_state(state)
             
@@ -456,7 +456,7 @@ class SimulationManager:
             raise
     
     def get_simulation(self, simulation_id: str) -> Optional[SimulationState]:
-        """获取模拟状态"""
+        """Get simulation status"""
         return self._load_simulation_state(simulation_id)
     
     def list_simulations(self, project_id: Optional[str] = None) -> List[SimulationState]:
@@ -493,7 +493,7 @@ class SimulationManager:
             return json.load(f)
     
     def get_simulation_config(self, simulation_id: str) -> Optional[Dict[str, Any]]:
-        """获取模拟配置"""
+        """获取Simulation configuration"""
         sim_dir = self._get_simulation_dir(simulation_id)
         config_path = os.path.join(sim_dir, "simulation_config.json")
         

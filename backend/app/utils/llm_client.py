@@ -1,6 +1,6 @@
 """
-LLM客户端封装
-统一使用OpenAI格式调用
+LLM client wrapper
+Unified OpenAI-format API calls
 """
 
 import json
@@ -12,7 +12,7 @@ from ..config import Config
 
 
 class LLMClient:
-    """LLM客户端"""
+    """LLM client"""
     
     def __init__(
         self,
@@ -25,7 +25,7 @@ class LLMClient:
         self.model = model or Config.LLM_MODEL_NAME
         
         if not self.api_key:
-            raise ValueError("LLM_API_KEY 未配置")
+            raise ValueError("LLM_API_KEY not configured")
         
         self.client = OpenAI(
             api_key=self.api_key,
@@ -40,11 +40,11 @@ class LLMClient:
         response_format: Optional[Dict] = None
     ) -> str:
         """
-        发送聊天请求
+        Send chat request
         
         Args:
-            messages: 消息列表
-            temperature: 温度参数
+            messages: Message list
+            temperature: Temperature parameter
             max_tokens: 最大token数
             response_format: 响应格式（如JSON模式）
             
@@ -74,11 +74,11 @@ class LLMClient:
         max_tokens: int = 4096
     ) -> Dict[str, Any]:
         """
-        发送聊天请求并返回JSON
+        Send chat request并返回JSON
         
         Args:
-            messages: 消息列表
-            temperature: 温度参数
+            messages: Message list
+            temperature: Temperature parameter
             max_tokens: 最大token数
             
         Returns:

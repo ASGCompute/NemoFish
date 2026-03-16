@@ -1,11 +1,11 @@
 """
-模拟IPC通信模块
-用于Flask后端和模拟脚本之间的进程间通信
+Simulation IPC communication module
+IPC between Flask backend and simulation scripts
 
-通过文件系统实现简单的命令/响应模式：
-1. Flask写入命令到 commands/ 目录
-2. 模拟脚本轮询命令目录，执行命令并写入响应到 responses/ 目录
-3. Flask轮询响应目录获取结果
+Simple command/response pattern via filesystem:
+1. Flask writes commands to commands/ directory
+2. Sim script polls commands, writes responses
+3. Flask polls response dir for results
 """
 
 import os
@@ -23,8 +23,8 @@ logger = get_logger('nemofish.simulation_ipc')
 
 
 class CommandType(str, Enum):
-    """命令类型"""
-    INTERVIEW = "interview"           # 单个Agent采访
+    """Command type"""
+    INTERVIEW = "interview"           # Single agent interview
     BATCH_INTERVIEW = "batch_interview"  # 批量采访
     CLOSE_ENV = "close_env"           # 关闭环境
 
@@ -125,7 +125,7 @@ class SimulationIPCClient:
         发送命令并等待响应
         
         Args:
-            command_type: 命令类型
+            command_type: Command type
             args: 命令参数
             timeout: 超时时间（秒）
             poll_interval: 轮询间隔（秒）

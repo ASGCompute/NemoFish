@@ -1,6 +1,6 @@
 """
-文件解析工具
-支持PDF、Markdown、TXT文件的文本提取
+File parsing utility
+Supports text extraction from PDF, Markdown, TXT files
 """
 
 import os
@@ -10,12 +10,12 @@ from typing import List, Optional
 
 def _read_text_with_fallback(file_path: str) -> str:
     """
-    读取文本文件，UTF-8失败时自动探测编码。
+    Read text file, auto-detect encoding on UTF-8 failure.
     
-    采用多级回退策略：
-    1. 首先尝试 UTF-8 解码
-    2. 使用 charset_normalizer 检测编码
-    3. 回退到 chardet 检测编码
+    Multi-level fallback strategy:
+    1. First try UTF-8 decoding
+    2. Use charset_normalizer for encoding detection
+    3. Fall back to chardet for encoding detection
     4. 最终使用 UTF-8 + errors='replace' 兜底
     
     Args:
@@ -32,7 +32,7 @@ def _read_text_with_fallback(file_path: str) -> str:
     except UnicodeDecodeError:
         pass
     
-    # 尝试使用 charset_normalizer 检测编码
+    # 尝试Use charset_normalizer for encoding detection
     encoding = None
     try:
         from charset_normalizer import from_bytes
@@ -123,7 +123,7 @@ class FileParser:
     @classmethod
     def extract_from_multiple(cls, file_paths: List[str]) -> str:
         """
-        从多个文件提取文本并合并
+        Extract text from multiple files并合并
         
         Args:
             file_paths: 文件路径列表
@@ -153,12 +153,12 @@ def split_text_into_chunks(
     将文本分割成小块
     
     Args:
-        text: 原始文本
+        text: Original text
         chunk_size: 每块的字符数
         overlap: 重叠字符数
         
     Returns:
-        文本块列表
+        Text chunk list
     """
     if len(text) <= chunk_size:
         return [text] if text.strip() else []

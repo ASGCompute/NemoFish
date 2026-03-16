@@ -29,7 +29,7 @@ from typing import Dict, Any, List, Optional
 _shutdown_event = None
 _cleanup_done = False
 
-# 添加项目路径
+# Add project path
 _scripts_dir = os.path.dirname(os.path.abspath(__file__))
 _backend_dir = os.path.abspath(os.path.join(_scripts_dir, '..'))
 _project_root = os.path.abspath(os.path.join(_backend_dir, '..'))
@@ -137,7 +137,7 @@ IPC_RESPONSES_DIR = "ipc_responses"
 ENV_STATUS_FILE = "env_status.json"
 
 class CommandType:
-    """命令类型常量"""
+    """Command type常量"""
     INTERVIEW = "interview"
     BATCH_INTERVIEW = "batch_interview"
     CLOSE_ENV = "close_env"
@@ -378,12 +378,12 @@ class IPCHandler:
             return False
         
         else:
-            self.send_response(command_id, "failed", error=f"未知命令类型: {command_type}")
+            self.send_response(command_id, "failed", error=f"未知Command type: {command_type}")
             return True
 
 
 class TwitterSimulationRunner:
-    """Twitter模拟运行器"""
+    """TwitterSimulation runner"""
     
     # Twitter可用动作（不包含INTERVIEW，INTERVIEW只能通过ManualAction手动触发）
     AVAILABLE_ACTIONS = [
@@ -397,7 +397,7 @@ class TwitterSimulationRunner:
     
     def __init__(self, config_path: str, wait_for_commands: bool = True):
         """
-        初始化模拟运行器
+        初始化Simulation runner
         
         Args:
             config_path: 配置文件路径 (simulation_config.json)

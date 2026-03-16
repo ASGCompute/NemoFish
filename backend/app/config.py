@@ -1,6 +1,6 @@
 """
-配置管理
-统一从项目根目录的 .env 文件加载配置
+Configuration management
+Load config from project root .env file
 """
 
 import os
@@ -18,9 +18,9 @@ else:
 
 
 class Config:
-    """Flask配置类"""
+    """Flask configuration class"""
     
-    # Flask配置
+    # Flask configuration
     SECRET_KEY = os.environ.get('SECRET_KEY', 'nemofish-secret-key')
     DEBUG = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
     
@@ -41,10 +41,10 @@ class Config:
     ALLOWED_EXTENSIONS = {'pdf', 'md', 'txt', 'markdown'}
     
     # 文本处理配置
-    DEFAULT_CHUNK_SIZE = 500  # 默认切块大小
-    DEFAULT_CHUNK_OVERLAP = 50  # 默认重叠大小
+    DEFAULT_CHUNK_SIZE = 500  # 默认切Chunk size
+    DEFAULT_CHUNK_OVERLAP = 50  # 默认Overlap size
     
-    # OASIS模拟配置
+    # OASISSimulation configuration
     OASIS_DEFAULT_MAX_ROUNDS = int(os.environ.get('OASIS_DEFAULT_MAX_ROUNDS', '10'))
     OASIS_SIMULATION_DATA_DIR = os.path.join(os.path.dirname(__file__), '../uploads/simulations')
     
@@ -68,8 +68,8 @@ class Config:
         """验证必要配置"""
         errors = []
         if not cls.LLM_API_KEY:
-            errors.append("LLM_API_KEY 未配置")
+            errors.append("LLM_API_KEY not configured")
         if not cls.ZEP_API_KEY:
-            errors.append("ZEP_API_KEY 未配置")
+            errors.append("ZEP_API_KEY not configured")
         return errors
 

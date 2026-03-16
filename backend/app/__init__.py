@@ -1,5 +1,5 @@
 """
-NemoFish Backend - Flask应用工厂
+NemoFish Backend - Flask Application Factory
 """
 
 import os
@@ -17,7 +17,7 @@ from .utils.logger import setup_logger, get_logger
 
 
 def create_app(config_class=Config):
-    """Flask应用工厂函数"""
+    """Flask application factory"""
     app = Flask(__name__)
     app.config.from_object(config_class)
     
@@ -26,7 +26,7 @@ def create_app(config_class=Config):
     if hasattr(app, 'json') and hasattr(app.json, 'ensure_ascii'):
         app.json.ensure_ascii = False
     
-    # 设置日志
+    # Set up logging
     logger = setup_logger('nemofish')
     
     # 只在 reloader 子进程中打印启动信息（避免 debug 模式下打印两次）

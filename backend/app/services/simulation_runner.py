@@ -1,5 +1,5 @@
 """
-OASIS模拟运行器
+OASISSimulation runner
 在后台运行模拟并记录每个Agent的动作，支持实时状态监控
 """
 
@@ -137,7 +137,7 @@ class SimulationRunState:
     updated_at: str = field(default_factory=lambda: datetime.now().isoformat())
     completed_at: Optional[str] = None
     
-    # 错误信息
+    # Error info
     error: Optional[str] = None
     
     # 进程ID（用于停止）
@@ -194,7 +194,7 @@ class SimulationRunState:
 
 class SimulationRunner:
     """
-    模拟运行器
+    Simulation runner
     
     负责：
     1. 在后台进程中运行OASIS模拟
@@ -318,7 +318,7 @@ class SimulationRunner:
         graph_id: str = None  # Zep图谱ID（启用图谱更新时必需）
     ) -> SimulationRunState:
         """
-        启动模拟
+        Start simulation
         
         Args:
             simulation_id: 模拟ID
@@ -335,12 +335,12 @@ class SimulationRunner:
         if existing and existing.runner_status in [RunnerStatus.RUNNING, RunnerStatus.STARTING]:
             raise ValueError(f"模拟已在运行中: {simulation_id}")
         
-        # 加载模拟配置
+        # 加载Simulation configuration
         sim_dir = os.path.join(cls.RUN_STATE_DIR, simulation_id)
         config_path = os.path.join(sim_dir, "simulation_config.json")
         
         if not os.path.exists(config_path):
-            raise ValueError(f"模拟配置不存在，请先调用 /prepare 接口")
+            raise ValueError(f"Simulation configuration不存在，请先调用 /prepare 接口")
         
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
@@ -404,7 +404,7 @@ class SimulationRunner:
         action_queue = Queue()
         cls._action_queues[simulation_id] = action_queue
         
-        # 启动模拟进程
+        # Start simulation进程
         try:
             # 构建运行命令，使用完整路径
             # 新的日志结构：
@@ -506,7 +506,7 @@ class SimulationRunner:
                         reddit_actions_log, reddit_position, state, "reddit"
                     )
                 
-                # 更新状态
+                # Update status
                 cls._save_run_state(state)
                 time.sleep(2)
             
@@ -770,7 +770,7 @@ class SimulationRunner:
     
     @classmethod
     def stop_simulation(cls, simulation_id: str) -> SimulationRunState:
-        """停止模拟"""
+        """Stop simulation"""
         state = cls.get_run_state(simulation_id)
         if not state:
             raise ValueError(f"模拟不存在: {simulation_id}")
@@ -1574,14 +1574,14 @@ class SimulationRunner:
         # 从配置文件获取所有Agent信息
         config_path = os.path.join(sim_dir, "simulation_config.json")
         if not os.path.exists(config_path):
-            raise ValueError(f"模拟配置不存在: {simulation_id}")
+            raise ValueError(f"Simulation configuration不存在: {simulation_id}")
 
         with open(config_path, 'r', encoding='utf-8') as f:
             config = json.load(f)
 
         agent_configs = config.get("agent_configs", [])
         if not agent_configs:
-            raise ValueError(f"模拟配置中没有Agent: {simulation_id}")
+            raise ValueError(f"Simulation configuration中没有Agent: {simulation_id}")
 
         # 构建批量采访列表
         interviews = []
@@ -1609,7 +1609,7 @@ class SimulationRunner:
         timeout: float = 30.0
     ) -> Dict[str, Any]:
         """
-        关闭模拟环境（而不是停止模拟进程）
+        关闭模拟环境（而不是Stop simulation进程）
         
         向模拟发送关闭环境命令，使其优雅退出等待命令模式
         

@@ -1,4 +1,4 @@
-"""Zep Graph 分页读取工具。
+"""Zep Graph pagination reader.
 
 Zep 的 node/edge 列表接口使用 UUID cursor 分页，
 本模块封装自动翻页逻辑（含单页重试），对调用方透明地返回完整列表。

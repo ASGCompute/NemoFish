@@ -1,6 +1,6 @@
 """
-任务状态管理
-用于跟踪长时间运行的任务（如图谱构建）
+Task status management
+For tracking long-running tasks (e.g. graph building)
 """
 
 import uuid
@@ -12,16 +12,16 @@ from dataclasses import dataclass, field
 
 
 class TaskStatus(str, Enum):
-    """任务状态枚举"""
-    PENDING = "pending"          # 等待中
-    PROCESSING = "processing"    # 处理中
-    COMPLETED = "completed"      # 已完成
-    FAILED = "failed"            # 失败
+    """Task status enum"""
+    PENDING = "pending"          # Pending
+    PROCESSING = "processing"    # Processing
+    COMPLETED = "completed"      # Completed
+    FAILED = "failed"            # Failed
 
 
 @dataclass
 class Task:
-    """任务数据类"""
+    """Task data class"""
     task_id: str
     task_type: str
     status: TaskStatus
@@ -30,12 +30,12 @@ class Task:
     progress: int = 0              # 总进度百分比 0-100
     message: str = ""              # 状态消息
     result: Optional[Dict] = None  # 任务结果
-    error: Optional[str] = None    # 错误信息
+    error: Optional[str] = None    # Error info
     metadata: Dict = field(default_factory=dict)  # 额外元数据
     progress_detail: Dict = field(default_factory=dict)  # 详细进度信息
     
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         return {
             "task_id": self.task_id,
             "task_type": self.task_type,
@@ -54,7 +54,7 @@ class Task:
 class TaskManager:
     """
     任务管理器
-    线程安全的任务状态管理
+    线程安全的Task status management
     """
     
     _instance = None

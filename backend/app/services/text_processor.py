@@ -1,5 +1,5 @@
 """
-文本处理服务
+Text processing service
 """
 
 from typing import List, Optional
@@ -7,11 +7,11 @@ from ..utils.file_parser import FileParser, split_text_into_chunks
 
 
 class TextProcessor:
-    """文本处理器"""
+    """Text processor"""
     
     @staticmethod
     def extract_from_files(file_paths: List[str]) -> str:
-        """从多个文件提取文本"""
+        """Extract text from multiple files"""
         return FileParser.extract_from_multiple(file_paths)
     
     @staticmethod
@@ -21,15 +21,15 @@ class TextProcessor:
         overlap: int = 50
     ) -> List[str]:
         """
-        分割文本
+        Split text
         
         Args:
-            text: 原始文本
-            chunk_size: 块大小
-            overlap: 重叠大小
+            text: Original text
+            chunk_size: Chunk size
+            overlap: Overlap size
             
         Returns:
-            文本块列表
+            Text chunk list
         """
         return split_text_into_chunks(text, chunk_size, overlap)
     
@@ -41,7 +41,7 @@ class TextProcessor:
         - 标准化换行
         
         Args:
-            text: 原始文本
+            text: Original text
             
         Returns:
             处理后的文本

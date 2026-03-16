@@ -1,6 +1,6 @@
 """
-图谱构建服务
-接口2：使用Zep API构建Standalone Graph
+Graph building service
+Interface 2: Build Standalone Graph using Zep API
 """
 
 import os
@@ -21,7 +21,7 @@ from .text_processor import TextProcessor
 
 @dataclass
 class GraphInfo:
-    """图谱信息"""
+    """Graph information"""
     graph_id: str
     node_count: int
     edge_count: int
@@ -38,14 +38,14 @@ class GraphInfo:
 
 class GraphBuilderService:
     """
-    图谱构建服务
-    负责调用Zep API构建知识图谱
+    Graph building service
+    Handles calling Zep API to build knowledge graph
     """
     
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or Config.ZEP_API_KEY
         if not self.api_key:
-            raise ValueError("ZEP_API_KEY 未配置")
+            raise ValueError("ZEP_API_KEY not configured")
         
         self.client = Zep(api_key=self.api_key)
         self.task_manager = TaskManager()
@@ -60,14 +60,14 @@ class GraphBuilderService:
         batch_size: int = 3
     ) -> str:
         """
-        异步构建图谱
+        Build graph asynchronously
         
         Args:
-            text: 输入文本
+            text: Input text
             ontology: 本体定义（来自接口1的输出）
             graph_name: 图谱名称
-            chunk_size: 文本块大小
-            chunk_overlap: 块重叠大小
+            chunk_size: 文本Chunk size
+            chunk_overlap: 块Overlap size
             batch_size: 每批发送的块数量
             
         Returns:
@@ -163,11 +163,11 @@ class GraphBuilderService:
                 )
             )
             
-            # 6. 获取图谱信息
+            # 6. 获取Graph information
             self.task_manager.update_task(
                 task_id,
                 progress=90,
-                message="获取图谱信息..."
+                message="获取Graph information..."
             )
             
             graph_info = self._get_graph_info(graph_id)
@@ -395,7 +395,7 @@ class GraphBuilderService:
             progress_callback(f"处理完成: {completed_count}/{total_episodes}", 1.0)
     
     def _get_graph_info(self, graph_id: str) -> GraphInfo:
-        """获取图谱信息"""
+        """获取Graph information"""
         # 获取节点（分页）
         nodes = fetch_all_nodes(self.client, graph_id)
 

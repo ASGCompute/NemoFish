@@ -1,6 +1,6 @@
 """
-Zep实体读取与过滤服务
-从Zep图谱中读取节点，筛选出符合预定义实体类型的节点
+Zep entity reading and filtering service
+Read nodes from Zep graph, filter for predefined entity types
 """
 
 import time
@@ -15,21 +15,21 @@ from ..utils.zep_paging import fetch_all_nodes, fetch_all_edges
 
 logger = get_logger('nemofish.zep_entity_reader')
 
-# 用于泛型返回类型
+# For generic return types
 T = TypeVar('T')
 
 
 @dataclass
 class EntityNode:
-    """实体节点数据结构"""
+    """Entity node data structure"""
     uuid: str
     name: str
     labels: List[str]
     summary: str
     attributes: Dict[str, Any]
-    # 相关的边信息
+    # Related edge info
     related_edges: List[Dict[str, Any]] = field(default_factory=list)
-    # 相关的其他节点信息
+    # Related node info
     related_nodes: List[Dict[str, Any]] = field(default_factory=list)
     
     def to_dict(self) -> Dict[str, Any]:
@@ -44,7 +44,7 @@ class EntityNode:
         }
     
     def get_entity_type(self) -> Optional[str]:
-        """获取实体类型（排除默认的Entity标签）"""
+        """Get entity type (excluding default Entity label)"""
         for label in self.labels:
             if label not in ["Entity", "Node"]:
                 return label
@@ -53,7 +53,7 @@ class EntityNode:
 
 @dataclass
 class FilteredEntities:
-    """过滤后的实体集合"""
+    """Filtered entity collection"""
     entities: List[EntityNode]
     entity_types: Set[str]
     total_count: int
@@ -70,7 +70,7 @@ class FilteredEntities:
 
 class ZepEntityReader:
     """
-    Zep实体读取与过滤服务
+    Zep entity reading and filtering service
     
     主要功能：
     1. 从Zep图谱读取所有节点
@@ -81,7 +81,7 @@ class ZepEntityReader:
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or Config.ZEP_API_KEY
         if not self.api_key:
-            raise ValueError("ZEP_API_KEY 未配置")
+            raise ValueError("ZEP_API_KEY not configured")
         
         self.client = Zep(api_key=self.api_key)
     
@@ -98,7 +98,7 @@ class ZepEntityReader:
         Args:
             func: 要执行的函数（无参数的lambda或callable）
             operation_name: 操作名称，用于日志
-            max_retries: 最大重试次数（默认3次，即最多尝试3次）
+            max_retries: Max retries（默认3次，即最多尝试3次）
             initial_delay: 初始延迟秒数
             
         Returns:
@@ -231,7 +231,7 @@ class ZepEntityReader:
             enrich_with_edges: 是否获取每个实体的相关边信息
             
         Returns:
-            FilteredEntities: 过滤后的实体集合
+            FilteredEntities: Filtered entity collection
         """
         logger.info(f"开始筛选图谱 {graph_id} 的实体...")
         

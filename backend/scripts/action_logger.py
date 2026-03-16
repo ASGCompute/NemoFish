@@ -1,14 +1,14 @@
 """
-动作日志记录器
-用于记录OASIS模拟中每个Agent的动作，供后端监控使用
+Action logger
+Records agent actions in OASIS simulation for monitoring
 
-日志结构:
+Log structure:
     sim_xxx/
     ├── twitter/
-    │   └── actions.jsonl    # Twitter 平台动作日志
+    │   └── actions.jsonl    # Twitter platform action log
     ├── reddit/
-    │   └── actions.jsonl    # Reddit 平台动作日志
-    ├── simulation.log       # 主模拟进程日志
+    │   └── actions.jsonl    # Reddit platform action log
+    ├── simulation.log       # Main simulation process log
     └── run_state.json       # 运行状态（API 查询用）
 """
 
@@ -20,7 +20,7 @@ from typing import Dict, Any, Optional
 
 
 class PlatformActionLogger:
-    """单平台动作日志记录器"""
+    """单平台Action logger"""
     
     def __init__(self, platform: str, base_dir: str):
         """
@@ -200,7 +200,7 @@ class SimulationLogManager:
 
 class ActionLogger:
     """
-    动作日志记录器（兼容旧接口）
+    Action logger（兼容旧接口）
     建议使用 SimulationLogManager 代替
     """
     

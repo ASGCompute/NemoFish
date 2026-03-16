@@ -1,6 +1,6 @@
 """
-模拟配置智能生成器
-使用LLM根据模拟需求、文档内容、图谱信息自动生成细致的模拟参数
+Simulation configuration智能生成器
+使用LLM根据模拟需求、文档内容、Graph information自动生成细致的模拟参数
 实现全程自动化，无需人工设置参数
 
 采用分步生成策略，避免一次性生成过长内容导致失败：
@@ -81,7 +81,7 @@ class AgentActivityConfig:
 
 @dataclass  
 class TimeSimulationConfig:
-    """时间模拟配置（基于中国人作息习惯）"""
+    """时间Simulation configuration（基于中国人作息习惯）"""
     # 模拟总时长（模拟小时数）
     total_simulation_hours: int = 72  # 默认模拟72小时（3天）
     
@@ -173,7 +173,7 @@ class SimulationParameters:
     generation_reasoning: str = ""  # LLM的推理说明
     
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         time_dict = asdict(self.time_config)
         return {
             "simulation_id": self.simulation_id,
@@ -198,7 +198,7 @@ class SimulationParameters:
 
 class SimulationConfigGenerator:
     """
-    模拟配置智能生成器
+    Simulation configuration智能生成器
     
     使用LLM分析模拟需求、文档内容、图谱实体信息，
     自动生成最佳的模拟参数配置
@@ -232,7 +232,7 @@ class SimulationConfigGenerator:
         self.model_name = model_name or Config.LLM_MODEL_NAME
         
         if not self.api_key:
-            raise ValueError("LLM_API_KEY 未配置")
+            raise ValueError("LLM_API_KEY not configured")
         
         self.client = OpenAI(
             api_key=self.api_key,
@@ -252,7 +252,7 @@ class SimulationConfigGenerator:
         progress_callback: Optional[Callable[[int, int, str], None]] = None,
     ) -> SimulationParameters:
         """
-        智能生成完整的模拟配置（分步生成）
+        智能生成完整的Simulation configuration（分步生成）
         
         Args:
             simulation_id: 模拟ID
@@ -268,7 +268,7 @@ class SimulationConfigGenerator:
         Returns:
             SimulationParameters: 完整的模拟参数
         """
-        logger.info(f"开始智能生成模拟配置: simulation_id={simulation_id}, 实体数={len(entities)}")
+        logger.info(f"开始智能生成Simulation configuration: simulation_id={simulation_id}, 实体数={len(entities)}")
         
         # 计算总步骤数
         num_batches = math.ceil(len(entities) / self.AGENTS_PER_BATCH)
@@ -373,7 +373,7 @@ class SimulationConfigGenerator:
             generation_reasoning=" | ".join(reasoning_parts)
         )
         
-        logger.info(f"模拟配置生成完成: {len(params.agent_configs)} 个Agent配置")
+        logger.info(f"Simulation configuration生成完成: {len(params.agent_configs)} 个Agent配置")
         
         return params
     
@@ -446,7 +446,7 @@ class SimulationConfigGenerator:
                         {"role": "user", "content": prompt}
                     ],
                     response_format={"type": "json_object"},
-                    temperature=0.7 - (attempt * 0.1)  # 每次重试降低温度
+                    temperature=0.7 - (attempt * 0.1)  # Lower temperature with each retry
                     # 不设置max_tokens，让LLM自由发挥
                 )
                 
@@ -539,23 +539,23 @@ class SimulationConfigGenerator:
         # 计算最大允许值（80%的agent数）
         max_agents_allowed = max(1, int(num_entities * 0.9))
         
-        prompt = f"""基于以下模拟需求，生成时间模拟配置。
+        prompt = f"""基于以下模拟需求，生成时间Simulation configuration。
 
 {context_truncated}
 
 ## 任务
 请生成时间配置JSON。
 
-### 基本原则（仅供参考，需根据具体事件和参与群体灵活调整）：
-- 用户群体为中国人，需符合北京时间作息习惯
+### 基本原则（仅供参考，需根据具体事件和参与group灵活调整）：
+- 用户group为中国人，需符合北京时间作息习惯
 - 凌晨0-5点几乎无人活动（活跃度系数0.05）
 - 早上6-8点逐渐活跃（活跃度系数0.4）
 - 工作时间9-18点中等活跃（活跃度系数0.7）
 - 晚间19-22点是高峰期（活跃度系数1.5）
 - 23点后活跃度下降（活跃度系数0.5）
 - 一般规律：凌晨低活跃、早间渐增、工作时段中等、晚间高峰
-- **重要**：以下示例值仅供参考，你需要根据事件性质、参与群体特点来调整具体时段
-  - 例如：学生群体高峰可能是21-23点；媒体全天活跃；官方机构只在工作时间
+- **重要**：以下示例值仅供参考，你需要根据事件性质、参与group特点来调整具体时段
+  - 例如：学生group高峰可能是21-23点；媒体全天活跃；官方机构只在工作时间
   - 例如：突发热点可能导致深夜也有讨论，off_peak_hours 可适当缩短
 
 ### 返回JSON格式（不要markdown）
@@ -578,7 +578,7 @@ class SimulationConfigGenerator:
 - minutes_per_round (int): 每轮时长，30-120分钟，建议60分钟
 - agents_per_hour_min (int): 每小时最少激活Agent数（取值范围: 1-{max_agents_allowed}）
 - agents_per_hour_max (int): 每小时最多激活Agent数（取值范围: 1-{max_agents_allowed}）
-- peak_hours (int数组): 高峰时段，根据事件参与群体调整
+- peak_hours (int数组): 高峰时段，根据事件参与group调整
 - off_peak_hours (int数组): 低谷时段，通常深夜凌晨
 - morning_hours (int数组): 早间时段
 - work_hours (int数组): 工作时段
@@ -841,7 +841,7 @@ class SimulationConfigGenerator:
 - **时间符合中国人作息**：凌晨0-5点几乎不活动，晚间19-22点最活跃
 - **官方机构**（University/GovernmentAgency）：活跃度低(0.1-0.3)，工作时间(9-17)活动，响应慢(60-240分钟)，影响力高(2.5-3.0)
 - **媒体**（MediaOutlet）：活跃度中(0.4-0.6)，全天活动(8-23)，响应快(5-30分钟)，影响力高(2.0-2.5)
-- **个人**（Student/Person/Alumni）：活跃度高(0.6-0.9)，主要晚间活动(18-23)，响应快(1-15分钟)，影响力低(0.8-1.2)
+- **individual**（Student/Person/Alumni）：活跃度高(0.6-0.9)，主要晚间活动(18-23)，响应快(1-15分钟)，影响力低(0.8-1.2)
 - **公众人物/专家**：活跃度中(0.4-0.6)，影响力中高(1.5-2.0)
 
 返回JSON格式（不要markdown）：

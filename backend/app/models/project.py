@@ -1,6 +1,6 @@
 """
-项目上下文管理
-用于在服务端持久化项目状态，避免前端在接口间传递大量数据
+Project context management
+Server-side project state persistence
 """
 
 import os
@@ -15,12 +15,12 @@ from ..config import Config
 
 
 class ProjectStatus(str, Enum):
-    """项目状态"""
-    CREATED = "created"              # 刚创建，文件已上传
-    ONTOLOGY_GENERATED = "ontology_generated"  # 本体已生成
-    GRAPH_BUILDING = "graph_building"    # 图谱构建中
-    GRAPH_COMPLETED = "graph_completed"  # 图谱构建完成
-    FAILED = "failed"                # 失败
+    """Project status"""
+    CREATED = "created"              # Just created, file uploaded
+    ONTOLOGY_GENERATED = "ontology_generated"  # Ontology generated
+    GRAPH_BUILDING = "graph_building"    # Graph building
+    GRAPH_COMPLETED = "graph_completed"  # Graph completed
+    FAILED = "failed"                # Failed
 
 
 @dataclass
@@ -40,7 +40,7 @@ class Project:
     ontology: Optional[Dict[str, Any]] = None
     analysis_summary: Optional[str] = None
     
-    # 图谱信息（接口2完成后填充）
+    # Graph information（接口2完成后填充）
     graph_id: Optional[str] = None
     graph_build_task_id: Optional[str] = None
     
@@ -49,11 +49,11 @@ class Project:
     chunk_size: int = 500
     chunk_overlap: int = 50
     
-    # 错误信息
+    # Error info
     error: Optional[str] = None
     
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """Convert to dictionary"""
         return {
             "project_id": self.project_id,
             "name": self.name,
