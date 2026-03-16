@@ -1,5 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import './App.css'
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
+  LineChart, Line, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
+  ReferenceLine
+} from 'recharts'
 
 // === Types ===
 interface KpiData {
@@ -103,6 +108,22 @@ interface OddsMovement {
   movement_b: number
 }
 
+interface StrategyResult {
+  name: string
+  source: string
+  bets: number
+  wins: number
+  winRate: number
+  wagered: number
+  pnl: number
+  roi: number
+  maxDrawdown: number
+  sharpe: number
+  avgPnlPerBet: number
+  color: string
+  pnlCurve: number[]
+}
+
 // === API ===
 const API_BASE = 'http://localhost:8888'
 
@@ -195,6 +216,30 @@ const DEMO_TRADES: Trade[] = [
   { id: 'NF-A3CC6A25', timestamp: '2026-03-16 00:43', match: 'Djokovic vs Alcaraz', pick: 'Novak Djokovic', odds: 2.40, edge: 0.138, betSize: 250, won: true, pnl: 350, confidence: 'LOW', sport: 'tennis' },
   { id: 'NF-36A012DD', timestamp: '2026-03-16 00:43', match: 'Sinner vs Alcaraz', pick: 'Jannik Sinner', odds: 1.55, edge: 0.051, betSize: 179.79, won: true, pnl: 98.88, confidence: 'HIGH', sport: 'tennis' },
   { id: 'NF-3513D00B', timestamp: '2026-03-16 00:43', match: 'Medvedev vs de Minaur', pick: 'Daniil Medvedev', odds: 1.80, edge: 0.120, betSize: 250, won: false, pnl: -250, confidence: 'LOW', sport: 'tennis' },
+]
+
+// === Strategy Demo Data (from backtest results) ===
+const DEMO_STRATEGIES: StrategyResult[] = [
+  { name: 'ATPConfidence(top5%)', source: 'ATPBetting', bets: 7, wins: 1, winRate: 14.3, wagered: 700, pnl: 354, roi: 50.6, maxDrawdown: 300, sharpe: 0.137, avgPnlPerBet: 50.6, color: '#ccff00',
+    pnlCurve: [0, -100, -200, -300, -200, -100, 354] },
+  { name: 'ValueConfirmation', source: 'NemoFish', bets: 108, wins: 81, winRate: 75.0, wagered: 10800, pnl: -129, roi: -1.2, maxDrawdown: 720, sharpe: -0.020, avgPnlPerBet: -1.2, color: '#0ea5e9',
+    pnlCurve: Array.from({length: 20}, (_, i) => Math.sin(i * 0.5) * 300 + (i > 15 ? -200 : 100) - i * 6) },
+  { name: 'ATPConfidence(top10%)', source: 'ATPBetting', bets: 15, wins: 2, winRate: 13.3, wagered: 1500, pnl: -66, roi: -4.4, maxDrawdown: 500, sharpe: -0.016, avgPnlPerBet: -4.4, color: '#22c55e',
+    pnlCurve: Array.from({length: 15}, (_, i) => Math.sin(i * 0.7) * 200 - i * 4) },
+  { name: 'SkempPredictWin+Value', source: 'skemp15', bets: 49, wins: 24, winRate: 49.0, wagered: 4900, pnl: -579, roi: -11.8, maxDrawdown: 1198, sharpe: -0.128, avgPnlPerBet: -11.8, color: '#06b6d4',
+    pnlCurve: Array.from({length: 20}, (_, i) => Math.sin(i * 0.4) * 400 - i * 30) },
+  { name: 'Edge(5%-20%)', source: 'NemoFish', bets: 23, wins: 10, winRate: 43.5, wagered: 2300, pnl: -410, roi: -17.8, maxDrawdown: 845, sharpe: -0.187, avgPnlPerBet: -17.8, color: '#d97706',
+    pnlCurve: Array.from({length: 15}, (_, i) => -i * 28 + Math.sin(i) * 100) },
+  { name: 'Edge(3%-30%)', source: 'NemoFish', bets: 35, wins: 15, winRate: 42.9, wagered: 3500, pnl: -691, roi: -19.7, maxDrawdown: 1022, sharpe: -0.208, avgPnlPerBet: -19.7, color: '#f59e0b',
+    pnlCurve: Array.from({length: 18}, (_, i) => -i * 38 + Math.sin(i * 0.6) * 150) },
+  { name: 'Kelly(¼)', source: 'NemoFish', bets: 36, wins: 15, winRate: 41.7, wagered: 6617, pnl: -1415, roi: -21.4, maxDrawdown: 1887, sharpe: -0.213, avgPnlPerBet: -39.3, color: '#c084fc',
+    pnlCurve: Array.from({length: 18}, (_, i) => -i * 78 + Math.sin(i * 0.8) * 300) },
+  { name: 'SkempInverse', source: 'skemp15', bets: 25, wins: 7, winRate: 28.0, wagered: 2500, pnl: -542, roi: -21.7, maxDrawdown: 743, sharpe: -0.169, avgPnlPerBet: -21.7, color: '#f97316',
+    pnlCurve: Array.from({length: 15}, (_, i) => -i * 36 + Math.sin(i * 1.2) * 150) },
+  { name: 'SkempValue', source: 'skemp15', bets: 128, wins: 39, winRate: 30.5, wagered: 12800, pnl: -3321, roi: -25.9, maxDrawdown: 3605, sharpe: -0.188, avgPnlPerBet: -25.9, color: '#ef4444',
+    pnlCurve: Array.from({length: 25}, (_, i) => -i * 132 + Math.sin(i * 0.3) * 500) },
+  { name: 'ATPConfidence(top15%)', source: 'ATPBetting', bets: 22, wins: 2, winRate: 9.1, wagered: 2200, pnl: -766, roi: -34.8, maxDrawdown: 920, sharpe: -0.152, avgPnlPerBet: -34.8, color: '#065f46',
+    pnlCurve: Array.from({length: 15}, (_, i) => -i * 51 + Math.sin(i * 0.9) * 100) },
 ]
 
 // === Components ===
@@ -510,9 +555,235 @@ function TradeJournal({ trades }: { trades: Trade[] }) {
   )
 }
 
+// === STRATEGY COMPARISON COMPONENT ===
+function StrategyComparison() {
+  const [activeStrategies, setActiveStrategies] = useState<Set<string>>(
+    new Set(DEMO_STRATEGIES.map(s => s.name))
+  )
+  const [sortBy, setSortBy] = useState<'roi' | 'winRate' | 'sharpe' | 'bets'>('roi')
+
+  const toggleStrategy = (name: string) => {
+    setActiveStrategies(prev => {
+      const n = new Set(prev)
+      if (n.has(name)) n.delete(name); else n.add(name)
+      return n
+    })
+  }
+
+  const filtered = useMemo(() =>
+    DEMO_STRATEGIES.filter(s => activeStrategies.has(s.name)),
+    [activeStrategies]
+  )
+
+  const sorted = useMemo(() =>
+    [...filtered].sort((a, b) => {
+      if (sortBy === 'roi') return b.roi - a.roi
+      if (sortBy === 'winRate') return b.winRate - a.winRate
+      if (sortBy === 'sharpe') return b.sharpe - a.sharpe
+      return b.bets - a.bets
+    }),
+    [filtered, sortBy]
+  )
+
+  // Build P&L curve data for the line chart
+  const pnlLineData = useMemo(() => {
+    const maxLen = Math.max(...filtered.map(s => s.pnlCurve.length))
+    return Array.from({ length: maxLen }, (_, i) => {
+      const point: Record<string, number> = { bet: i + 1 }
+      filtered.forEach(s => {
+        if (i < s.pnlCurve.length) point[s.name] = s.pnlCurve[i]
+      })
+      return point
+    })
+  }, [filtered])
+
+  // ROI bar chart data
+  const roiBarData = sorted.map(s => ({
+    name: s.name.length > 18 ? s.name.slice(0, 18) + '…' : s.name,
+    fullName: s.name,
+    roi: s.roi,
+    color: s.roi > 0 ? '#ccff00' : s.roi > -10 ? '#f59e0b' : '#ef4444'
+  }))
+
+  // Radar chart data
+  const radarData = [
+    { metric: 'ROI', ...Object.fromEntries(sorted.slice(0, 5).map(s => [s.name, Math.max(0, s.roi + 40)])) },
+    { metric: 'Win Rate', ...Object.fromEntries(sorted.slice(0, 5).map(s => [s.name, s.winRate])) },
+    { metric: 'Sharpe', ...Object.fromEntries(sorted.slice(0, 5).map(s => [s.name, (s.sharpe + 0.3) * 200])) },
+    { metric: 'Volume', ...Object.fromEntries(sorted.slice(0, 5).map(s => [s.name, Math.min(100, s.bets)])) },
+    { metric: 'Safety', ...Object.fromEntries(sorted.slice(0, 5).map(s => [s.name, Math.max(0, 100 - s.maxDrawdown / 40)])) },
+  ]
+
+  return (
+    <div className="strategies-page">
+      {/* Strategy Toggle Bar */}
+      <div className="strategy-toggles">
+        <div className="toggle-header">
+          <span className="toggle-title">📊 Strategy Filter</span>
+          <div className="toggle-actions">
+            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.map(s => s.name)))}>All</button>
+            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.filter(s => s.source === 'ATPBetting').map(s => s.name)))}>ATPBetting</button>
+            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.filter(s => s.source === 'skemp15').map(s => s.name)))}>skemp15</button>
+            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.filter(s => s.source === 'NemoFish').map(s => s.name)))}>NemoFish</button>
+          </div>
+        </div>
+        <div className="toggle-chips">
+          {DEMO_STRATEGIES.map(s => (
+            <button
+              key={s.name}
+              className={`strategy-chip ${activeStrategies.has(s.name) ? 'active' : 'inactive'}`}
+              style={activeStrategies.has(s.name) ? { borderColor: s.color, boxShadow: `0 0 12px ${s.color}33` } : {}}
+              onClick={() => toggleStrategy(s.name)}
+            >
+              <span className="chip-dot" style={{ background: s.color }} />
+              {s.name}
+              <span className="chip-source">{s.source}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Hero KPIs */}
+      <div className="strategy-hero-kpis">
+        <div className="strat-kpi best">
+          <div className="strat-kpi-label">🏆 Best Strategy</div>
+          <div className="strat-kpi-value">{sorted[0]?.name || '—'}</div>
+          <div className="strat-kpi-sub positive">+{sorted[0]?.roi?.toFixed(1)}% ROI</div>
+        </div>
+        <div className="strat-kpi">
+          <div className="strat-kpi-label">Active Strategies</div>
+          <div className="strat-kpi-value">{filtered.length}</div>
+          <div className="strat-kpi-sub">of {DEMO_STRATEGIES.length} total</div>
+        </div>
+        <div className="strat-kpi">
+          <div className="strat-kpi-label">Total Bets Tracked</div>
+          <div className="strat-kpi-value">{filtered.reduce((a, s) => a + s.bets, 0)}</div>
+          <div className="strat-kpi-sub">{filtered.reduce((a, s) => a + s.wins, 0)} wins</div>
+        </div>
+        <div className="strat-kpi">
+          <div className="strat-kpi-label">Highest Win Rate</div>
+          <div className="strat-kpi-value">{Math.max(...filtered.map(s => s.winRate)).toFixed(1)}%</div>
+          <div className="strat-kpi-sub">{filtered.find(s => s.winRate === Math.max(...filtered.map(x => x.winRate)))?.name}</div>
+        </div>
+      </div>
+
+      {/* Charts Row */}
+      <div className="strategy-charts-row">
+        {/* ROI Bar Chart */}
+        <div className="card strategy-chart">
+          <div className="card-title">
+            💰 ROI by Strategy
+            <div className="sort-controls">
+              {(['roi', 'winRate', 'sharpe', 'bets'] as const).map(s => (
+                <button key={s} className={`sort-btn ${sortBy === s ? 'active' : ''}`} onClick={() => setSortBy(s)}>
+                  {s === 'roi' ? 'ROI' : s === 'winRate' ? 'WR%' : s === 'sharpe' ? 'Sharpe' : 'Volume'}
+                </button>
+              ))}
+            </div>
+          </div>
+          <ResponsiveContainer width="100%" height={340}>
+            <BarChart data={roiBarData} layout="vertical" margin={{ left: 10, right: 30, top: 10, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis type="number" tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(v) => `${v}%`} />
+              <YAxis type="category" dataKey="name" width={160} tick={{ fill: '#e2e8f0', fontSize: 11, fontFamily: 'JetBrains Mono' }} />
+              <Tooltip
+                contentStyle={{ background: 'rgba(10, 17, 32, 0.95)', border: '1px solid rgba(14,165,233,0.3)', borderRadius: 12, fontSize: 12, color: '#f8fafc' }}
+                formatter={(v: unknown) => [`${Number(v).toFixed(1)}%`, 'ROI']}
+              />
+              <ReferenceLine x={0} stroke="rgba(255,255,255,0.2)" />
+              <Bar dataKey="roi" radius={[0, 6, 6, 0]}>
+                {roiBarData.map((entry, i) => (
+                  <Cell key={i} fill={entry.color} fillOpacity={0.85} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Cumulative P&L Line Chart */}
+        <div className="card strategy-chart">
+          <div className="card-title">📈 Cumulative P&L Curve</div>
+          <ResponsiveContainer width="100%" height={340}>
+            <LineChart data={pnlLineData} margin={{ left: 10, right: 30, top: 10, bottom: 10 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis dataKey="bet" tick={{ fill: '#94a3b8', fontSize: 11 }} label={{ value: 'Bet #', position: 'insideBottom', offset: -5, fill: '#64748b' }} />
+              <YAxis tick={{ fill: '#94a3b8', fontSize: 11 }} tickFormatter={(v) => `$${v}`} />
+              <Tooltip
+                contentStyle={{ background: 'rgba(10, 17, 32, 0.95)', border: '1px solid rgba(14,165,233,0.3)', borderRadius: 12, fontSize: 12, color: '#f8fafc' }}
+                formatter={(v: unknown, name: unknown) => [`$${Number(v).toFixed(0)}`, String(name)]}
+              />
+              <ReferenceLine y={0} stroke="rgba(255,255,255,0.2)" strokeDasharray="4 4" />
+              {filtered.map(s => (
+                <Line key={s.name} type="monotone" dataKey={s.name} stroke={s.color} strokeWidth={2} dot={false} />
+              ))}
+              <Legend wrapperStyle={{ fontSize: 10, color: '#94a3b8' }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Radar + Stats Table Row */}
+      <div className="strategy-charts-row">
+        {/* Radar Chart */}
+        <div className="card strategy-chart radar-card">
+          <div className="card-title">🎯 Strategy Profile (Top 5)</div>
+          <ResponsiveContainer width="100%" height={340}>
+            <RadarChart data={radarData} margin={{ top: 20, right: 30, bottom: 20, left: 30 }}>
+              <PolarGrid stroke="rgba(255,255,255,0.1)" />
+              <PolarAngleAxis dataKey="metric" tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <PolarRadiusAxis tick={false} axisLine={false} />
+              {sorted.slice(0, 5).map(s => (
+                <Radar key={s.name} name={s.name} dataKey={s.name} stroke={s.color} fill={s.color} fillOpacity={0.1} strokeWidth={2} />
+              ))}
+              <Legend wrapperStyle={{ fontSize: 10, color: '#94a3b8' }} />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Strategy Stats Table */}
+        <div className="card strategy-chart">
+          <div className="card-title">📋 Detailed Metrics</div>
+          <div className="strategy-table-scroll">
+            <table className="strategy-table">
+              <thead>
+                <tr>
+                  <th>Strategy</th><th>Source</th><th>Bets</th><th>WR%</th>
+                  <th>P&L</th><th>ROI</th><th>Sharpe</th><th>MaxDD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sorted.map(s => (
+                  <tr key={s.name} className={s.roi > 0 ? 'row-profit' : ''}>
+                    <td>
+                      <span className="table-dot" style={{ background: s.color }} />
+                      {s.name}
+                    </td>
+                    <td><span className={`source-tag tag-${s.source.toLowerCase()}`}>{s.source}</span></td>
+                    <td className="mono">{s.bets}</td>
+                    <td className="mono">{s.winRate.toFixed(1)}%</td>
+                    <td className={`mono ${s.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}`}>
+                      {s.pnl >= 0 ? '+' : ''}${s.pnl.toLocaleString()}
+                    </td>
+                    <td className={`mono bold ${s.roi >= 0 ? 'pnl-positive' : 'pnl-negative'}`}>
+                      {s.roi >= 0 ? '+' : ''}{s.roi.toFixed(1)}%
+                    </td>
+                    <td className="mono">{s.sharpe.toFixed(3)}</td>
+                    <td className="mono" style={{ color: 'var(--accent-red)' }}>${s.maxDrawdown.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // === MAIN APP ===
 function App() {
   const [time, setTime] = useState(new Date())
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'strategies'>('dashboard')
   const [kpi, setKpi] = useState<KpiData>(DEMO_KPI)
   const [signals, setSignals] = useState<BetSignal[]>(DEMO_SIGNALS)
   const [trades, setTrades] = useState<Trade[]>(DEMO_TRADES)
@@ -582,6 +853,14 @@ function App() {
               <div className="logo-sub">God View Terminal • Powered by MiroFish Swarm</div>
             </div>
           </div>
+          <nav className="nav-tabs">
+            <button className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
+              📊 Dashboard
+            </button>
+            <button className={`nav-tab ${activeTab === 'strategies' ? 'active' : ''}`} onClick={() => setActiveTab('strategies')}>
+              🧪 Strategies
+            </button>
+          </nav>
         </div>
         <div className="header-right">
           <span className={`api-status ${apiConnected ? 'connected' : 'offline'}`}>
@@ -597,69 +876,75 @@ function App() {
       </header>
 
       <main className="dashboard">
-        {/* Row 1: Player Profile / Swarm Insight & KPIs */}
-        <div className="top-row">
-          <div className="card profile-card">
-            <div className="card-title">🔍 Swarm Active Profile Search</div>
-            <div className="profile-content">
-              <img src="https://ui-avatars.com/api/?name=Jannik+Sinner&background=0D8ABC&color=fff&size=64" alt="Player" className="profile-img" />
-              <div className="profile-details">
-                <div className="profile-name">Jannik Sinner 🇮🇹</div>
-                <div className="profile-stats">
-                  <span>#1 ATP</span>
-                  <span> • </span>
-                  <span>Win Rate: 79% (Hard)</span>
-                </div>
-                <div className="profile-tags">
-                  <span className="tag green">Aggressive L-Baseline</span>
-                  <span className="tag blue">Elite Returner</span>
+        {activeTab === 'strategies' ? (
+          <StrategyComparison />
+        ) : (
+          <>
+            {/* Row 1: Player Profile / Swarm Insight & KPIs */}
+            <div className="top-row">
+              <div className="card profile-card">
+                <div className="card-title">🔍 Swarm Active Profile Search</div>
+                <div className="profile-content">
+                  <img src="https://ui-avatars.com/api/?name=Jannik+Sinner&background=0D8ABC&color=fff&size=64" alt="Player" className="profile-img" />
+                  <div className="profile-details">
+                    <div className="profile-name">Jannik Sinner 🇮🇹</div>
+                    <div className="profile-stats">
+                      <span>#1 ATP</span>
+                      <span> • </span>
+                      <span>Win Rate: 79% (Hard)</span>
+                    </div>
+                    <div className="profile-tags">
+                      <span className="tag green">Aggressive L-Baseline</span>
+                      <span className="tag blue">Elite Returner</span>
+                    </div>
+                  </div>
+                  <div className="profile-h2h">
+                    <div className="h2h-title">H2H vs Alcaraz</div>
+                    <div className="h2h-score">4 - 6</div>
+                    <div className="h2h-sub">Sackmann DB Insight</div>
+                  </div>
                 </div>
               </div>
-              <div className="profile-h2h">
-                <div className="h2h-title">H2H vs Alcaraz</div>
-                <div className="h2h-score">4 - 6</div>
-                <div className="h2h-sub">Sackmann DB Insight</div>
+
+              <div className="kpi-grid">
+                <KpiCard label="Bankroll Engine" value={kpi.bankroll.toLocaleString('en-US', { minimumFractionDigits: 2 })} change={`${totalReturn}%`} color="green" prefix="$" />
+                <KpiCard label="Daily Delta" value={Math.abs(kpi.dailyPnl).toFixed(2)} color={kpi.dailyPnl >= 0 ? 'green' : 'red'} prefix={kpi.dailyPnl >= 0 ? '+$' : '-$'} />
+                <KpiCard label="Swarm Win Rate" value={kpi.winRate.toFixed(1)} color="blue" suffix="%" />
+                <KpiCard label="Risk vs Reward (ROI)" value={kpi.roi.toFixed(1)} color="amber" prefix="+" suffix="%" />
               </div>
             </div>
-          </div>
 
-          <div className="kpi-grid">
-            <KpiCard label="Bankroll Engine" value={kpi.bankroll.toLocaleString('en-US', { minimumFractionDigits: 2 })} change={`${totalReturn}%`} color="green" prefix="$" />
-            <KpiCard label="Daily Delta" value={Math.abs(kpi.dailyPnl).toFixed(2)} color={kpi.dailyPnl >= 0 ? 'green' : 'red'} prefix={kpi.dailyPnl >= 0 ? '+$' : '-$'} />
-            <KpiCard label="Swarm Win Rate" value={kpi.winRate.toFixed(1)} color="blue" suffix="%" />
-            <KpiCard label="Risk vs Reward (ROI)" value={kpi.roi.toFixed(1)} color="amber" prefix="+" suffix="%" />
-          </div>
-        </div>
+            {/* Row 2: Heatmap + Signals */}
+            <div className="middle-row">
+              <AgentHeatmap signals={signals} />
+              <SignalsList signals={signals} />
+            </div>
 
-        {/* Row 2: Heatmap + Signals */}
-        <div className="middle-row">
-          <AgentHeatmap signals={signals} />
-          <SignalsList signals={signals} />
-        </div>
-
-        {/* Row 3: Live Feeds & Markets & Rankings */}
-        <div className="bottom-row">
-          <div className="col-1">
-             <LiveEventFeed matches={liveMatches} source={liveSource} />
-             <RankingsPanel rankings={rankings} />
-          </div>
-          <div className="col-2">
-             <MarketReaction movements={oddsMovements} />
-             <TradeJournal trades={trades} />
-          </div>
-          <div className="col-3">
-             <NewsFeed news={news} />
-             <div className="card sackmann-stats">
-               <div className="card-title">🎾 JeffSackmann Data Engine</div>
-               <div className="sackmann-data">
-                 <div className="db-stat"><span className="db-icon">📚</span> 143,530 Matches Loaded</div>
-                 <div className="db-stat"><span className="db-icon">👤</span> 132,494 Player Profiles</div>
-                 <div className="db-stat"><span className="db-icon">📍</span> Shot-by-Shot Matrix Active</div>
-                 <div className="db-stat"><span className="db-icon">🧮</span> Live Probability Alg Sync</div>
-               </div>
-             </div>
-          </div>
-        </div>
+            {/* Row 3: Live Feeds & Markets & Rankings */}
+            <div className="bottom-row">
+              <div className="col-1">
+                 <LiveEventFeed matches={liveMatches} source={liveSource} />
+                 <RankingsPanel rankings={rankings} />
+              </div>
+              <div className="col-2">
+                 <MarketReaction movements={oddsMovements} />
+                 <TradeJournal trades={trades} />
+              </div>
+              <div className="col-3">
+                 <NewsFeed news={news} />
+                 <div className="card sackmann-stats">
+                   <div className="card-title">🎾 JeffSackmann Data Engine</div>
+                   <div className="sackmann-data">
+                     <div className="db-stat"><span className="db-icon">📚</span> 143,530 Matches Loaded</div>
+                     <div className="db-stat"><span className="db-icon">👤</span> 132,494 Player Profiles</div>
+                     <div className="db-stat"><span className="db-icon">📍</span> Shot-by-Shot Matrix Active</div>
+                     <div className="db-stat"><span className="db-icon">🧮</span> Live Probability Alg Sync</div>
+                   </div>
+                 </div>
+              </div>
+            </div>
+          </>
+        )}
       </main>
     </div>
   )

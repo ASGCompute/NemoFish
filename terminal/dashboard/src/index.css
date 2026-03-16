@@ -592,3 +592,66 @@ body {
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
 ::-webkit-scrollbar-thumb { background: rgba(14,165,233,0.3); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(14,165,233,0.5); }
+
+/* === NAV TABS === */
+.nav-tabs { display: flex; gap: 4px; margin-left: 32px; background: rgba(0,0,0,0.4); border-radius: 10px; padding: 4px; border: 1px solid var(--border); }
+.nav-tab { background: transparent; border: none; color: var(--text-muted); padding: 8px 20px; border-radius: 8px; cursor: pointer; font-family: var(--font); font-size: 13px; font-weight: 600; transition: all 0.2s; }
+.nav-tab:hover { color: var(--text-secondary); background: rgba(255,255,255,0.03); }
+.nav-tab.active { background: var(--accent-blue-dim); color: var(--accent-blue); box-shadow: 0 0 12px var(--accent-blue-dim); }
+
+/* === STRATEGY PAGE === */
+.strategies-page { display: flex; flex-direction: column; gap: 20px; }
+
+/* Strategy Toggle Bar */
+.strategy-toggles { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 20px 24px; backdrop-filter: blur(20px); }
+.toggle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.toggle-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+.toggle-actions { display: flex; gap: 6px; }
+.toggle-btn { background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: var(--text-secondary); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: var(--font-mono); transition: all 0.2s; }
+.toggle-btn:hover { background: var(--accent-blue-dim); color: var(--accent-blue); border-color: var(--accent-blue); }
+
+.toggle-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.strategy-chip { display: flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border); background: rgba(0,0,0,0.3); cursor: pointer; font-size: 12px; font-weight: 600; font-family: var(--font); color: var(--text-primary); transition: all 0.3s; }
+.strategy-chip:hover { background: rgba(255,255,255,0.05); transform: translateY(-1px); }
+.strategy-chip.inactive { opacity: 0.35; border-color: rgba(100,116,139,0.2); }
+.strategy-chip.active { opacity: 1; border-width: 1.5px; }
+.chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.chip-source { font-size: 10px; font-weight: 500; color: var(--text-muted); margin-left: 4px; padding: 2px 6px; background: rgba(0,0,0,0.4); border-radius: 4px; }
+
+/* Strategy Hero KPIs */
+.strategy-hero-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.strat-kpi { background: var(--bg-card); border: 1px solid var(--glass-border); border-radius: var(--radius); padding: 20px 24px; backdrop-filter: blur(20px); text-align: center; }
+.strat-kpi.best { border-color: rgba(204,255,0,0.3); box-shadow: 0 0 20px rgba(204,255,0,0.08); }
+.strat-kpi-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.strat-kpi-value { font-size: 22px; font-weight: 900; font-family: var(--font-mono); color: var(--text-primary); }
+.strat-kpi-sub { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+.strat-kpi-sub.positive { color: var(--accent-green); font-weight: 700; }
+
+/* Strategy Charts */
+.strategy-charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.strategy-chart { min-height: 400px; }
+.radar-card { }
+
+.sort-controls { display: inline-flex; gap: 4px; margin-left: 12px; }
+.sort-btn { background: rgba(0,0,0,0.4); border: 1px solid var(--border); color: var(--text-muted); padding: 3px 10px; border-radius: 4px; cursor: pointer; font-size: 10px; font-weight: 700; font-family: var(--font-mono); transition: all 0.2s; }
+.sort-btn.active { background: var(--accent-blue-dim); color: var(--accent-blue); border-color: var(--accent-blue); }
+
+/* Strategy Table */
+.strategy-table-scroll { overflow-x: auto; max-height: 320px; overflow-y: auto; }
+.strategy-table { width: 100%; border-collapse: collapse; font-size: 12px; white-space: nowrap; }
+.strategy-table th { text-align: left; padding: 10px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--bg-card); z-index: 1; }
+.strategy-table td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.02); }
+.strategy-table tr:hover td { background: rgba(14,165,233,0.04); }
+.strategy-table tr.row-profit td { background: rgba(204,255,0,0.02); }
+.strategy-table tr.row-profit:hover td { background: rgba(204,255,0,0.06); }
+
+.table-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+
+.source-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; font-family: var(--font-mono); }
+.tag-atpbetting { background: rgba(204,255,0,0.12); color: #ccff00; }
+.tag-skemp15 { background: rgba(6,182,212,0.12); color: #06b6d4; }
+.tag-nemofish { background: rgba(14,165,233,0.12); color: #0ea5e9; }
+
+/* Recharts tooltip overrides */
+.recharts-default-tooltip { border-radius: 12px !important; }
+.recharts-legend-item-text { font-size: 11px !important; }
