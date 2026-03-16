@@ -182,9 +182,12 @@ class PolymarketTrader:
             print(f"⚠️  Polymarket POST failed: {e}")
             return {"error": str(e)}
 
-    def search_markets(self, query: str, limit: int = 20) -> List[Market]:
-        """Search Polymarket events via Gamma API."""
-        url = f"{GAMMA_BASE}/events?limit={limit}&active=true&closed=false"
+    def search_markets(self, query: str = None, tag_slug: str = None, limit: int = 100) -> List[Market]:
+        """Search Polymarket events via Gamma API using tag_slug for sport filtering."""
+        params = f"limit={limit}&active=true&closed=false"
+        if tag_slug:
+            params += f"&tag_slug={tag_slug}"
+        url = f"{GAMMA_BASE}/events?{params}"
         data = self._fetch(url)
         if not data:
             return []
@@ -196,8 +199,8 @@ class PolymarketTrader:
             title = item.get("title", "")
             slug = item.get("slug", "")
             
-            # Filter by query
-            if query.lower() not in title.lower() and query.lower() not in slug.lower():
+            # If query specified, filter by keyword in title/slug
+            if query and query.lower() not in title.lower() and query.lower() not in slug.lower():
                 continue
 
             for m in item.get("markets", []):
@@ -235,18 +238,19 @@ class PolymarketTrader:
         return sorted(markets, key=lambda m: m.volume, reverse=True)
 
     def find_tennis_markets(self) -> List[Market]:
-        """Find all active tennis markets."""
+        """Find all active tennis markets using tag_slug for proper sport filtering."""
         results = []
-        for q in ["tennis", "ATP", "WTA", "Miami Open", "Grand Slam"]:
-            results.extend(self.search_markets(q))
-        # Deduplicate
+        # Use tag_slug for Gamma API sport filtering
+        for tag in ["tennis", "atp"]:
+            results.extend(self.search_markets(tag_slug=tag, limit=100))
+        # Deduplicate by condition_id
         seen = set()
         unique = []
         for m in results:
-            if m.condition_id not in seen:
+            if m.condition_id and m.condition_id not in seen:
                 seen.add(m.condition_id)
                 unique.append(m)
-        return unique
+        return sorted(unique, key=lambda m: m.volume, reverse=True)
 
     def find_sports_markets(self) -> List[Market]:
         """Find all active sports markets."""

@@ -1,0 +1,472 @@
+[
+  {
+    "player_a": "C. Dolehide",
+    "player_b": "N. Bartunkova",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "21:55",
+    "event_key": "12109389",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "D. Galfi",
+    "player_b": "E. Kalieva",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "19:40",
+    "event_key": "12109390",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "V. Golubic",
+    "player_b": "T. Frodin",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "20:45",
+    "event_key": "12109391",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "M. Inglis",
+    "player_b": "Y. Starodubtseva",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "22:00",
+    "event_key": "12109392",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "L. Radivojevic",
+    "player_b": "S. Kraus",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "22:00",
+    "event_key": "12109393",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "D. Semenistaja",
+    "player_b": "M. Ekstrand",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "21:10",
+    "event_key": "12109394",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "L. Stefanini",
+    "player_b": "D. Parry",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "20:35",
+    "event_key": "12109395",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "A. Aksu",
+    "player_b": "A. Sasnovich",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "17:00",
+    "event_key": "12109396",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "S. Hunter",
+    "player_b": "R. Masarova",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "19:05",
+    "event_key": "12109397",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "K. Juvan",
+    "player_b": "M. Stoiana",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "21:30",
+    "event_key": "12109398",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "W. Osuigwe",
+    "player_b": "D. Vekic",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "20:25",
+    "event_key": "12109399",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "E. Seidel",
+    "player_b": "M. Stakusic",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "20:30",
+    "event_key": "12109400",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "L. Sun",
+    "player_b": "M. Timofeeva",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "19:40",
+    "event_key": "12109401",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "R. Zarazua",
+    "player_b": "M. Trevisan",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "19:00",
+    "event_key": "12109402",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "E. Andreeva",
+    "player_b": "R. Sramkova",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "17:10",
+    "event_key": "12109403",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "R. Brantmeier",
+    "player_b": "Y. Yuan",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "15:10",
+    "event_key": "12109404",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "M. Brengle",
+    "player_b": "L. Fruhvirtova",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "15:10",
+    "event_key": "12109405",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "E. Gorgodze",
+    "player_b": "T. Gibson",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "15:10",
+    "event_key": "12109406",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "V. Jimenez Kasintseva",
+    "player_b": "V. Lepchenko",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "15:10",
+    "event_key": "12109407",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "K. Rakhimova",
+    "player_b": "L. Jeanjean",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "15:15",
+    "event_key": "12109408",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "K. Volynets",
+    "player_b": "P. Hon",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "15:10",
+    "event_key": "12109409",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "K. Birrell",
+    "player_b": "V. Tomova",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "15:15",
+    "event_key": "12109410",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "B. Andreescu",
+    "player_b": "S. Lamens",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "18:55",
+    "event_key": "12109411",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "A. Zakharova",
+    "player_b": "L. Tararudee",
+    "tournament": "Miami",
+    "round": "WTA Miami - Semi-finals",
+    "date": "2026-03-16",
+    "time": "17:20",
+    "event_key": "12109412",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "R. A. Burruchaga",
+    "player_b": "A. Fery",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "15:10",
+    "event_key": "12109507",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "Y. Bu",
+    "player_b": "T. Schoolkate",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "15:10",
+    "event_key": "12109508",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "I. Buse",
+    "player_b": "M. Echargui",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "18:35",
+    "event_key": "12109509",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "Y. Hanfmann",
+    "player_b": "L. Riedi",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "18:55",
+    "event_key": "12109510",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "J. Pinnington Jones",
+    "player_b": "C. Wong",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "18:10",
+    "event_key": "12109511",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "B. Willwerth",
+    "player_b": "L. van Assche",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "17:30",
+    "event_key": "12109512",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "A. Bolt",
+    "player_b": "S. Shimabukuro",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "19:10",
+    "event_key": "12109513",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "J. Clarke",
+    "player_b": "S. Mochizuki",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "20:30",
+    "event_key": "12109514",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "C. Garin",
+    "player_b": "L. Draxl",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "20:00",
+    "event_key": "12109515",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "P. Kypson",
+    "player_b": "N. Basilashvili",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "20:05",
+    "event_key": "12109516",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "N. Mejia",
+    "player_b": "C. O'Connell",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "19:25",
+    "event_key": "12109517",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "A. Blockx",
+    "player_b": "C. H. Tseng",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "20:55",
+    "event_key": "12109518",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "N. Basavareddy",
+    "player_b": "T. Barrios Vera",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "23:00",
+    "event_key": "12109519",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "R. Jodar",
+    "player_b": "M. Dhamne",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "23:05",
+    "event_key": "12109520",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "M. Landaluce",
+    "player_b": "M. McDonald",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "22:35",
+    "event_key": "12109521",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "D. Merida Aguilar",
+    "player_b": "D. Svrcina",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "22:25",
+    "event_key": "12109522",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "G. Miguel",
+    "player_b": "B. Bonzi",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "22:00",
+    "event_key": "12109523",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "D. Sweeny",
+    "player_b": "R. Hijikata",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "23:30",
+    "event_key": "12109524",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "T. A. Tirante",
+    "player_b": "D. Dedura",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "22:05",
+    "event_key": "12109525",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "A. Vukic",
+    "player_b": "B. Harris",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "23:30",
+    "event_key": "12109526",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "Y. Watanuki",
+    "player_b": "F. Maestrelli",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "22:05",
+    "event_key": "12109527",
+    "event_type": "Atp Singles"
+  },
+  {
+    "player_a": "A. Zakharova",
+    "player_b": "L. Chirico",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "18:50",
+    "event_key": "12109645",
+    "event_type": "Wta Singles"
+  },
+  {
+    "player_a": "M. Melnikova",
+    "player_b": "E. Kalieva",
+    "tournament": "Miami",
+    "round": null,
+    "date": "2026-03-16",
+    "time": "20:15",
+    "event_key": "12109646",
+    "event_type": "Wta Singles"
+  }
+]

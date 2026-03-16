@@ -1,0 +1,4846 @@
+{
+  "timestamp": "2026-03-16T11:19:29.158691",
+  "usage": "Used: 20, Remaining: 480",
+  "matches": [
+    {
+      "home": "Jack Pinnington Jones",
+      "away": "Chak Lam Coleman Wong",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T16:00:00Z",
+      "avg_odds": [
+        1.931,
+        1.856
+      ],
+      "best_odds": [
+        2.1,
+        2.34
+      ],
+      "implied_prob": [
+        0.5178,
+        0.5389
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.64,
+          "odds_away": 2.34
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.08,
+          "odds_away": 1.81
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.85,
+          "odds_away": 1.85
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.95,
+          "odds_away": 1.8
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.1,
+          "odds_away": 1.67
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.85,
+          "odds_away": 1.85
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.9,
+          "odds_away": 1.85
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.1,
+          "odds_away": 1.73
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.91,
+          "odds_away": 1.8
+        }
+      ]
+    },
+    {
+      "home": "Yannick Hanfmann",
+      "away": "Leandro Riedi",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T16:00:00Z",
+      "avg_odds": [
+        1.243,
+        4.084
+      ],
+      "best_odds": [
+        1.52,
+        4.8
+      ],
+      "implied_prob": [
+        0.8045,
+        0.2449
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.52,
+          "odds_away": 2.64
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.23,
+          "odds_away": 4.8
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.18,
+          "odds_away": 4.25
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.17,
+          "odds_away": 4.8
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.25,
+          "odds_away": 4.0
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.18,
+          "odds_away": 4.5
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.22,
+          "odds_away": 3.75
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.18,
+          "odds_away": 4.5
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.25,
+          "odds_away": 4.0
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.25,
+          "odds_away": 3.6
+        }
+      ]
+    },
+    {
+      "home": "Alex Bolt",
+      "away": "Sho Shimabukuro",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T19:00:00Z",
+      "avg_odds": [
+        3.492,
+        1.321
+      ],
+      "best_odds": [
+        4.5,
+        1.51
+      ],
+      "implied_prob": [
+        0.2864,
+        0.7571
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.66,
+          "odds_away": 1.51
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 4.5,
+          "odds_away": 1.26
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 2.68,
+          "odds_away": 1.48
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.6,
+          "odds_away": 1.22
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.8,
+          "odds_away": 1.25
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 4.05,
+          "odds_away": 1.25
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 4.5,
+          "odds_away": 1.18
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.6,
+          "odds_away": 1.22
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.4,
+          "odds_away": 1.29
+        },
+        {
+          "name": "Betway",
+          "odds_home": 3.5,
+          "odds_away": 1.3
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.5,
+          "odds_away": 1.25
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.8,
+          "odds_away": 1.48
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.8,
+          "odds_away": 1.48
+        }
+      ]
+    },
+    {
+      "home": "Nicolas Mejia",
+      "away": "Christopher O'Connell",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T19:00:00Z",
+      "avg_odds": [
+        3.526,
+        1.291
+      ],
+      "best_odds": [
+        3.93,
+        1.32
+      ],
+      "implied_prob": [
+        0.2836,
+        0.7747
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 3.56,
+          "odds_away": 1.32
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 3.75,
+          "odds_away": 1.32
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 3.52,
+          "odds_away": 1.31
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.35,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.5,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 3.5,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.35,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.25,
+          "odds_away": 1.3
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 3.3,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Betway",
+          "odds_home": 3.5,
+          "odds_away": 1.3
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.4,
+          "odds_away": 1.29
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 3.93,
+          "odds_away": 1.27
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 3.93,
+          "odds_away": 1.27
+        }
+      ]
+    },
+    {
+      "home": "Cristian Garin",
+      "away": "Liam Draxl",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T19:00:00Z",
+      "avg_odds": [
+        1.784,
+        2.008
+      ],
+      "best_odds": [
+        1.84,
+        2.1
+      ],
+      "implied_prob": [
+        0.5604,
+        0.498
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.81,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.81,
+          "odds_away": 2.1
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.84,
+          "odds_away": 1.98
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.78,
+          "odds_away": 1.93
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.73,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.8,
+          "odds_away": 2.02
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.73,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.78,
+          "odds_away": 1.93
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.75,
+          "odds_away": 1.95
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.75,
+          "odds_away": 1.95
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.8,
+          "odds_away": 2.0
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.8,
+          "odds_away": 2.0
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.8,
+          "odds_away": 2.05
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.8,
+          "odds_away": 2.05
+        }
+      ]
+    },
+    {
+      "home": "Jay Clarke",
+      "away": "Shintaro Mochizuki",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T19:00:00Z",
+      "avg_odds": [
+        2.911,
+        1.397
+      ],
+      "best_odds": [
+        3.15,
+        1.46
+      ],
+      "implied_prob": [
+        0.3435,
+        0.7157
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.99,
+          "odds_away": 1.42
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 3.15,
+          "odds_away": 1.4
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 2.93,
+          "odds_away": 1.46
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 2.85,
+          "odds_away": 1.37
+        },
+        {
+          "name": "Coral",
+          "odds_home": 2.8,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 3.0,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.8,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 2.85,
+          "odds_away": 1.37
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 2.88,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 2.9,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.9,
+          "odds_away": 1.4
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 2.75,
+          "odds_away": 1.4
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.98,
+          "odds_away": 1.41
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.98,
+          "odds_away": 1.41
+        }
+      ]
+    },
+    {
+      "home": "Patrick Kypson",
+      "away": "Nikoloz Basilashvili",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T19:00:00Z",
+      "avg_odds": [
+        1.413,
+        2.841
+      ],
+      "best_odds": [
+        1.44,
+        2.96
+      ],
+      "implied_prob": [
+        0.7078,
+        0.3519
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.44,
+          "odds_away": 2.92
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.44,
+          "odds_away": 2.96
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.43,
+          "odds_away": 2.85
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.39,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.4,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.41,
+          "odds_away": 2.93
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.4,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.39,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.4,
+          "odds_away": 2.75
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.4,
+          "odds_away": 2.75
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.44,
+          "odds_away": 2.75
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.4,
+          "odds_away": 2.75
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.42,
+          "odds_away": 2.96
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.42,
+          "odds_away": 2.96
+        }
+      ]
+    },
+    {
+      "home": "Alexander Blockx",
+      "away": "Chun-Hsin Tseng",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T20:00:00Z",
+      "avg_odds": [
+        1.278,
+        3.623
+      ],
+      "best_odds": [
+        1.32,
+        3.8
+      ],
+      "implied_prob": [
+        0.7826,
+        0.276
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.3,
+          "odds_away": 3.74
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.32,
+          "odds_away": 3.7
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.27,
+          "odds_away": 3.57
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.26,
+          "odds_away": 3.5
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.25,
+          "odds_away": 3.7
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.27,
+          "odds_away": 3.8
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.25,
+          "odds_away": 3.7
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.26,
+          "odds_away": 3.5
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.29,
+          "odds_away": 3.4
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.28,
+          "odds_away": 3.3
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.29,
+          "odds_away": 3.75
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.29,
+          "odds_away": 3.5
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.28,
+          "odds_away": 3.78
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.28,
+          "odds_away": 3.78
+        }
+      ]
+    },
+    {
+      "home": "Aleksandar Vukic",
+      "away": "Billy Harris",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T22:00:00Z",
+      "avg_odds": [
+        1.672,
+        2.187
+      ],
+      "best_odds": [
+        1.74,
+        2.32
+      ],
+      "implied_prob": [
+        0.5982,
+        0.4571
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.69,
+          "odds_away": 2.21
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.7,
+          "odds_away": 2.32
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.74,
+          "odds_away": 2.22
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.64,
+          "odds_away": 2.13
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.67,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.64,
+          "odds_away": 2.13
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.61,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.65,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.65,
+          "odds_away": 2.25
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.67,
+          "odds_away": 2.15
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.7,
+          "odds_away": 2.22
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.7,
+          "odds_away": 2.22
+        }
+      ]
+    },
+    {
+      "home": "Daniel Merida Aguilar",
+      "away": "Dalibor Svrcina",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T22:00:00Z",
+      "avg_odds": [
+        2.633,
+        1.466
+      ],
+      "best_odds": [
+        2.76,
+        1.5
+      ],
+      "implied_prob": [
+        0.3798,
+        0.6823
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.69,
+          "odds_away": 1.49
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.7,
+          "odds_away": 1.49
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 2.68,
+          "odds_away": 1.48
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 2.6,
+          "odds_away": 1.43
+        },
+        {
+          "name": "Coral",
+          "odds_home": 2.5,
+          "odds_away": 1.48
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 2.7,
+          "odds_away": 1.47
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.5,
+          "odds_away": 1.48
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 2.6,
+          "odds_away": 1.43
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 2.6,
+          "odds_away": 1.44
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 2.55,
+          "odds_away": 1.45
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.6,
+          "odds_away": 1.5
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 2.62,
+          "odds_away": 1.44
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.76,
+          "odds_away": 1.47
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.76,
+          "odds_away": 1.47
+        }
+      ]
+    },
+    {
+      "home": "Dane Sweeny",
+      "away": "Rinky Hijikata",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T22:00:00Z",
+      "avg_odds": [
+        3.105,
+        1.351
+      ],
+      "best_odds": [
+        3.35,
+        1.39
+      ],
+      "implied_prob": [
+        0.3221,
+        0.74
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 3.25,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 3.35,
+          "odds_away": 1.36
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 3.01,
+          "odds_away": 1.39
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.05,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 3.1,
+          "odds_away": 1.37
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.05,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.0,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 3.0,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Betway",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 3.08,
+          "odds_away": 1.39
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 3.08,
+          "odds_away": 1.39
+        }
+      ]
+    },
+    {
+      "home": "Yosuke Watanuki",
+      "away": "Francesco Maestrelli",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T22:00:00Z",
+      "avg_odds": [
+        2.087,
+        1.726
+      ],
+      "best_odds": [
+        2.22,
+        1.8
+      ],
+      "implied_prob": [
+        0.4791,
+        0.5795
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.1,
+          "odds_away": 1.76
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.1,
+          "odds_away": 1.76
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 2.22,
+          "odds_away": 1.7
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 2.08,
+          "odds_away": 1.67
+        },
+        {
+          "name": "Coral",
+          "odds_home": 2.05,
+          "odds_away": 1.73
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 2.12,
+          "odds_away": 1.73
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.05,
+          "odds_away": 1.73
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 2.08,
+          "odds_away": 1.67
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 2.05,
+          "odds_away": 1.7
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.0,
+          "odds_away": 1.8
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 2.05,
+          "odds_away": 1.73
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 2.0,
+          "odds_away": 1.7
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.16,
+          "odds_away": 1.74
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.16,
+          "odds_away": 1.74
+        }
+      ]
+    },
+    {
+      "home": "Martin Landaluce",
+      "away": "Mackenzie McDonald",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T22:00:00Z",
+      "avg_odds": [
+        2.232,
+        1.642
+      ],
+      "best_odds": [
+        2.32,
+        1.72
+      ],
+      "implied_prob": [
+        0.4481,
+        0.6091
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.32,
+          "odds_away": 1.63
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.3,
+          "odds_away": 1.72
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 2.16,
+          "odds_away": 1.68
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 2.15,
+          "odds_away": 1.63
+        },
+        {
+          "name": "Coral",
+          "odds_home": 2.25,
+          "odds_away": 1.6
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.25,
+          "odds_away": 1.6
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 2.15,
+          "odds_away": 1.63
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 2.2,
+          "odds_away": 1.61
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 2.25,
+          "odds_away": 1.57
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.25,
+          "odds_away": 1.65
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.25,
+          "odds_away": 1.69
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.25,
+          "odds_away": 1.69
+        }
+      ]
+    },
+    {
+      "home": "Nishesh Basavareddy",
+      "away": "Marcelo Tomas Barrios Vera",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-16T22:00:00Z",
+      "avg_odds": [
+        1.399,
+        2.877
+      ],
+      "best_odds": [
+        1.42,
+        3.15
+      ],
+      "implied_prob": [
+        0.7147,
+        0.3476
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.42,
+          "odds_away": 2.97
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.41,
+          "odds_away": 3.15
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.37,
+          "odds_away": 2.81
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.39,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.4,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.41,
+          "odds_away": 2.93
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.4,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.39,
+          "odds_away": 2.8
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.4,
+          "odds_away": 2.75
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.36,
+          "odds_away": 2.9
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.4,
+          "odds_away": 2.9
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.4,
+          "odds_away": 2.75
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.42,
+          "odds_away": 2.96
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.42,
+          "odds_away": 2.96
+        }
+      ]
+    },
+    {
+      "home": "Adam Walton",
+      "away": "Chris Rodesch",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-17T00:00:00Z",
+      "avg_odds": [
+        1.573,
+        2.366
+      ],
+      "best_odds": [
+        1.61,
+        2.46
+      ],
+      "implied_prob": [
+        0.6358,
+        0.4226
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.58,
+          "odds_away": 2.43
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.55,
+          "odds_away": 2.3
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.56,
+          "odds_away": 2.46
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.55,
+          "odds_away": 2.3
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.58,
+          "odds_away": 2.42
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.57,
+          "odds_away": 2.3
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.61,
+          "odds_away": 2.33
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.6,
+          "odds_away": 2.3
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.57,
+          "odds_away": 2.3
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.55,
+          "odds_away": 2.37
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.55,
+          "odds_away": 2.37
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.53,
+          "odds_away": 2.35
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.61,
+          "odds_away": 2.45
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.61,
+          "odds_away": 2.45
+        }
+      ]
+    },
+    {
+      "home": "Zachary Svajda",
+      "away": "Colton Smith",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-17T00:00:00Z",
+      "avg_odds": [
+        1.37,
+        3.039
+      ],
+      "best_odds": [
+        1.43,
+        3.22
+      ],
+      "implied_prob": [
+        0.7299,
+        0.329
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.38,
+          "odds_away": 3.12
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.43,
+          "odds_away": 3.1
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.37,
+          "odds_away": 3.12
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.35,
+          "odds_away": 2.95
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.36,
+          "odds_away": 3.0
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.38,
+          "odds_away": 3.07
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.36,
+          "odds_away": 3.0
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.35,
+          "odds_away": 2.95
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.36,
+          "odds_away": 2.9
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.36,
+          "odds_away": 2.9
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.38,
+          "odds_away": 3.0
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.36,
+          "odds_away": 3.0
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.37,
+          "odds_away": 3.22
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.37,
+          "odds_away": 3.22
+        }
+      ]
+    },
+    {
+      "home": "Mattia Bellucci",
+      "away": "Nicolas Jarry",
+      "sport": "tennis_atp_miami_open",
+      "time": "2026-03-17T00:00:00Z",
+      "avg_odds": [
+        1.464,
+        2.647
+      ],
+      "best_odds": [
+        1.53,
+        2.75
+      ],
+      "implied_prob": [
+        0.6833,
+        0.3778
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.48,
+          "odds_away": 2.73
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.49,
+          "odds_away": 2.72
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.46,
+          "odds_away": 2.7
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.44,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.44,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.47,
+          "odds_away": 2.7
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.44,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.44,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.44,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Everygame",
+          "odds_home": 1.44,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.45,
+          "odds_away": 2.75
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.44,
+          "odds_away": 2.62
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.53,
+          "odds_away": 2.62
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.53,
+          "odds_away": 2.62
+        }
+      ]
+    },
+    {
+      "home": "Bianca Andreescu",
+      "away": "Suzan Lamens",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T15:30:00Z",
+      "avg_odds": [
+        1.398,
+        2.877
+      ],
+      "best_odds": [
+        1.53,
+        3.35
+      ],
+      "implied_prob": [
+        0.7153,
+        0.3476
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.53,
+          "odds_away": 2.62
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.4,
+          "odds_away": 2.88
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.35,
+          "odds_away": 2.9
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.44,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.37,
+          "odds_away": 3.35
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.36,
+          "odds_away": 3.0
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.35,
+          "odds_away": 2.9
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.36,
+          "odds_away": 2.9
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.38,
+          "odds_away": 3.0
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.44,
+          "odds_away": 2.62
+        }
+      ]
+    },
+    {
+      "home": "Renata Zarazua",
+      "away": "Martina Trevisan",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T15:30:00Z",
+      "avg_odds": [
+        1.793,
+        2.074
+      ],
+      "best_odds": [
+        2.06,
+        3.01
+      ],
+      "implied_prob": [
+        0.5577,
+        0.4822
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.43,
+          "odds_away": 3.01
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.67,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.9,
+          "odds_away": 1.8
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.48,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.06,
+          "odds_away": 1.92
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.91,
+          "odds_away": 1.8
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.9,
+          "odds_away": 1.8
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.75,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.0,
+          "odds_away": 1.8
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.83,
+          "odds_away": 1.91
+        }
+      ]
+    },
+    {
+      "home": "Storm Hunter",
+      "away": "Rebeka Masarova",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T17:00:00Z",
+      "avg_odds": [
+        3.362,
+        1.353
+      ],
+      "best_odds": [
+        4.25,
+        1.65
+      ],
+      "implied_prob": [
+        0.2975,
+        0.7394
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.73,
+          "odds_away": 1.5
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.4,
+          "odds_away": 1.3
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.55,
+          "odds_away": 1.25
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.0,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 4.1,
+          "odds_away": 1.31
+        },
+        {
+          "name": "888sport",
+          "odds_home": 3.75,
+          "odds_away": 1.25
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.55,
+          "odds_away": 1.25
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 3.75,
+          "odds_away": 1.25
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.33,
+          "odds_away": 1.65
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.33,
+          "odds_away": 1.65
+        },
+        {
+          "name": "Betway",
+          "odds_home": 4.25,
+          "odds_away": 1.22
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.6,
+          "odds_away": 1.25
+        }
+      ]
+    },
+    {
+      "home": "Anastasia Zakharova",
+      "away": "Louisa Chirico",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T18:15:00Z",
+      "avg_odds": [
+        1.025,
+        12.961
+      ],
+      "best_odds": [
+        1.08,
+        17.0
+      ],
+      "implied_prob": [
+        0.9756,
+        0.0772
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.08,
+          "odds_away": 11.69
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.01,
+          "odds_away": 15.0
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.03,
+          "odds_away": 17.0
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.01,
+          "odds_away": 10.0
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.03,
+          "odds_away": 13.0
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.01,
+          "odds_away": 16.0
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.01,
+          "odds_away": 10.0
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.02,
+          "odds_away": 11.0
+        }
+      ]
+    },
+    {
+      "home": "Whitney Osuigwe",
+      "away": "Donna Vekic",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T18:30:00Z",
+      "avg_odds": [
+        4.381,
+        1.203
+      ],
+      "best_odds": [
+        4.61,
+        1.22
+      ],
+      "implied_prob": [
+        0.2283,
+        0.8312
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 4.61,
+          "odds_away": 1.22
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 4.2,
+          "odds_away": 1.19
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 4.33,
+          "odds_away": 1.2
+        },
+        {
+          "name": "Coral",
+          "odds_home": 4.4,
+          "odds_away": 1.2
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 4.43,
+          "odds_away": 1.21
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 4.4,
+          "odds_away": 1.19
+        },
+        {
+          "name": "888sport",
+          "odds_home": 4.33,
+          "odds_away": 1.2
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 4.2,
+          "odds_away": 1.19
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 4.4,
+          "odds_away": 1.2
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 4.41,
+          "odds_away": 1.22
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 4.41,
+          "odds_away": 1.22
+        },
+        {
+          "name": "Betway",
+          "odds_home": 4.5,
+          "odds_away": 1.2
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 4.33,
+          "odds_away": 1.2
+        }
+      ]
+    },
+    {
+      "home": "Ella Seidel",
+      "away": "Marina Stakusic",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T18:30:00Z",
+      "avg_odds": [
+        2.33,
+        1.572
+      ],
+      "best_odds": [
+        2.4,
+        1.63
+      ],
+      "implied_prob": [
+        0.4292,
+        0.6363
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.38,
+          "odds_away": 1.62
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 2.32,
+          "odds_away": 1.54
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 2.25,
+          "odds_away": 1.57
+        },
+        {
+          "name": "Coral",
+          "odds_home": 2.37,
+          "odds_away": 1.55
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.24,
+          "odds_away": 1.54
+        },
+        {
+          "name": "888sport",
+          "odds_home": 2.25,
+          "odds_away": 1.57
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 2.32,
+          "odds_away": 1.54
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.37,
+          "odds_away": 1.55
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.38,
+          "odds_away": 1.63
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.38,
+          "odds_away": 1.63
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.4,
+          "odds_away": 1.55
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 2.3,
+          "odds_away": 1.57
+        }
+      ]
+    },
+    {
+      "home": "Kaja Juvan",
+      "away": "Mary Stoiana",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T18:30:00Z",
+      "avg_odds": [
+        1.584,
+        2.333
+      ],
+      "best_odds": [
+        1.64,
+        2.44
+      ],
+      "implied_prob": [
+        0.6314,
+        0.4286
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.6,
+          "odds_away": 2.42
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.55,
+          "odds_away": 2.3
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 1.62,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.55,
+          "odds_away": 2.37
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.64,
+          "odds_away": 2.39
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.55,
+          "odds_away": 2.3
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.61,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.55,
+          "odds_away": 2.3
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.55,
+          "odds_away": 2.37
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.6,
+          "odds_away": 2.44
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.6,
+          "odds_away": 2.44
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.6,
+          "odds_away": 2.3
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.57,
+          "odds_away": 2.3
+        }
+      ]
+    },
+    {
+      "home": "Lulu Sun",
+      "away": "Maria Timofeeva",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T18:30:00Z",
+      "avg_odds": [
+        1.5,
+        2.547
+      ],
+      "best_odds": [
+        1.53,
+        2.75
+      ],
+      "implied_prob": [
+        0.6667,
+        0.3927
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.51,
+          "odds_away": 2.67
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.5,
+          "odds_away": 2.42
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 1.53,
+          "odds_away": 2.38
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.48,
+          "odds_away": 2.5
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.48,
+          "odds_away": 2.7
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.53,
+          "odds_away": 2.38
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.5,
+          "odds_away": 2.42
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.48,
+          "odds_away": 2.5
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.52,
+          "odds_away": 2.67
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.52,
+          "odds_away": 2.67
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.45,
+          "odds_away": 2.75
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.5,
+          "odds_away": 2.5
+        }
+      ]
+    },
+    {
+      "home": "Marina Melnikova",
+      "away": "Elvina Kalieva",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T18:40:00Z",
+      "avg_odds": [
+        10.869,
+        1.039
+      ],
+      "best_odds": [
+        13.0,
+        1.05
+      ],
+      "implied_prob": [
+        0.092,
+        0.9629
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 12.28,
+          "odds_away": 1.05
+        },
+        {
+          "name": "Betway",
+          "odds_home": 12.0,
+          "odds_away": 1.03
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 13.0,
+          "odds_away": 1.03
+        },
+        {
+          "name": "Coral",
+          "odds_home": 13.0,
+          "odds_away": 1.03
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 8.4,
+          "odds_away": 1.04
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 8.4,
+          "odds_away": 1.04
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 9.0,
+          "odds_away": 1.05
+        }
+      ]
+    },
+    {
+      "home": "Lucrezia Stefanini",
+      "away": "Diane Parry",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T19:00:00Z",
+      "avg_odds": [
+        3.108,
+        1.347
+      ],
+      "best_odds": [
+        3.31,
+        1.36
+      ],
+      "implied_prob": [
+        0.3217,
+        0.7426
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 3.31,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.0,
+          "odds_away": 1.33
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 3.0,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 3.15,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.94,
+          "odds_away": 1.33
+        },
+        {
+          "name": "888sport",
+          "odds_home": 3.0,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 3.2,
+          "odds_away": 1.36
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 3.2,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Betway",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        }
+      ]
+    },
+    {
+      "home": "Lola Radivojevic",
+      "away": "Sinja Kraus",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-16T19:00:00Z",
+      "avg_odds": [
+        2.01,
+        1.766
+      ],
+      "best_odds": [
+        2.09,
+        1.81
+      ],
+      "implied_prob": [
+        0.4975,
+        0.5663
+      ],
+      "bookmakers": [
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.05,
+          "odds_away": 1.81
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 2.0,
+          "odds_away": 1.73
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 2.0,
+          "odds_away": 1.73
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.95,
+          "odds_away": 1.75
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 2.09,
+          "odds_away": 1.75
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.0,
+          "odds_away": 1.79
+        },
+        {
+          "name": "888sport",
+          "odds_home": 2.0,
+          "odds_away": 1.73
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.95,
+          "odds_away": 1.75
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.04,
+          "odds_away": 1.81
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.04,
+          "odds_away": 1.81
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.0,
+          "odds_away": 1.8
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 2.0,
+          "odds_away": 1.73
+        }
+      ]
+    },
+    {
+      "home": "Simona Waltert",
+      "away": "Ajla Tomljanovic",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        3.253,
+        1.343
+      ],
+      "best_odds": [
+        3.42,
+        1.38
+      ],
+      "implied_prob": [
+        0.3074,
+        0.7445
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 3.25,
+          "odds_away": 1.38
+        },
+        {
+          "name": "Betway",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 3.4,
+          "odds_away": 1.34
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 3.25,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.2,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 3.15,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 3.27,
+          "odds_away": 1.32
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 3.25,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 3.2,
+          "odds_away": 1.33
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 3.25,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 3.25,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 3.25,
+          "odds_away": 1.35
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 3.15,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.0,
+          "odds_away": 1.33
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 3.21,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 3.4,
+          "odds_away": 1.36
+        },
+        {
+          "name": "888sport",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 3.25,
+          "odds_away": 1.35
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 3.25,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 3.42,
+          "odds_away": 1.35
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 3.41,
+          "odds_away": 1.34
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 3.41,
+          "odds_away": 1.34
+        }
+      ]
+    },
+    {
+      "home": "Sofia Kenin",
+      "away": "Anna Blinkova",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.628,
+        2.28
+      ],
+      "best_odds": [
+        1.69,
+        2.45
+      ],
+      "implied_prob": [
+        0.6143,
+        0.4387
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.69,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.65,
+          "odds_away": 2.25
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.59,
+          "odds_away": 2.36
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.63,
+          "odds_away": 2.38
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.57,
+          "odds_away": 2.25
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.64,
+          "odds_away": 2.17
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.59,
+          "odds_away": 2.36
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.61,
+          "odds_away": 2.33
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.57,
+          "odds_away": 2.25
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.57,
+          "odds_away": 2.25
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.64,
+          "odds_away": 2.17
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.57,
+          "odds_away": 2.25
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.64,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.61,
+          "odds_away": 2.45
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.57,
+          "odds_away": 2.38
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.62,
+          "odds_away": 2.4
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.62,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.63,
+          "odds_away": 2.38
+        }
+      ]
+    },
+    {
+      "home": "Elena Gabriela Ruse",
+      "away": "Antonia Ruzic",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.747,
+        2.077
+      ],
+      "best_odds": [
+        1.8,
+        2.26
+      ],
+      "implied_prob": [
+        0.5724,
+        0.4814
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.7,
+          "odds_away": 2.26
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.8,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.75,
+          "odds_away": 2.08
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.79,
+          "odds_away": 2.12
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.74,
+          "odds_away": 2.08
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.72,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.75,
+          "odds_away": 2.08
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.8,
+          "odds_away": 2.02
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.74,
+          "odds_away": 2.08
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.73,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.74,
+          "odds_away": 2.08
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.74,
+          "odds_away": 2.08
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.74,
+          "odds_away": 2.08
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.72,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.7,
+          "odds_away": 2.05
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.77,
+          "odds_away": 2.07
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.77,
+          "odds_away": 2.15
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.73,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.74,
+          "odds_away": 2.08
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.74,
+          "odds_away": 2.08
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.73,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.73,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.78,
+          "odds_away": 2.12
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 1.73,
+          "odds_away": 2.1
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.77,
+          "odds_away": 2.1
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.77,
+          "odds_away": 2.1
+        }
+      ]
+    },
+    {
+      "home": "Dayana Yastremska",
+      "away": "Ashlyn Krueger",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        2.022,
+        1.788
+      ],
+      "best_odds": [
+        2.09,
+        1.86
+      ],
+      "implied_prob": [
+        0.4946,
+        0.5591
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 2.08,
+          "odds_away": 1.82
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 2.04,
+          "odds_away": 1.77
+        },
+        {
+          "name": "Coral",
+          "odds_home": 2.0,
+          "odds_away": 1.75
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 2.02,
+          "odds_away": 1.75
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.94,
+          "odds_away": 1.86
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 2.04,
+          "odds_away": 1.77
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.0,
+          "odds_away": 1.75
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.91,
+          "odds_away": 1.8
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 2.04,
+          "odds_away": 1.77
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 2.04,
+          "odds_away": 1.77
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 2.04,
+          "odds_away": 1.77
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 2.02,
+          "odds_away": 1.75
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.95,
+          "odds_away": 1.75
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.98,
+          "odds_away": 1.84
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.08,
+          "odds_away": 1.8
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 2.02,
+          "odds_away": 1.81
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 2.02,
+          "odds_away": 1.81
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 2.08,
+          "odds_away": 1.82
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.0,
+          "odds_away": 1.8
+        },
+        {
+          "name": "888sport",
+          "odds_home": 2.0,
+          "odds_away": 1.8
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 2.04,
+          "odds_away": 1.77
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 2.04,
+          "odds_away": 1.77
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 2.09,
+          "odds_away": 1.8
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 2.0,
+          "odds_away": 1.8
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.05,
+          "odds_away": 1.8
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.05,
+          "odds_away": 1.8
+        }
+      ]
+    },
+    {
+      "home": "Zeynep Sonmez",
+      "away": "Beatriz Haddad Maia",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.528,
+        2.522
+      ],
+      "best_odds": [
+        1.57,
+        2.64
+      ],
+      "implied_prob": [
+        0.6545,
+        0.3965
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.57,
+          "odds_away": 2.55
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.5,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.55,
+          "odds_away": 2.47
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.56,
+          "odds_away": 2.58
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.51,
+          "odds_away": 2.55
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.5,
+          "odds_away": 2.48
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.55,
+          "odds_away": 2.47
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.56,
+          "odds_away": 2.54
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.51,
+          "odds_away": 2.55
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.53,
+          "odds_away": 2.38
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.51,
+          "odds_away": 2.55
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.51,
+          "odds_away": 2.55
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.51,
+          "odds_away": 2.55
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.5,
+          "odds_away": 2.48
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.5,
+          "odds_away": 2.4
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.5,
+          "odds_away": 2.64
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.55,
+          "odds_away": 2.6
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.53,
+          "odds_away": 2.5
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.51,
+          "odds_away": 2.55
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.51,
+          "odds_away": 2.55
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.55,
+          "odds_away": 2.57
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.53,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.53,
+          "odds_away": 2.4
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.56,
+          "odds_away": 2.57
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.56,
+          "odds_away": 2.57
+        }
+      ]
+    },
+    {
+      "home": "Darja Vidmanova",
+      "away": "Elsa Jacquemot",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.548,
+        2.451
+      ],
+      "best_odds": [
+        1.61,
+        2.55
+      ],
+      "implied_prob": [
+        0.6461,
+        0.408
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.61,
+          "odds_away": 2.45
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.55,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.55,
+          "odds_away": 2.46
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.57,
+          "odds_away": 2.54
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.53,
+          "odds_away": 2.37
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.55,
+          "odds_away": 2.46
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.55,
+          "odds_away": 2.48
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.53,
+          "odds_away": 2.37
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.53,
+          "odds_away": 2.38
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.53,
+          "odds_away": 2.38
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.54,
+          "odds_away": 2.5
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.57,
+          "odds_away": 2.55
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.53,
+          "odds_away": 2.5
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 1.53,
+          "odds_away": 2.5
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.56,
+          "odds_away": 2.54
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.56,
+          "odds_away": 2.39
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.56,
+          "odds_away": 2.39
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.54,
+          "odds_away": 2.38
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.56,
+          "odds_away": 2.43
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.56,
+          "odds_away": 2.43
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.54,
+          "odds_away": 2.48
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.54,
+          "odds_away": 2.48
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.54,
+          "odds_away": 2.48
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.53,
+          "odds_away": 2.43
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.54,
+          "odds_away": 2.48
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.54,
+          "odds_away": 2.48
+        }
+      ]
+    },
+    {
+      "home": "Emiliana Arango",
+      "away": "Oksana Selekhmeteva",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        3.055,
+        1.379
+      ],
+      "best_odds": [
+        3.2,
+        1.43
+      ],
+      "implied_prob": [
+        0.3274,
+        0.725
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 3.19,
+          "odds_away": 1.39
+        },
+        {
+          "name": "Betway",
+          "odds_home": 2.9,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.15,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 3.0,
+          "odds_away": 1.42
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 3.1,
+          "odds_away": 1.34
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.15,
+          "odds_away": 1.36
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 3.1,
+          "odds_away": 1.39
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 2.88,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 3.1,
+          "odds_away": 1.34
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 2.88,
+          "odds_away": 1.36
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 3.05,
+          "odds_away": 1.39
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 3.05,
+          "odds_away": 1.42
+        },
+        {
+          "name": "888sport",
+          "odds_home": 2.9,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 3.2,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 3.03,
+          "odds_away": 1.42
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 2.87,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Coral",
+          "odds_home": 2.87,
+          "odds_away": 1.4
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 2.95,
+          "odds_away": 1.43
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 2.95,
+          "odds_away": 1.43
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 2.9,
+          "odds_away": 1.4
+        }
+      ]
+    },
+    {
+      "home": "Francesca Jones",
+      "away": "Venus Williams",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.548,
+        2.464
+      ],
+      "best_odds": [
+        1.59,
+        2.61
+      ],
+      "implied_prob": [
+        0.646,
+        0.4059
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.59,
+          "odds_away": 2.48
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.5,
+          "odds_away": 2.6
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.56,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.55,
+          "odds_away": 2.35
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.56,
+          "odds_away": 2.44
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.56,
+          "odds_away": 2.4
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.53,
+          "odds_away": 2.38
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.56,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.56,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.56,
+          "odds_away": 2.4
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.55,
+          "odds_away": 2.35
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.53,
+          "odds_away": 2.38
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.53,
+          "odds_away": 2.53
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.53,
+          "odds_away": 2.5
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.57,
+          "odds_away": 2.55
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.56,
+          "odds_away": 2.45
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.56,
+          "odds_away": 2.45
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.54,
+          "odds_away": 2.6
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.56,
+          "odds_away": 2.4
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.56,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.53,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.54,
+          "odds_away": 2.61
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.54,
+          "odds_away": 2.61
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.54,
+          "odds_away": 2.61
+        },
+        {
+          "name": "William Hill",
+          "odds_home": 1.53,
+          "odds_away": 2.5
+        }
+      ]
+    },
+    {
+      "home": "Hailey Baptiste",
+      "away": "Tatjana Maria",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.222,
+        4.301
+      ],
+      "best_odds": [
+        1.29,
+        4.71
+      ],
+      "implied_prob": [
+        0.8187,
+        0.2325
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.29,
+          "odds_away": 3.94
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.22,
+          "odds_away": 4.25
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.2,
+          "odds_away": 4.2
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.25,
+          "odds_away": 4.14
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.2,
+          "odds_away": 4.2
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.2,
+          "odds_away": 4.0
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.22,
+          "odds_away": 3.75
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.24,
+          "odds_away": 4.28
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.24,
+          "odds_away": 4.5
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.25,
+          "odds_away": 4.0
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.22,
+          "odds_away": 4.3
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.22,
+          "odds_away": 4.3
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.21,
+          "odds_away": 4.7
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.22,
+          "odds_away": 4.71
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.21,
+          "odds_away": 4.67
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.21,
+          "odds_away": 4.67
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.21,
+          "odds_away": 4.4
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.2,
+          "odds_away": 4.2
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.21,
+          "odds_away": 4.4
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.21,
+          "odds_away": 4.4
+        }
+      ]
+    },
+    {
+      "home": "Janice Tjen",
+      "away": "Yulia Putintseva",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.809,
+        1.982
+      ],
+      "best_odds": [
+        1.85,
+        2.06
+      ],
+      "implied_prob": [
+        0.5528,
+        0.5046
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.85,
+          "odds_away": 2.04
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.8,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.81,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.84,
+          "odds_away": 2.04
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.82,
+          "odds_away": 1.97
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.8,
+          "odds_away": 1.95
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.79,
+          "odds_away": 1.95
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.81,
+          "odds_away": 2.0
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.81,
+          "odds_away": 2.06
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.82,
+          "odds_away": 1.97
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.8,
+          "odds_away": 1.95
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.8,
+          "odds_away": 1.91
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.82,
+          "odds_away": 1.97
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.82,
+          "odds_away": 1.97
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.82,
+          "odds_away": 1.97
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.79,
+          "odds_away": 1.95
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.75,
+          "odds_away": 1.95
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.8,
+          "odds_away": 2.03
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.8,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.82,
+          "odds_away": 1.97
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.82,
+          "odds_away": 1.97
+        }
+      ]
+    },
+    {
+      "home": "Solana Sierra",
+      "away": "Jaqueline Cristian",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        3.066,
+        1.361
+      ],
+      "best_odds": [
+        3.38,
+        1.4
+      ],
+      "implied_prob": [
+        0.3262,
+        0.7348
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 3.38,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Betway",
+          "odds_home": 3.0,
+          "odds_away": 1.38
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 3.1,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 3.05,
+          "odds_away": 1.35
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 3.06,
+          "odds_away": 1.35
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 3.1,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 3.1,
+          "odds_away": 1.33
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.0,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 3.1,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 3.1,
+          "odds_away": 1.36
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 3.1,
+          "odds_away": 1.36
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 3.05,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.0,
+          "odds_away": 1.33
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 3.16,
+          "odds_away": 1.37
+        },
+        {
+          "name": "888sport",
+          "odds_home": 2.9,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.0,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 3.15,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.0,
+          "odds_away": 1.4
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 2.8,
+          "odds_away": 1.34
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 3.1,
+          "odds_away": 1.36
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 3.1,
+          "odds_away": 1.36
+        }
+      ]
+    },
+    {
+      "home": "Jennifer Brady",
+      "away": "Sloane Stephens",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.401,
+        2.979
+      ],
+      "best_odds": [
+        1.44,
+        3.2
+      ],
+      "implied_prob": [
+        0.714,
+        0.3357
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.44,
+          "odds_away": 2.96
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.35,
+          "odds_away": 3.2
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.37,
+          "odds_away": 3.15
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.41,
+          "odds_away": 3.05
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.37,
+          "odds_away": 3.15
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.35,
+          "odds_away": 3.06
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.4,
+          "odds_away": 2.75
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.36,
+          "odds_away": 2.88
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.42,
+          "odds_away": 2.92
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.44,
+          "odds_away": 3.0
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.44,
+          "odds_away": 2.75
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.4,
+          "odds_away": 2.87
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.4,
+          "odds_away": 2.87
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.42,
+          "odds_away": 3.05
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.42,
+          "odds_away": 3.0
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.42,
+          "odds_away": 3.0
+        }
+      ]
+    },
+    {
+      "home": "Katie Boulter",
+      "away": "Jessica Bouzas Maneiro",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.624,
+        2.268
+      ],
+      "best_odds": [
+        1.68,
+        2.4
+      ],
+      "implied_prob": [
+        0.6158,
+        0.4409
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.63,
+          "odds_away": 2.4
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.55,
+          "odds_away": 2.4
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.66,
+          "odds_away": 2.26
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.62,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.6,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.68,
+          "odds_away": 2.3
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.57,
+          "odds_away": 2.16
+        }
+      ]
+    },
+    {
+      "home": "Katerina Siniakova",
+      "away": "Maria Camila Osorio Serrano",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.903,
+        1.889
+      ],
+      "best_odds": [
+        1.98,
+        2.05
+      ],
+      "implied_prob": [
+        0.5254,
+        0.5294
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.98,
+          "odds_away": 1.9
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.75,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.93,
+          "odds_away": 1.88
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.81,
+          "odds_away": 2.04
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.95,
+          "odds_away": 1.83
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.93,
+          "odds_away": 1.81
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.93,
+          "odds_away": 1.88
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.93,
+          "odds_away": 1.86
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.95,
+          "odds_away": 1.83
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.83,
+          "odds_away": 1.83
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.95,
+          "odds_away": 1.83
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.95,
+          "odds_away": 1.83
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.95,
+          "odds_away": 1.83
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.93,
+          "odds_away": 1.81
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.83,
+          "odds_away": 1.87
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.88,
+          "odds_away": 1.93
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.94,
+          "odds_away": 1.94
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.91,
+          "odds_away": 1.91
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.95,
+          "odds_away": 1.83
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.95,
+          "odds_away": 1.83
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.82,
+          "odds_away": 2.02
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.82,
+          "odds_away": 2.02
+        }
+      ]
+    },
+    {
+      "home": "Laura Siegemund",
+      "away": "Petra Marcinko",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.741,
+        2.08
+      ],
+      "best_odds": [
+        1.82,
+        2.16
+      ],
+      "implied_prob": [
+        0.5743,
+        0.4808
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.78,
+          "odds_away": 2.13
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.8,
+          "odds_away": 2.0
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.72,
+          "odds_away": 2.12
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.75,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.7,
+          "odds_away": 2.08
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.74,
+          "odds_away": 2.1
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.72,
+          "odds_away": 2.12
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.75,
+          "odds_away": 2.0
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.73,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.72,
+          "odds_away": 2.12
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.72,
+          "odds_away": 2.12
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.72,
+          "odds_away": 2.12
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.7,
+          "odds_away": 2.08
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.73,
+          "odds_away": 2.0
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.71,
+          "odds_away": 2.16
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.78,
+          "odds_away": 2.13
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.73,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.75,
+          "odds_away": 2.09
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.75,
+          "odds_away": 2.09
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.67,
+          "odds_away": 2.04
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.72,
+          "odds_away": 2.12
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.72,
+          "odds_away": 2.12
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.8,
+          "odds_away": 2.05
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.8,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.82,
+          "odds_away": 2.06
+        }
+      ]
+    },
+    {
+      "home": "Magda Linette",
+      "away": "Varvara Gracheva",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.655,
+        2.235
+      ],
+      "best_odds": [
+        1.73,
+        2.45
+      ],
+      "implied_prob": [
+        0.6044,
+        0.4474
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.61,
+          "odds_away": 2.45
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.65,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.64,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.71,
+          "odds_away": 2.18
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.61,
+          "odds_away": 2.23
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.64,
+          "odds_away": 2.28
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.67,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.61,
+          "odds_away": 2.23
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.61,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.71,
+          "odds_away": 2.25
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.63,
+          "odds_away": 2.28
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 1.71,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.7,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.7,
+          "odds_away": 2.1
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 1.71,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 1.73,
+          "odds_away": 2.2
+        }
+      ]
+    },
+    {
+      "home": "McCartney Kessler",
+      "away": "Magdalena Frech",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.744,
+        2.082
+      ],
+      "best_odds": [
+        1.81,
+        2.2
+      ],
+      "implied_prob": [
+        0.5734,
+        0.4803
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.81,
+          "odds_away": 2.09
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.65,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.74,
+          "odds_away": 2.1
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.67,
+          "odds_away": 2.1
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.78,
+          "odds_away": 2.04
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.75,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.74,
+          "odds_away": 2.1
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.72,
+          "odds_away": 2.18
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.78,
+          "odds_away": 2.04
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.73,
+          "odds_away": 2.05
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.78,
+          "odds_away": 2.04
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.78,
+          "odds_away": 2.04
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.78,
+          "odds_away": 2.04
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.75,
+          "odds_away": 2.0
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.7,
+          "odds_away": 2.05
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.74,
+          "odds_away": 2.11
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.75,
+          "odds_away": 2.18
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.67,
+          "odds_away": 2.2
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.78,
+          "odds_away": 2.04
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.78,
+          "odds_away": 2.04
+        }
+      ]
+    },
+    {
+      "home": "Sonay Kartal",
+      "away": "Peyton Stearns",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        1.61,
+        2.302
+      ],
+      "best_odds": [
+        1.68,
+        2.4
+      ],
+      "implied_prob": [
+        0.6213,
+        0.4344
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 1.65,
+          "odds_away": 2.36
+        },
+        {
+          "name": "Betway",
+          "odds_home": 1.65,
+          "odds_away": 2.25
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 1.6,
+          "odds_away": 2.35
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 1.65,
+          "odds_away": 2.32
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Coral",
+          "odds_home": 1.55,
+          "odds_away": 2.3
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 1.6,
+          "odds_away": 2.25
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 1.6,
+          "odds_away": 2.35
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 1.68,
+          "odds_away": 2.32
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 1.55,
+          "odds_away": 2.3
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 1.57,
+          "odds_away": 2.25
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 1.6,
+          "odds_away": 2.25
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 1.57,
+          "odds_away": 2.25
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 1.6,
+          "odds_away": 2.36
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 1.63,
+          "odds_away": 2.4
+        },
+        {
+          "name": "888sport",
+          "odds_home": 1.57,
+          "odds_away": 2.38
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 1.62,
+          "odds_away": 2.28
+        }
+      ]
+    },
+    {
+      "home": "Shuai Zhang",
+      "away": "Sorana Cirstea",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T14:00:00Z",
+      "avg_odds": [
+        3.501,
+        1.305
+      ],
+      "best_odds": [
+        3.85,
+        1.35
+      ],
+      "implied_prob": [
+        0.2856,
+        0.7662
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 3.44,
+          "odds_away": 1.35
+        },
+        {
+          "name": "Betway",
+          "odds_home": 3.75,
+          "odds_away": 1.29
+        },
+        {
+          "name": "Nordic Bet",
+          "odds_home": 3.7,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Smarkets",
+          "odds_home": 3.85,
+          "odds_away": 1.3
+        },
+        {
+          "name": "LeoVegas",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Virgin Bet",
+          "odds_home": 3.2,
+          "odds_away": 1.32
+        },
+        {
+          "name": "Betsson",
+          "odds_home": 3.7,
+          "odds_away": 1.28
+        },
+        {
+          "name": "GTbets",
+          "odds_home": 3.6,
+          "odds_away": 1.29
+        },
+        {
+          "name": "BetRivers",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "BoyleSports",
+          "odds_home": 3.5,
+          "odds_away": 1.25
+        },
+        {
+          "name": "Casumo",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Grosvenor",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Unibet (NL)",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "LiveScore Bet",
+          "odds_home": 3.2,
+          "odds_away": 1.32
+        },
+        {
+          "name": "Bet Victor",
+          "odds_home": 3.25,
+          "odds_away": 1.29
+        },
+        {
+          "name": "DraftKings",
+          "odds_home": 3.78,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Coolbet",
+          "odds_home": 3.75,
+          "odds_away": 1.31
+        },
+        {
+          "name": "888sport",
+          "odds_home": 3.6,
+          "odds_away": 1.29
+        },
+        {
+          "name": "Unibet (SE)",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "LeoVegas (SE)",
+          "odds_home": 3.3,
+          "odds_away": 1.33
+        },
+        {
+          "name": "Pinnacle",
+          "odds_home": 3.71,
+          "odds_away": 1.31
+        },
+        {
+          "name": "Coral",
+          "odds_home": 3.5,
+          "odds_away": 1.28
+        },
+        {
+          "name": "Ladbrokes",
+          "odds_home": 3.5,
+          "odds_away": 1.28
+        },
+        {
+          "name": "LowVig.ag",
+          "odds_home": 3.7,
+          "odds_away": 1.3
+        },
+        {
+          "name": "BetOnline.ag",
+          "odds_home": 3.7,
+          "odds_away": 1.3
+        }
+      ]
+    },
+    {
+      "home": "Dalma Galfi",
+      "away": "Maria Sakkari",
+      "sport": "tennis_wta_miami_open",
+      "time": "2026-03-18T15:00:00Z",
+      "avg_odds": [
+        3.52,
+        1.34
+      ],
+      "best_odds": [
+        3.52,
+        1.34
+      ],
+      "implied_prob": [
+        0.2841,
+        0.7463
+      ],
+      "bookmakers": [
+        {
+          "name": "1xBet",
+          "odds_home": 3.52,
+          "odds_away": 1.34
+        }
+      ]
+    }
+  ]
+}

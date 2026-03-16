@@ -25,10 +25,18 @@ import urllib.error
 from typing import List, Dict, Optional, Any
 from dataclasses import dataclass, field, asdict
 from datetime import datetime, timedelta
+from pathlib import Path
 
+# Load .env from project root
+_ENV_PATH = Path(__file__).parent.parent.parent / ".env"
+if _ENV_PATH.exists():
+    for _line in _ENV_PATH.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _k, _v = _line.split("=", 1)
+            os.environ.setdefault(_k.strip(), _v.strip())
 
 API_TENNIS_BASE = "https://api.api-tennis.com/tennis/"
-API_TENNIS_KEY = "d146e28f6dd96205fcd9302463e3113176b77600442f99444137df409e8456e8"
 
 
 @dataclass
@@ -94,7 +102,7 @@ class ApiTennisClient:
     """
 
     def __init__(self, api_key: str = None):
-        self.api_key = api_key or os.environ.get("API_TENNIS_KEY", API_TENNIS_KEY)
+        self.api_key = api_key or os.environ.get("API_TENNIS_KEY", "")
         self.base_url = API_TENNIS_BASE
         self._request_count = 0
 

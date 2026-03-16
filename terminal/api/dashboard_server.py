@@ -125,52 +125,40 @@ class DashboardAPI(BaseHTTPRequestHandler):
         })
 
     def _handle_signals(self):
-        """Current bet signals (demo + TODO: live swarm)."""
-        signals = [
-            {
-                "id": "NF-A3CC6A25", "match": "Djokovic vs Alcaraz",
-                "playerA": "Novak Djokovic", "playerB": "Carlos Alcaraz",
-                "pick": "Novak Djokovic", "odds": 2.40, "edge": 0.138,
-                "betSize": 250, "confidence": "LOW", "action": "BET",
-                "surface": "Hard", "round": "QF", "modelProb": 0.552,
-                "agents": [
-                    {"agentName": "StatBot", "role": "Statistical", "probA": 0.68, "confidence": 0.9},
-                    {"agentName": "PsychBot", "role": "Psychology", "probA": 0.48, "confidence": 0.6},
-                    {"agentName": "MarketBot", "role": "Market", "probA": 0.40, "confidence": 0.8},
-                    {"agentName": "ContrarianBot", "role": "Contrarian", "probA": 0.50, "confidence": 0.5},
-                    {"agentName": "NewsBot", "role": "News", "probA": 0.50, "confidence": 0.5},
-                ],
-            },
-            {
-                "id": "NF-3513D00B", "match": "Medvedev vs de Minaur",
-                "playerA": "Daniil Medvedev", "playerB": "Alex de Minaur",
-                "pick": "Daniil Medvedev", "odds": 1.80, "edge": 0.120,
-                "betSize": 250, "confidence": "LOW", "action": "BET",
-                "surface": "Hard", "round": "R16", "modelProb": 0.675,
-                "agents": [
-                    {"agentName": "StatBot", "role": "Statistical", "probA": 0.93, "confidence": 0.9},
-                    {"agentName": "PsychBot", "role": "Psychology", "probA": 0.52, "confidence": 0.6},
-                    {"agentName": "MarketBot", "role": "Market", "probA": 0.54, "confidence": 0.8},
-                    {"agentName": "ContrarianBot", "role": "Contrarian", "probA": 0.49, "confidence": 0.5},
-                    {"agentName": "NewsBot", "role": "News", "probA": 0.50, "confidence": 0.5},
-                ],
-            },
-            {
-                "id": "NF-36A012DD", "match": "Sinner vs Alcaraz",
-                "playerA": "Jannik Sinner", "playerB": "Carlos Alcaraz",
-                "pick": "Jannik Sinner", "odds": 1.55, "edge": 0.051,
-                "betSize": 179.79, "confidence": "HIGH", "action": "BET",
-                "surface": "Hard", "round": "F", "modelProb": 0.693,
-                "agents": [
-                    {"agentName": "StatBot", "role": "Statistical", "probA": 0.87, "confidence": 0.9},
-                    {"agentName": "PsychBot", "role": "Psychology", "probA": 0.55, "confidence": 0.6},
-                    {"agentName": "MarketBot", "role": "Market", "probA": 0.62, "confidence": 0.8},
-                    {"agentName": "ContrarianBot", "role": "Contrarian", "probA": 0.50, "confidence": 0.5},
-                    {"agentName": "NewsBot", "role": "News", "probA": 0.50, "confidence": 0.5},
-                ],
-            },
-        ]
-        self._json_response({"signals": signals})
+        """Current bet signals — from live swarm or SOURCE_UNAVAILABLE."""
+        # TODO: wire up live swarm signals from last_run.json
+        last_run_path = Path(__file__).parent.parent / "execution" / "last_run.json"
+        if last_run_path.exists():
+            try:
+                data = json.loads(last_run_path.read_text())
+                results = data.get("results", [])
+                signals = []
+                for r in results:
+                    signals.append({
+                        "id": r.get("order_id", "N/A"),
+                        "match": r.get("match", ""),
+                        "pick": r.get("pick", ""),
+                        "odds": 0,
+                        "edge": r.get("edge", 0),
+                        "betSize": r.get("bet_size", 0),
+                        "confidence": r.get("confidence", ""),
+                        "action": "BET",
+                        "modelProb": r.get("prob", 0),
+                    })
+                self._json_response({
+                    "signals": signals,
+                    "source": "live_runner",
+                    "last_run": data.get("timestamp", ""),
+                })
+                return
+            except Exception:
+                pass
+
+        self._json_response({
+            "signals": [],
+            "source": "SOURCE_UNAVAILABLE",
+            "message": "Run live_runner.py to generate live signals",
+        })
 
     def _handle_trades(self):
         trades = [asdict(t) for t in self.__class__.tracker.trades]

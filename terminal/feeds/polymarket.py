@@ -98,13 +98,13 @@ class PolymarketClient:
     def search_events(
         self,
         query: str,
-        limit: int = 20,
+        limit: int = 100,
         active: bool = True,
         closed: bool = False,
     ) -> List[PolymarketEvent]:
         """
-        Search Polymarket events by keyword.
-        Uses the Gamma API for full-text search.
+        Search Polymarket events by keyword/tag.
+        Uses the Gamma API with tag_slug for sport-specific search.
         """
         params = {
             "limit": str(limit),
@@ -112,7 +112,7 @@ class PolymarketClient:
             "closed": str(closed).lower(),
         }
         if query:
-            params["tag"] = query
+            params["tag_slug"] = query
 
         data = self._fetch(f"{GAMMA_BASE}/events", params)
 
@@ -182,8 +182,16 @@ class PolymarketClient:
         return self.search_events(query=tag)
 
     def find_tennis_markets(self) -> List[PolymarketEvent]:
-        """Find all active tennis prediction markets."""
-        return self.search_events("tennis")
+        """Find all active tennis prediction markets using tag_slug."""
+        events = self.search_events("tennis", limit=100)
+        # Also try atp tag for additional coverage
+        atp_events = self.search_events("atp", limit=100)
+        seen = set(e.id for e in events)
+        for e in atp_events:
+            if e.id not in seen:
+                events.append(e)
+                seen.add(e.id)
+        return sorted(events, key=lambda e: e.volume, reverse=True)
 
     def find_hockey_markets(self) -> List[PolymarketEvent]:
         """Find all active NHL/hockey prediction markets."""

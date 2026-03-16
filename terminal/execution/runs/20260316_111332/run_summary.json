@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-16T11:19:43.260451",
+  "timestamp": "2026-03-16T11:14:09.953798",
   "mode": "PAPER",
   "scan_only": true,
   "fixtures_scanned": 47,
@@ -13,7 +13,7 @@
     "total_trades": 0,
     "open_positions": 0
   },
-  "odds_matches": 48,
-  "polymarket_events": 100,
-  "polymarket_trader_markets": 1343
+  "odds_matches": 49,
+  "polymarket_events": 20,
+  "polymarket_trader_markets": 0
 }

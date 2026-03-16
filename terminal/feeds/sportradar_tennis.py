@@ -27,10 +27,18 @@ import urllib.error
 from typing import List, Dict, Optional, Any
 from dataclasses import dataclass, field, asdict
 from datetime import datetime
+from pathlib import Path
 
+# Load .env from project root
+_ENV_PATH = Path(__file__).parent.parent.parent / ".env"
+if _ENV_PATH.exists():
+    for _line in _ENV_PATH.read_text().splitlines():
+        _line = _line.strip()
+        if _line and not _line.startswith("#") and "=" in _line:
+            _k, _v = _line.split("=", 1)
+            os.environ.setdefault(_k.strip(), _v.strip())
 
 SPORTRADAR_BASE = "https://api.sportradar.com/tennis/production/v3"
-SPORTRADAR_KEY = "XK6HLp7UPB4rzBn81U2prttFCerHbbIHMD2kftCU"
 
 
 @dataclass
@@ -107,7 +115,7 @@ class SportradarTennisClient:
     """
 
     def __init__(self, api_key: str = None):
-        self.api_key = api_key or os.environ.get("SPORTRADAR_KEY", SPORTRADAR_KEY)
+        self.api_key = api_key or os.environ.get("SPORTRADAR_API_KEY", "")
         self.base_url = SPORTRADAR_BASE
         self._request_count = 0
 
