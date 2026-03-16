@@ -1,14 +1,15 @@
 {
-  "timestamp": "2026-03-16T02:13:03.867382",
-  "mode": "LIVE",
+  "timestamp": "2026-03-16T02:28:05.937704",
+  "mode": "PAPER",
   "fixtures_scanned": 48,
   "predictions_made": 48,
   "bets_executed": 0,
   "results": [],
   "daily_summary": {
-    "mode": "LIVE",
-    "api_key": "019cf588-c0a...",
-    "wallet": "0xc47328927678a629f71f7441d4005417612188d3",
-    "note": "Use Polymarket UI to check USDC balance"
+    "mode": "PAPER",
+    "balance": 500.0,
+    "invested": 0,
+    "total_trades": 0,
+    "open_positions": 0
   }
 }

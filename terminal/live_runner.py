@@ -31,6 +31,7 @@ sys.path.insert(0, str(ROOT))
 from feeds.api_tennis import ApiTennisClient
 from feeds.sportradar_tennis import SportradarTennisClient
 from feeds.polymarket import PolymarketClient
+from feeds.name_resolver import TennisNameResolver
 from agents.tennis_swarm import TennisSwarm, MatchContext
 from execution.polymarket_live import PolymarketTrader
 from execution.risk_manager import RiskManager
@@ -122,16 +123,25 @@ def step_3_search_polymarket(pm_client):
     return markets
 
 
-def step_4_run_swarm(swarm, fixtures, rankings):
+def step_4_run_swarm(swarm, fixtures, rankings, resolver=None):
     """Step 4: Run swarm prediction on each viable match."""
     print("\n🤖 STEP 4: Running 5-agent swarm on ATP/WTA matches...")
     
     predictions = []
     
     for fix in fixtures:
-        # Build MatchContext from real fixture data
-        player_a = fix.player_a
-        player_b = fix.player_b
+        # Resolve abbreviated names to full canonical names
+        player_a = resolver.resolve(fix.player_a) if resolver else fix.player_a
+        player_b = resolver.resolve(fix.player_b) if resolver else fix.player_b
+        
+        # Show resolution if name changed
+        if player_a != fix.player_a or player_b != fix.player_b:
+            resolved_parts = []
+            if player_a != fix.player_a:
+                resolved_parts.append(f"{fix.player_a} → {player_a}")
+            if player_b != fix.player_b:
+                resolved_parts.append(f"{fix.player_b} → {player_b}")
+            print(f"   🔗 Name resolved: {', '.join(resolved_parts)}")
         
         # Lookup rankings
         rank_a = rankings.get(player_a.lower(), {}).get("rank", 80)
@@ -326,9 +336,16 @@ def main():
     print(f"      API Key: {'✅ ' + trader.api_key[:12] + '...' if trader.api_key else '❌ Not set'}")
     print(f"      Wallet:  {'✅ ' + trader.wallet[:12] + '...' if trader.wallet else '❌ Not set'}")
     
-    print("   🧠 Loading swarm (Elo engine from 74,906 matches)...")
+    print("   🧠 Loading swarm (Elo engine from 74,906 matches + Sackmann)...")
     swarm = TennisSwarm()
     print("   ✅ 5-agent swarm ready")
+    
+    # Name resolver bridges abbreviated API names to full Elo/Sackmann names
+    resolver = TennisNameResolver()
+    resolver.load_from_elo(swarm.elo_engine)
+    if swarm.sackmann:
+        resolver.load_from_sackmann(swarm.sackmann)
+    print(f"   ✅ Name resolver ({resolver.player_count:,} players)")
     
     # === RUN PIPELINE ===
     
@@ -340,7 +357,7 @@ def main():
     
     rankings = step_2_enrich_rankings(sportradar_client)
     pm_markets = step_3_search_polymarket(pm_read)
-    predictions = step_4_run_swarm(swarm, fixtures, rankings)
+    predictions = step_4_run_swarm(swarm, fixtures, rankings, resolver=resolver)
     results = step_5_execute(trader, predictions, scan_only=args.scan_only)
     
     # === FINAL REPORT ===
