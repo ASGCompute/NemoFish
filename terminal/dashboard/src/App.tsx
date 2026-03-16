@@ -53,20 +53,32 @@ interface Trade {
   sport: string
 }
 
-interface LiveMatch {
-  match_id: string
-  player_a: string
-  player_b: string
+// Real api-tennis.com live match shape
+interface ApiLiveMatch {
+  event_key: string
+  playerA: string
+  playerB: string
   score: string
+  game_score: string
   status: 'live' | 'finished' | 'scheduled'
+  set_status: string
+  serve: string | null
   tournament: string
-  round_name: string
-  surface: string
-  start_time: string
-  odds_a: number | null
-  odds_b: number | null
-  set_scores: string[]
-  server: string
+  round: string
+  event_type: string
+  time: string
+  date: string
+  oddsA: number | null
+  oddsB: number | null
+}
+
+interface RankingEntry {
+  rank: number
+  points: number
+  player_name: string
+  player_id: string
+  nationality: string
+  movement: number
 }
 
 interface NewsItem {
@@ -153,24 +165,6 @@ const DEMO_SIGNALS: BetSignal[] = [
   },
 ]
 
-const DEMO_LIVE: LiveMatch[] = [
-  { match_id: 'd1', player_a: 'Jannik Sinner', player_b: 'Ben Shelton', score: '6-4 3-2',
-    status: 'live', tournament: 'Miami Open 2026', round_name: 'R32', surface: 'Hard',
-    start_time: '15:00', odds_a: 1.18, odds_b: 5.50, set_scores: ['6-4', '3-2'], server: 'Sinner' },
-  { match_id: 'd2', player_a: 'Carlos Alcaraz', player_b: 'Hubert Hurkacz', score: '4-6 6-3 2-1',
-    status: 'live', tournament: 'Miami Open 2026', round_name: 'R32', surface: 'Hard',
-    start_time: '17:00', odds_a: 1.35, odds_b: 3.40, set_scores: ['4-6', '6-3', '2-1'], server: 'Alcaraz' },
-  { match_id: 'd3', player_a: 'Alexander Zverev', player_b: 'Lorenzo Musetti', score: '7-5 6-4',
-    status: 'finished', tournament: 'Miami Open 2026', round_name: 'R32', surface: 'Hard',
-    start_time: '12:00', odds_a: 1.28, odds_b: 4.00, set_scores: ['7-5', '6-4'], server: '' },
-  { match_id: 'd4', player_a: 'Daniil Medvedev', player_b: 'Tommy Paul', score: '',
-    status: 'scheduled', tournament: 'Miami Open 2026', round_name: 'R16', surface: 'Hard',
-    start_time: '14:00', odds_a: 1.65, odds_b: 2.30, set_scores: [], server: '' },
-  { match_id: 'd5', player_a: 'Novak Djokovic', player_b: 'Frances Tiafoe', score: '6-3 5-4',
-    status: 'live', tournament: 'Miami Open 2026', round_name: 'R32', surface: 'Hard',
-    start_time: '19:00', odds_a: 1.12, odds_b: 7.00, set_scores: ['6-3', '5-4'], server: 'Djokovic' },
-]
-
 const DEMO_NEWS: NewsItem[] = [
   { title: 'Sinner enters Miami Open as top seed, targeting back-to-back titles', source: 'ATP Tour',
     url: '', published: '2026-03-16T10:00Z', category: 'preview', sentiment: 'positive', players: ['Sinner'] },
@@ -243,14 +237,15 @@ function AgentHeatmap({ signals }: { signals: BetSignal[] }) {
       <div className="card-title">🤖 Agent Consensus Heatmap</div>
       <div className="heatmap-grid">
         <div className="heatmap-row">
-          <div className="heatmap-header" style={{ textAlign: 'left' }}>Match</div>
+          <div className="heatmap-header heatmap-label-col">Match</div>
           {roles.map(r => <div key={r} className="heatmap-header">{r.slice(0, 4)}</div>)}
         </div>
         {bets.map(s => (
           <div key={s.id} className="heatmap-row">
             <div className="heatmap-label">{s.match}</div>
             {s.agents.map((a, i) => (
-              <div key={i} className="heatmap-cell" style={{ background: getHeatColor(a.probA) }}
+              <div key={i} className="heatmap-cell"
+                style={{ background: getHeatColor(a.probA) }}
                 title={`${a.role}: ${s.playerA} ${(a.probA * 100).toFixed(0)}%`}>
                 {(a.probA * 100).toFixed(0)}%
               </div>
@@ -290,56 +285,98 @@ function SignalsList({ signals }: { signals: BetSignal[] }) {
   )
 }
 
-// --- LIVE EVENT FEED ---
-function LiveEventFeed({ matches }: { matches: LiveMatch[] }) {
+// --- LIVE EVENT FEED (REAL DATA from api-tennis.com) ---
+function LiveEventFeed({ matches, source }: { matches: ApiLiveMatch[]; source: string }) {
   const statusIcon = (s: string) => ({ live: '🔴', finished: '✅', scheduled: '📅' }[s] || '❓')
   const statusColor = (s: string) => ({
     live: 'var(--accent-red)', finished: 'var(--accent-green)', scheduled: 'var(--text-muted)'
   }[s] || 'var(--text-muted)')
 
+  const liveCount = matches.filter(m => m.status === 'live').length
+  const scheduledCount = matches.filter(m => m.status === 'scheduled').length
+
   return (
     <div className="card live-feed">
       <div className="card-title">
         🔴 Live Event Feed
-        <span className="live-count">{matches.filter(m => m.status === 'live').length} LIVE</span>
+        <span className="live-count">
+          {liveCount > 0 ? `${liveCount} LIVE` : `${scheduledCount} TODAY`}
+        </span>
+        {source && <span className="feed-source">{source}</span>}
       </div>
       <div className="feed-list">
         {matches.map(m => (
-          <div key={m.match_id} className={`feed-item feed-${m.status}`}>
+          <div key={m.event_key} className={`feed-item feed-${m.status}`}>
             <div className="feed-status">
               <span className="feed-icon">{statusIcon(m.status)}</span>
               <span className="feed-time" style={{ color: statusColor(m.status) }}>
-                {m.status === 'live' ? 'LIVE' : m.status === 'finished' ? 'FT' : m.start_time.slice(-5)}
+                {m.status === 'live' ? 'LIVE' : m.status === 'finished' ? 'FT' : m.time || '—'}
               </span>
             </div>
             <div className="feed-match">
               <div className="feed-players">
-                <span className={`feed-player ${m.server === m.player_a ? 'serving' : ''}`}>
-                  {m.server === m.player_a && '🎾 '}{m.player_a}
+                <span className={`feed-player ${m.serve === m.playerA ? 'serving' : ''}`}>
+                  {m.serve === m.playerA && '🎾 '}{m.playerA}
                 </span>
                 <span className="feed-vs">vs</span>
-                <span className={`feed-player ${m.server === m.player_b ? 'serving' : ''}`}>
-                  {m.server === m.player_b && '🎾 '}{m.player_b}
+                <span className={`feed-player ${m.serve === m.playerB ? 'serving' : ''}`}>
+                  {m.serve === m.playerB && '🎾 '}{m.playerB}
                 </span>
               </div>
               <div className="feed-meta">
-                {m.round_name} • {m.tournament}
+                {m.round || ''} {m.round && '•'} {m.tournament}
+                {m.event_type && <span className="feed-type"> • {m.event_type.replace('ATP Singles, ', '').replace('WTA Singles, ', '')}</span>}
               </div>
             </div>
             <div className="feed-score">
-              {m.score ? (
+              {m.score && m.score !== '0-0' ? (
                 <span className="score-text">{m.score}</span>
               ) : (
                 <span className="score-scheduled">—</span>
               )}
             </div>
-            {m.odds_a && (
-              <div className="feed-odds">
-                <span className="odds-val">{m.odds_a.toFixed(2)}</span>
-                <span className="odds-sep">|</span>
-                <span className="odds-val">{m.odds_b?.toFixed(2)}</span>
-              </div>
-            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// --- RANKINGS PANEL (REAL DATA from Sportradar) ---
+function RankingsPanel({ rankings }: { rankings: Record<string, RankingEntry[]> }) {
+  const [activeTour, setActiveTour] = useState<string>('atp')
+  const tours = Object.keys(rankings)
+
+  if (tours.length === 0) return null
+
+  const entries = rankings[activeTour] || []
+
+  return (
+    <div className="card rankings-panel">
+      <div className="card-title">
+        🏆 World Rankings
+        <span className="rankings-source">sportradar.com</span>
+      </div>
+      <div className="rankings-tabs">
+        {tours.map(t => (
+          <button
+            key={t}
+            className={`rankings-tab ${t === activeTour ? 'active' : ''}`}
+            onClick={() => setActiveTour(t)}
+          >
+            {t.toUpperCase()}
+          </button>
+        ))}
+      </div>
+      <div className="rankings-list">
+        {entries.slice(0, 15).map(r => (
+          <div key={r.player_id || r.rank} className="ranking-row">
+            <span className="ranking-pos">#{r.rank}</span>
+            <span className="ranking-name">{r.player_name}</span>
+            <span className="ranking-pts">{r.points.toLocaleString()}</span>
+            <span className={`ranking-move ${r.movement > 0 ? 'up' : r.movement < 0 ? 'down' : ''}`}>
+              {r.movement > 0 ? `↑${r.movement}` : r.movement < 0 ? `↓${Math.abs(r.movement)}` : '—'}
+            </span>
           </div>
         ))}
       </div>
@@ -479,7 +516,10 @@ function App() {
   const [kpi, setKpi] = useState<KpiData>(DEMO_KPI)
   const [signals, setSignals] = useState<BetSignal[]>(DEMO_SIGNALS)
   const [trades, setTrades] = useState<Trade[]>(DEMO_TRADES)
-  const [liveMatches, setLiveMatches] = useState<LiveMatch[]>(DEMO_LIVE)
+  const [liveMatches, setLiveMatches] = useState<ApiLiveMatch[]>([])
+  const [liveSource, setLiveSource] = useState<string>('')
+  const [liveTotal, setLiveTotal] = useState<number>(0)
+  const [rankings, setRankings] = useState<Record<string, RankingEntry[]>>({})
   const [news, setNews] = useState<NewsItem[]>(DEMO_NEWS)
   const [oddsMovements, setOddsMovements] = useState<OddsMovement[]>(DEMO_ODDS)
   const [apiConnected, setApiConnected] = useState(false)
@@ -495,14 +535,22 @@ function App() {
     const health = await fetchAPI<{ status: string }>('/api/health')
     if (health?.status === 'ok') {
       setApiConnected(true)
-      const [kpiRes, liveRes, newsRes, oddsRes] = await Promise.all([
+
+      const [kpiRes, liveRes, rankingsRes, newsRes, oddsRes] = await Promise.all([
         fetchAPI<KpiData>('/api/kpi'),
-        fetchAPI<{ matches: LiveMatch[] }>('/api/live'),
+        fetchAPI<{ matches: ApiLiveMatch[]; source: string; total_count: number; live_count: number }>('/api/live'),
+        fetchAPI<{ rankings: Record<string, RankingEntry[]> }>('/api/rankings'),
         fetchAPI<{ news: NewsItem[] }>('/api/news'),
         fetchAPI<{ movements: OddsMovement[] }>('/api/odds'),
       ])
+
       if (kpiRes) setKpi(kpiRes)
-      if (liveRes?.matches) setLiveMatches(liveRes.matches)
+      if (liveRes?.matches) {
+        setLiveMatches(liveRes.matches)
+        setLiveSource(liveRes.source || '')
+        setLiveTotal(liveRes.total_count || liveRes.matches.length)
+      }
+      if (rankingsRes?.rankings) setRankings(rankingsRes.rankings)
       if (newsRes?.news) setNews(newsRes.news)
       if (oddsRes?.movements) setOddsMovements(oddsRes.movements)
     } else {
@@ -530,7 +578,11 @@ function App() {
         <div className="header-right">
           <span className={`api-status ${apiConnected ? 'connected' : 'offline'}`}>
             {apiConnected ? '🟢 API' : '🔴 DEMO'}
+            {apiConnected && liveSource && ` (${liveSource})`}
           </span>
+          {apiConnected && liveTotal > 0 && (
+            <span className="match-count">{liveTotal} matches</span>
+          )}
           <span className="mode-badge paper">PAPER</span>
           <span className="clock">{time.toLocaleString('en-US', { hour12: false })}</span>
         </div>
@@ -557,12 +609,15 @@ function App() {
         <AgentHeatmap signals={signals} />
         <SignalsList signals={signals} />
 
-        {/* Row 3: LIVE FEED + MARKET REACTION */}
-        <LiveEventFeed matches={liveMatches} />
-        <MarketReaction movements={oddsMovements} />
+        {/* Row 3: LIVE FEED + RANKINGS */}
+        <LiveEventFeed matches={liveMatches} source={liveSource} />
+        <RankingsPanel rankings={rankings} />
 
-        {/* Row 4: NEWS + JOURNAL */}
+        {/* Row 4: MARKET REACTION + NEWS */}
+        <MarketReaction movements={oddsMovements} />
         <NewsFeed news={news} />
+
+        {/* Row 5: JOURNAL */}
         <TradeJournal trades={trades} />
       </main>
     </div>

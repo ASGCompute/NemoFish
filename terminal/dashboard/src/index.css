@@ -697,11 +697,120 @@ body {
 .kpi:nth-child(5) { animation-delay: 0.2s; }
 .kpi:nth-child(6) { animation-delay: 0.25s; }
 
+/* === Rankings Panel (Sportradar) === */
+.rankings-panel { grid-column: span 1; }
+.rankings-source {
+  font-size: 0.65rem;
+  color: var(--accent-cyan);
+  opacity: 0.6;
+  margin-left: auto;
+  font-weight: 400;
+}
+.rankings-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.rankings-tab {
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  padding: 4px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+  transition: all 0.2s;
+}
+.rankings-tab:hover { color: var(--text-primary); border-color: var(--accent-blue); }
+.rankings-tab.active {
+  background: var(--accent-blue-dim);
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+.rankings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 440px;
+  overflow-y: auto;
+}
+.ranking-row {
+  display: grid;
+  grid-template-columns: 36px 1fr 70px 40px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+  gap: 8px;
+}
+.ranking-row:hover { background: rgba(255,255,255,0.03); }
+.ranking-row:nth-child(-n+3) .ranking-pos {
+  color: var(--accent-amber);
+  font-weight: 700;
+}
+.ranking-pos {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.ranking-name {
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ranking-pts {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-align: right;
+}
+.ranking-move {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+.ranking-move.up { color: var(--accent-green); }
+.ranking-move.down { color: var(--accent-red); }
+
+/* === Feed source + match count badges === */
+.feed-source {
+  font-size: 0.6rem;
+  color: var(--accent-cyan);
+  opacity: 0.5;
+  margin-left: 6px;
+  font-weight: 400;
+}
+.match-count {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--accent-cyan);
+  background: rgba(6, 182, 212, 0.1);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Feed type label */
+.feed-type {
+  font-size: 0.65rem;
+  opacity: 0.6;
+}
+
+/* Heatmap label column alignment */
+.heatmap-label-col { text-align: left; }
+
 /* === Responsive === */
 @media (max-width: 1200px) {
   .kpi-row { grid-template-columns: repeat(3, 1fr); }
   .dashboard { grid-template-columns: 1fr; }
-  .agent-heatmap, .signals, .live-feed, .market-reaction,
+  .agent-heatmap, .signals, .live-feed, .rankings-panel, .market-reaction,
   .news-feed, .journal { grid-column: 1 / -1; }
 }
 
