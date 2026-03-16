@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """
-NemoFish Historical Backtester v2
-====================================
-Enhanced backtest with:
+NemoFish Historical Backtester v3 — Multi-Strategy
+====================================================
+Enhanced backtest with pluggable strategy architecture:
   ✅ Surface-specific Elo (already in engine)
   ✅ Real P&L from betting odds (B365, Pinnacle, Max, Avg)
   ✅ Rookie detection (low-match players → reduced confidence)
   ✅ 2025-2026 data support
+  ✅ Multiple strategies tested in parallel
+  ✅ ATPBetting two-pass confidence filtering
+  ✅ Side-by-side comparison report
 
 No data leakage:
   1. Elo trained on 2000 → (test_year - 1)
@@ -16,7 +19,7 @@ No data leakage:
 Usage:
   python3 terminal/backtest_historical.py --n 200 --year 2025
   python3 terminal/backtest_historical.py --n 200 --year 2026
-  python3 terminal/backtest_historical.py --n 500 --year 2025  # Monster test
+  python3 terminal/backtest_historical.py --n 200 --year 2025 --strategies all
 """
 
 import sys
@@ -27,16 +30,27 @@ from pathlib import Path
 from datetime import datetime
 from dataclasses import dataclass
 from typing import List, Dict, Optional
+from collections import defaultdict
 
 ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT))
 
 from models.tennis_elo import TennisEloEngine
 from agents.tennis_swarm import TennisSwarm, MatchContext
+from strategies.strategy_base import BettingStrategy, BetDecision, MatchInput
+from strategies.value_confirmation import ValueConfirmationStrategy
+from strategies.atp_confidence import ATPConfidenceStrategy
+from strategies.edge_threshold import EdgeThresholdStrategy
+from strategies.kelly_strategy import KellyStrategy
+from strategies.skemp_value import (
+    SkempValueOnlyStrategy,
+    SkempPredictedWinValueStrategy,
+    SkempInverseStrategy,
+)
 
 
 # --- Rookie threshold ---
-ROOKIE_MATCH_THRESHOLD = 15  # Players with < 15 matches in our Elo DB
+ROOKIE_MATCH_THRESHOLD = 15
 
 
 @dataclass
@@ -56,7 +70,6 @@ class HistoricalMatch:
     score: str
     best_of: int
     minutes: int
-    # Betting odds (from tennis-data.co.uk)
     odds_winner_b365: Optional[float] = None
     odds_loser_b365: Optional[float] = None
     odds_winner_avg: Optional[float] = None
@@ -66,7 +79,7 @@ class HistoricalMatch:
 
 
 def load_test_matches(data_dir: str, year: int, n: int, main_tour_only: bool = True) -> List[HistoricalMatch]:
-    """Load the last N matches from a year's CSV (supports both JeffSackmann & tennis-data.co.uk)."""
+    """Load the last N matches from a year's CSV."""
     csv_path = Path(data_dir) / f"atp_matches_{year}.csv"
     odds_path = Path(data_dir) / f"atp_odds_{year}.csv"
 
@@ -74,7 +87,6 @@ def load_test_matches(data_dir: str, year: int, n: int, main_tour_only: bool = T
         print(f"❌ File not found: {csv_path}")
         return []
 
-    # Load odds data if available (separate file)
     odds_lookup = {}
     if odds_path.exists():
         with open(odds_path, 'r', encoding='utf-8') as f:
@@ -88,12 +100,9 @@ def load_test_matches(data_dir: str, year: int, n: int, main_tour_only: bool = T
         reader = csv.DictReader(f)
         for row in reader:
             level = row.get('tourney_level', '')
-
-            # Filter to main tour only
             if main_tour_only and level not in ('G', 'M', 'A', 'B', 'F'):
                 continue
 
-            # Parse ranks safely
             try:
                 w_rank = int(float(row.get('winner_rank', 999) or 999))
             except:
@@ -103,7 +112,6 @@ def load_test_matches(data_dir: str, year: int, n: int, main_tour_only: bool = T
             except:
                 l_rank = 999
 
-            # Parse seeds
             w_seed = None
             l_seed = None
             try:
@@ -122,7 +130,6 @@ def load_test_matches(data_dir: str, year: int, n: int, main_tour_only: bool = T
             except:
                 minutes = 0
 
-            # Try to get odds from odds file
             odds_key = f"{row.get('winner_name','')}__{row.get('loser_name','')}__{row.get('tourney_date','')}"
             odds = odds_lookup.get(odds_key, {})
 
@@ -155,7 +162,6 @@ def load_test_matches(data_dir: str, year: int, n: int, main_tour_only: bool = T
                 odds_loser_max=safe_float(odds.get('odds_loser_max')),
             ))
 
-    # Take last N matches
     if len(matches) > n:
         matches = matches[-n:]
 
@@ -170,19 +176,41 @@ def is_rookie(engine: TennisEloEngine, player_name: str) -> bool:
     return rating.matches_played < ROOKIE_MATCH_THRESHOLD
 
 
-def run_backtest(test_year: int = 2025, n_matches: int = 200):
-    """Run the full enhanced historical backtest."""
+def get_default_strategies() -> List[BettingStrategy]:
+    """Get all default strategies for multi-strategy testing."""
+    return [
+        ValueConfirmationStrategy(min_model_prob=0.55),
+        ATPConfidenceStrategy(top_pct=0.05),
+        ATPConfidenceStrategy(top_pct=0.10),
+        ATPConfidenceStrategy(top_pct=0.15),
+        EdgeThresholdStrategy(min_edge=0.03, max_edge=0.30),
+        EdgeThresholdStrategy(min_edge=0.05, max_edge=0.20),
+        KellyStrategy(kelly_fraction=0.25, bankroll=5000),
+        # skemp15/Tennis-Betting-Model strategies
+        SkempValueOnlyStrategy(),
+        SkempPredictedWinValueStrategy(),
+        SkempInverseStrategy(),
+    ]
+
+
+def run_backtest(test_year: int = 2025, n_matches: int = 200, strategies: List[BettingStrategy] = None):
+    """Run the full multi-strategy backtest."""
+
+    if strategies is None:
+        strategies = get_default_strategies()
 
     print("═" * 70)
-    print("  🐡 NEMOFISH — ENHANCED HISTORICAL BACKTEST v2")
+    print("  🐡 NEMOFISH — MULTI-STRATEGY BACKTEST v3")
     print(f"  Testing on last {n_matches} ATP matches of {test_year}")
     print(f"  Elo trained on: 2000 – {test_year - 1} (NO data leakage)")
-    print(f"  Features: Surface Elo ✅ | Real Odds P&L ✅ | Rookie detect ✅")
+    print(f"  Strategies: {len(strategies)}")
+    for s in strategies:
+        print(f"    • {s.name}: {s.description}")
     print("═" * 70)
 
     data_dir = str(ROOT / "data" / "tennis" / "tennis_atp")
 
-    # === STEP 1: Train Elo on data BEFORE test year ===
+    # === STEP 1: Train Elo ===
     print(f"\n⏳ Training Elo engine (2000–{test_year - 1})...")
     elo_engine = TennisEloEngine(data_dir)
     elo_engine.load_and_process(start_year=2000, end_year=test_year - 1)
@@ -198,7 +226,6 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
     test_matches = load_test_matches(data_dir, test_year, n_matches)
     print(f"   ✅ {len(test_matches)} matches loaded")
 
-    # Count matches with odds
     has_odds = sum(1 for m in test_matches if m.odds_winner_avg is not None)
     print(f"   📊 {has_odds}/{len(test_matches)} matches have betting odds")
 
@@ -206,23 +233,28 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
         print("❌ No test matches found!")
         return
 
-    # === STEP 4: Run predictions ===
+    # === STEP 4: Run predictions + strategy evaluations ===
     print(f"\n🎾 Running predictions (blind — no result knowledge)...\n")
 
-    results = []
+    # Track per-strategy results
+    strategy_tracker: Dict[str, dict] = {}
+    for s in strategies:
+        strategy_tracker[s.name] = {
+            "decisions": [],      # BetDecision for each match
+            "bet_count": 0,
+            "bet_correct": 0,
+            "total_pnl": 0.0,
+            "total_wagered": 0.0,
+            "pnl_history": [],
+        }
+
+    # Also track prediction accuracy
     total_correct = 0
     rookie_count = 0
-    rookie_correct = 0
-
-    # Betting metrics
-    total_bet_count = 0
-    total_bet_correct = 0
-    total_pnl = 0.0
-    total_wagered = 0.0
-    bets_by_edge = {}
+    results = []  # Per-match result details
 
     for i, match in enumerate(test_matches):
-        # Random player assignment (prevent winner bias)
+        # Random player assignment
         random.seed(hash(match.winner_name + match.loser_name + match.tourney_date))
 
         if random.random() > 0.5:
@@ -230,8 +262,6 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
             rank_a, rank_b = match.winner_rank, match.loser_rank
             seed_a, seed_b = match.winner_seed, match.loser_seed
             actual_winner = "A"
-            odds_actual_winner = match.odds_winner_avg
-            odds_actual_loser = match.odds_loser_avg
             odds_a = match.odds_winner_avg
             odds_b = match.odds_loser_avg
         else:
@@ -239,17 +269,17 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
             rank_a, rank_b = match.loser_rank, match.winner_rank
             seed_a, seed_b = match.loser_seed, match.winner_seed
             actual_winner = "B"
-            odds_actual_winner = match.odds_winner_avg
-            odds_actual_loser = match.odds_loser_avg
             odds_a = match.odds_loser_avg
             odds_b = match.odds_winner_avg
 
         # Rookie detection
         a_is_rookie = is_rookie(elo_engine, player_a)
         b_is_rookie = is_rookie(elo_engine, player_b)
-        has_rookie = a_is_rookie or b_is_rookie
+        has_rookie_flag = a_is_rookie or b_is_rookie
+        if has_rookie_flag:
+            rookie_count += 1
 
-        # Build context
+        # Build context for swarm
         ctx = MatchContext(
             player_a=player_a,
             player_b=player_b,
@@ -268,99 +298,48 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
         # Swarm predicts
         prediction = swarm.predict(ctx)
 
-        # Adjust confidence down for rookies
+        # Adjust confidence for rookies
         confidence = prediction.confidence
-        if has_rookie and confidence == "HIGH":
+        if has_rookie_flag and confidence == "HIGH":
             confidence = "MEDIUM"
-        if has_rookie:
-            rookie_count += 1
 
-        # Determine correctness
+        # Check prediction accuracy
         predicted_winner = "A" if prediction.prob_a >= 0.5 else "B"
         correct = (predicted_winner == actual_winner)
         if correct:
             total_correct += 1
-            if has_rookie:
-                rookie_correct += 1
 
-        # === REAL P&L from odds ===
-        bet_result = None
-        bet_pnl = 0.0
-        model_edge = 0.0
+        # Build standardized MatchInput for strategies
+        match_input = MatchInput(
+            player_a=player_a,
+            player_b=player_b,
+            prob_a=prediction.prob_a,
+            prob_b=prediction.prob_b,
+            odds_a=odds_a,
+            odds_b=odds_b,
+            surface=match.surface or "Hard",
+            tourney_name=match.tourney_name,
+            tourney_level=match.tourney_level,
+            round_name=match.round_name,
+            confidence=confidence,
+            has_rookie=has_rookie_flag,
+            kelly_raw=prediction.kelly_bet_size if hasattr(prediction, 'kelly_bet_size') else 0.0,
+        )
 
-        # Calculate edge vs market odds
-        if odds_a and odds_b:
-            implied_a = 1.0 / odds_a
-            implied_b = 1.0 / odds_b
+        # Evaluate each strategy (Phase 1 for two-pass strategies)
+        for s in strategies:
+            decision = s.evaluate_match(match_input)
+            strategy_tracker[s.name]["decisions"].append(decision)
 
-            if predicted_winner == "A":
-                model_edge = prediction.prob_a - implied_a
-                our_odds = odds_a
-                our_implied = implied_a
-            else:
-                model_edge = prediction.prob_b - implied_b
-                our_odds = odds_b
-                our_implied = implied_b
-
-            # === STRATEGY: Value Confirmation ===
-            # Only bet when:
-            # 1. Model agrees with market favorite (both pick same player)
-            # 2. No rookies involved
-            # 3. Model probability > threshold (confident pick)
-            
-            market_fav = "A" if odds_a < odds_b else "B"
-            model_agrees_with_market = (predicted_winner == market_fav)
-            model_prob = max(prediction.prob_a, prediction.prob_b)
-            
-            should_bet = False
-            bet_strategy = ""
-            
-            if model_agrees_with_market and model_prob >= 0.55 and not has_rookie:
-                # Confirmation bet: model + market agree on favorite, high confidence
-                should_bet = True
-                bet_strategy = "confirm"
-            elif model_edge >= 0.03 and model_edge < 0.10 and not has_rookie:
-                # Small edge bet: model finds slight value, not extreme contrarian
-                should_bet = True
-                bet_strategy = "small_edge"
-            
-            if should_bet:
-                bet_size = 100.0
-                total_bet_count += 1
-                total_wagered += bet_size
-
-                if predicted_winner == "A":
-                    bet_won = (actual_winner == "A")
-                else:
-                    bet_won = (actual_winner == "B")
-
-                if bet_won:
-                    bet_pnl = bet_size * (our_odds - 1)  # Real payout from odds
-                    total_bet_correct += 1
-                else:
-                    bet_pnl = -bet_size
-
-                total_pnl += bet_pnl
-                bet_result = "WON" if bet_won else "LOST"
-
-                # Categorize by strategy
-                if bet_strategy not in bets_by_edge:
-                    bets_by_edge[bet_strategy] = []
-                bets_by_edge[bet_strategy].append(bet_pnl)
-
-        # Display
+        # Display prediction
         prob_display = prediction.prob_a if predicted_winner == "A" else prediction.prob_b
         correct_icon = "✅" if correct else "❌"
-        rookie_icon = " 🆕" if has_rookie else ""
-        bet_icon = ""
-        if bet_result:
-            bet_icon = f" | 💰 {bet_result} ${bet_pnl:+.0f} (edge:{model_edge:.0%})"
-
+        rookie_icon = " 🆕" if has_rookie_flag else ""
         actual_name = player_a if actual_winner == "A" else player_b
         predicted_name = player_a if predicted_winner == "A" else player_b
 
         print(f"  {i+1:3d}. {correct_icon} {player_a} vs {player_b}")
-        print(f"       → {predicted_name} ({prob_display:.0%}) | ✓ {actual_name} | {confidence}{rookie_icon}{bet_icon}")
+        print(f"       → {predicted_name} ({prob_display:.0%}) | ✓ {actual_name} | {confidence}{rookie_icon}")
 
         results.append({
             "match": f"{player_a} vs {player_b}",
@@ -370,19 +349,48 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
             "predicted": predicted_name,
             "predicted_prob": round(prob_display, 4),
             "actual": actual_name,
+            "actual_winner": actual_winner,
             "correct": correct,
-            "action": prediction.recommended_action,
             "confidence": confidence,
-            "bet_result": bet_result,
-            "bet_pnl": round(bet_pnl, 2),
-            "model_edge": round(model_edge, 4),
-            "has_rookie": has_rookie,
+            "has_rookie": has_rookie_flag,
+            "odds_a": odds_a,
+            "odds_b": odds_b,
         })
 
-    # === STEP 5: Report ===
-    accuracy = total_correct / len(test_matches) * 100
+    # === STEP 5: Phase 2 — Apply ATPBetting top-N% filter ===
+    for s in strategies:
+        if isinstance(s, ATPConfidenceStrategy):
+            decisions = strategy_tracker[s.name]["decisions"]
+            filtered = ATPConfidenceStrategy.filter_top_n(decisions, s.top_pct)
+            strategy_tracker[s.name]["decisions"] = filtered
 
-    # Accuracy by confidence
+    # === STEP 6: Compute P&L for each strategy ===
+    for s in strategies:
+        tracker = strategy_tracker[s.name]
+        for idx, decision in enumerate(tracker["decisions"]):
+            if not decision.should_bet:
+                continue
+
+            r = results[idx]
+            actual_winner = r["actual_winner"]
+
+            tracker["bet_count"] += 1
+            tracker["total_wagered"] += decision.bet_size
+
+            bet_won = (decision.pick == actual_winner)
+            if bet_won:
+                pnl = decision.bet_size * (decision.our_odds - 1)
+                tracker["bet_correct"] += 1
+            else:
+                pnl = -decision.bet_size
+
+            tracker["total_pnl"] += pnl
+            tracker["pnl_history"].append(pnl)
+
+    # === STEP 7: Print Report ===
+    accuracy = total_correct / len(test_matches) * 100 if test_matches else 0
+
+    # Accuracy breakdown by confidence
     by_conf = {}
     for r in results:
         c = r["confidence"]
@@ -392,7 +400,7 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
         if r["correct"]:
             by_conf[c]["correct"] += 1
 
-    # Accuracy by surface
+    # Accuracy breakdown by surface
     by_surface = {}
     for r in results:
         s = r["surface"]
@@ -402,23 +410,12 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
         if r["correct"]:
             by_surface[s]["correct"] += 1
 
-    # Accuracy by round
-    by_round = {}
-    for r in results:
-        rd = r["round"]
-        if rd not in by_round:
-            by_round[rd] = {"total": 0, "correct": 0}
-        by_round[rd]["total"] += 1
-        if r["correct"]:
-            by_round[rd]["correct"] += 1
-
-    # Rookie impact
-    non_rookie_correct = total_correct - rookie_correct
-    non_rookie_total = len(test_matches) - rookie_count
+    non_rookie_correct = sum(1 for r in results if r["correct"] and not r["has_rookie"])
+    non_rookie_total = sum(1 for r in results if not r["has_rookie"])
     non_rookie_acc = non_rookie_correct / non_rookie_total * 100 if non_rookie_total > 0 else 0
 
     print(f"\n{'═' * 70}")
-    print(f"  📊 NEMOFISH BACKTEST RESULTS v2")
+    print(f"  📊 NEMOFISH BACKTEST RESULTS v3 — MULTI-STRATEGY")
     print(f"{'═' * 70}")
     print(f"\n  Test Set: {len(test_matches)} ATP matches ({test_year})")
     print(f"  Elo Training: 2000–{test_year - 1} (out-of-sample)")
@@ -440,56 +437,99 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
             print(f"    {conf:8s}: {d['correct']:3d}/{d['total']:3d} = {acc:4.0f}%  {bar}")
 
     print(f"\n  By Surface:")
-    for s in ["Hard", "Clay", "Grass", "Carpet"]:
-        if s in by_surface:
-            d = by_surface[s]
+    for s_name in ["Hard", "Clay", "Grass", "Carpet"]:
+        if s_name in by_surface:
+            d = by_surface[s_name]
             acc = d["correct"] / d["total"] * 100
-            print(f"    {s:8s}: {d['correct']:3d}/{d['total']:3d} = {acc:.0f}%")
-
-    print(f"\n  By Round:")
-    for rd in ["F", "SF", "QF", "R16", "R32", "R64", "R128", "RR", "1st Round", "2nd Round", "3rd Round", "4th Round", "Quarterfinals", "Semifinals", "The Final"]:
-        if rd in by_round:
-            d = by_round[rd]
-            acc = d["correct"] / d["total"] * 100
-            print(f"    {rd:14s}: {d['correct']:3d}/{d['total']:3d} = {acc:.0f}%")
+            print(f"    {s_name:8s}: {d['correct']:3d}/{d['total']:3d} = {acc:.0f}%")
 
     print(f"\n  🆕 Rookie Impact:")
-    print(f"    Matches with rookies:    {rookie_count} ({rookie_count/len(test_matches)*100:.0f}%)")
-    if rookie_count > 0:
-        print(f"    Rookie accuracy:         {rookie_correct}/{rookie_count} = {rookie_correct/rookie_count*100:.0f}%")
+    print(f"    Matches with rookies:    {rookie_count} ({rookie_count/len(test_matches)*100:.0f}%)" if test_matches else "")
     print(f"    Non-rookie accuracy:     {non_rookie_correct}/{non_rookie_total} = {non_rookie_acc:.0f}%")
 
-    if total_bet_count > 0:
-        bet_accuracy = total_bet_correct / total_bet_count * 100
-        roi = (total_pnl / total_wagered * 100) if total_wagered > 0 else 0
-        print(f"\n  ┌─────────────────────────────────────────────┐")
-        print(f"  │  💰 REAL P&L (from actual betting odds)      │")
-        print(f"  │  ─────────────────────────────────────────── │")
-        print(f"  │  Bets Placed:    {total_bet_count:3d}                        │")
-        print(f"  │  Win Rate:       {bet_accuracy:.1f}%                      │")
-        print(f"  │  Total Wagered:  ${total_wagered:>10,.0f}              │")
-        print(f"  │  P&L:            ${total_pnl:>+10,.0f}              │")
-        print(f"  │  ROI:            {roi:>+8.1f}%                   │")
-        print(f"  └─────────────────────────────────────────────┘")
+    # === STRATEGY COMPARISON TABLE ===
+    print(f"\n{'═' * 70}")
+    print(f"  💰 STRATEGY COMPARISON — REAL P&L")
+    print(f"{'═' * 70}")
+    print(f"\n  {'Strategy':<30} {'Bets':>5} {'Wins':>5} {'WR':>6} {'Wagered':>10} {'P&L':>10} {'ROI':>8}")
+    print(f"  {'─'*30} {'─'*5} {'─'*5} {'─'*6} {'─'*10} {'─'*10} {'─'*8}")
 
-        print(f"\n  P&L by Edge Size:")
-        for edge_name, edge_bets in bets_by_edge.items():
-            if edge_bets:
-                pnl = sum(edge_bets)
-                wins = sum(1 for b in edge_bets if b > 0)
-                total = len(edge_bets)
-                print(f"    {edge_name:8s}: {wins}/{total} wins | P&L: ${pnl:+,.0f}")
-    else:
-        print(f"\n  No bets placed (edge threshold: 3%)")
-        print(f"  All matches fell below the minimum edge requirement")
+    for s in strategies:
+        t = strategy_tracker[s.name]
+        if t["bet_count"] > 0:
+            wr = t["bet_correct"] / t["bet_count"] * 100
+            roi = t["total_pnl"] / t["total_wagered"] * 100 if t["total_wagered"] > 0 else 0
+            pnl_icon = "📈" if t["total_pnl"] > 0 else "📉"
+            print(f"  {s.name:<30} {t['bet_count']:>5} {t['bet_correct']:>5} {wr:>5.1f}% ${t['total_wagered']:>9,.0f} ${t['total_pnl']:>+9,.0f} {roi:>+7.1f}%  {pnl_icon}")
+        else:
+            print(f"  {s.name:<30} {'—':>5} {'—':>5} {'—':>6} {'—':>10} {'—':>10} {'—':>8}")
+
+    # Find best strategy
+    best = None
+    best_roi = -float('inf')
+    for s in strategies:
+        t = strategy_tracker[s.name]
+        if t["bet_count"] > 0:
+            roi = t["total_pnl"] / t["total_wagered"] * 100
+            if roi > best_roi:
+                best_roi = roi
+                best = s.name
+
+    if best:
+        print(f"\n  🏆 BEST STRATEGY: {best} (ROI: {best_roi:+.1f}%)")
+
+    # Per-strategy detail
+    for s in strategies:
+        t = strategy_tracker[s.name]
+        if t["bet_count"] > 0 and t["pnl_history"]:
+            import numpy as np
+            pnl_arr = np.array(t["pnl_history"])
+            # Max drawdown
+            cumulative = np.cumsum(pnl_arr)
+            peak = np.maximum.accumulate(cumulative)
+            drawdown = peak - cumulative
+            max_dd = float(drawdown.max()) if len(drawdown) > 0 else 0
+
+            # Sharpe (per-bet)
+            mean_ret = float(pnl_arr.mean())
+            std_ret = float(pnl_arr.std()) if len(pnl_arr) > 1 else 1.0
+            sharpe = mean_ret / std_ret if std_ret > 0 else 0
+
+            print(f"\n  📊 {s.name}:")
+            print(f"     Max Drawdown: ${max_dd:,.0f}")
+            print(f"     Avg P&L/bet:  ${mean_ret:+,.1f}")
+            print(f"     Sharpe Ratio: {sharpe:.3f}")
 
     print(f"\n{'═' * 70}\n")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="NemoFish Enhanced Backtest v2")
+    parser = argparse.ArgumentParser(description="NemoFish Multi-Strategy Backtest v3")
     parser.add_argument("--n", type=int, default=200, help="Number of matches to test")
     parser.add_argument("--year", type=int, default=2025, help="Test year")
+    parser.add_argument("--strategies", type=str, default="all",
+                        help="Which strategies to test: all, confirm, atp, edge, kelly, skemp, inverse")
     args = parser.parse_args()
 
-    run_backtest(test_year=args.year, n_matches=args.n)
+    # Parse strategy selection
+    strats = None
+    if args.strategies != "all":
+        strats = []
+        for name in args.strategies.split(","):
+            name = name.strip().lower()
+            if name == "confirm":
+                strats.append(ValueConfirmationStrategy())
+            elif name == "atp":
+                strats.append(ATPConfidenceStrategy(top_pct=0.10))
+            elif name == "edge":
+                strats.append(EdgeThresholdStrategy())
+            elif name == "kelly":
+                strats.append(KellyStrategy())
+            elif name == "skemp":
+                strats.append(SkempPredictedWinValueStrategy())
+            elif name == "value":
+                strats.append(SkempValueOnlyStrategy())
+            elif name == "inverse":
+                strats.append(SkempInverseStrategy())
+
+    run_backtest(test_year=args.year, n_matches=args.n, strategies=strats)
