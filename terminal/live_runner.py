@@ -36,6 +36,29 @@ from agents.tennis_swarm import TennisSwarm, MatchContext
 from execution.polymarket_live import PolymarketTrader
 from execution.risk_manager import RiskManager
 from execution.pnl_tracker import PnLTracker
+from strategies import (
+    ATPConfidenceStrategy, ValueConfirmationStrategy, 
+    EdgeThresholdStrategy, KellyStrategy
+)
+from strategies.skemp_value import (
+    SkempValueOnlyStrategy, SkempPredictedWinValueStrategy
+)
+from strategies.strategy_base import MatchInput
+
+# Strategy registry — maps CLI names to strategy instances
+STRATEGY_REGISTRY = {
+    'atp_confidence_5': ATPConfidenceStrategy(top_pct=0.05),
+    'atp_confidence_10': ATPConfidenceStrategy(top_pct=0.10),
+    'value_confirmation': ValueConfirmationStrategy(),
+    'edge_3pct': EdgeThresholdStrategy(min_edge=0.03),
+    'edge_5pct': EdgeThresholdStrategy(min_edge=0.05),
+    'kelly_quarter': KellyStrategy(fraction=0.25),
+    'skemp_value': SkempValueOnlyStrategy(),
+    'skemp_predict_value': SkempPredictedWinValueStrategy(),
+}
+
+# Default strategy set — only proven profitable strategies
+DEFAULT_STRATEGIES = ['atp_confidence_5']
 
 
 # === Config ===
@@ -216,6 +239,81 @@ def step_4_run_swarm(swarm, fixtures, rankings, resolver=None):
     return predictions
 
 
+def step_4b_filter_strategies(predictions, strategy_names):
+    """Step 4B: Apply strategy layer to filter swarm predictions into bet decisions."""
+    print(f"\n🎲 STEP 4B: Strategy filter ({', '.join(strategy_names)})...")
+    
+    strategies = [STRATEGY_REGISTRY[s] for s in strategy_names if s in STRATEGY_REGISTRY]
+    if not strategies:
+        print("   ⚠️  No valid strategies — falling back to swarm signals only")
+        return predictions
+    
+    # Build MatchInput objects from swarm predictions
+    strategy_signals = []
+    
+    for pred_data in predictions:
+        pred = pred_data['prediction']
+        fix = pred_data['fixture']
+        ctx = pred_data['context']
+        
+        # Map swarm output to MatchInput for strategy evaluation
+        # Use swarm prob as model_prob, and market_odds derived from edge
+        model_prob_a = pred.prob_a
+        # If we have market odds from edge, derive implied prob; otherwise assume fair odds
+        if pred.edge_vs_market is not None and pred.edge_vs_market != 0:
+            # edge = model_prob - implied_prob → implied_prob = model_prob - edge
+            implied_prob_a = max(0.05, min(0.95, model_prob_a - pred.edge_vs_market))
+        else:
+            implied_prob_a = model_prob_a  # No market, assume fair
+        
+        market_odds_a = 1.0 / max(0.01, implied_prob_a)
+        market_odds_b = 1.0 / max(0.01, 1 - implied_prob_a)
+        
+        match_input = MatchInput(
+            player_a=ctx.player_a,
+            player_b=ctx.player_b,
+            prob_a=model_prob_a,
+            prob_b=pred.prob_b,
+            odds_a=market_odds_a,
+            odds_b=market_odds_b,
+            surface=ctx.surface,
+            tourney_level=ctx.tourney_level,
+            round_name=ctx.round_name,
+            confidence=pred.confidence,
+        )
+        
+        # Run each strategy
+        match_decisions = []
+        for strategy in strategies:
+            decision = strategy.evaluate_match(match_input)
+            if decision.should_bet:
+                match_decisions.append({
+                    'strategy': strategy.name,
+                    'decision': decision,
+                })
+        
+        # If ANY strategy says bet, include this match
+        if match_decisions:
+            pred_data['strategy_decisions'] = match_decisions
+            strategy_signals.append(pred_data)
+            
+            best = match_decisions[0]  # First strategy that triggered
+            d = best['decision']
+            pick = ctx.player_a if d.pick == 'A' else ctx.player_b
+            print(f"   🎯 {ctx.player_a} vs {ctx.player_b}")
+            print(f"      Strategy: {best['strategy']} → {pick} "
+                  f"(edge {d.edge:+.1%}, size ${d.bet_size:.0f})")
+        else:
+            pred_data['strategy_decisions'] = []
+    
+    print(f"\n   ━━━ Strategy Summary ━━━")
+    print(f"   Swarm signals: {len(predictions)}")
+    print(f"   Strategy-approved: {len(strategy_signals)}")
+    print(f"   Filtered out: {len(predictions) - len(strategy_signals)}")
+    
+    return strategy_signals
+
+
 def step_5_execute(trader, predictions, scan_only=False):
     """Step 5: Execute bets on Polymarket (or paper track)."""
     print(f"\n💰 STEP 5: Execution ({trader.mode} mode){'  [SCAN ONLY]' if scan_only else ''}")
@@ -313,11 +411,17 @@ def main():
     parser = argparse.ArgumentParser(description="NemoFish Live Execution Pipeline")
     parser.add_argument("--live", action="store_true", help="Enable LIVE trading (real $$$)")
     parser.add_argument("--scan-only", action="store_true", help="Scan only, no execution")
+    parser.add_argument("--strategies", nargs="+", default=DEFAULT_STRATEGIES,
+                        choices=list(STRATEGY_REGISTRY.keys()),
+                        help=f"Strategies to use (default: {DEFAULT_STRATEGIES})")
+    parser.add_argument("--no-strategy-filter", action="store_true",
+                        help="Skip strategy filtering, use swarm signals directly")
     args = parser.parse_args()
     
     mode = "LIVE" if args.live else "PAPER"
     banner()
     print(f"  Mode: {mode}")
+    print(f"  Strategies: {', '.join(args.strategies)}")
     
     # Initialize all components
     print("\n⚙️  Initializing components...")
@@ -358,6 +462,11 @@ def main():
     rankings = step_2_enrich_rankings(sportradar_client)
     pm_markets = step_3_search_polymarket(pm_read)
     predictions = step_4_run_swarm(swarm, fixtures, rankings, resolver=resolver)
+    
+    # Step 4B: Strategy filter
+    if not args.no_strategy_filter:
+        predictions = step_4b_filter_strategies(predictions, args.strategies)
+    
     results = step_5_execute(trader, predictions, scan_only=args.scan_only)
     
     # === FINAL REPORT ===
