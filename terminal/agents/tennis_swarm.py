@@ -36,6 +36,14 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from models.tennis_elo import TennisEloEngine
 from models.kelly import KellyCriterion
 
+# JeffSackmann deep data integration (1.4 GB: 143K matches, 132K players)
+try:
+    from feeds.sackmann_loader import JeffSackmannLoader
+    SACKMANN_AVAILABLE = True
+except ImportError:
+    SACKMANN_AVAILABLE = False
+    JeffSackmannLoader = None
+
 
 # === Data Structures ===
 
@@ -108,15 +116,17 @@ class SwarmConsensus:
 
 class StatisticalAgent:
     """
-    Pure statistics agent: Elo, serve/return metrics, H2H.
+    Pure statistics agent: Elo + JeffSackmann deep data.
+    Uses H2H records, surface win rates, serve/return stats from 143K matches.
     This is the backbone — highest weight in consensus.
     Weight: 0.35
     """
     ROLE = "Statistical Analyst"
     WEIGHT = 0.35
 
-    def __init__(self, elo_engine: TennisEloEngine):
+    def __init__(self, elo_engine: TennisEloEngine, sackmann: 'JeffSackmannLoader' = None):
         self.elo = elo_engine
+        self.sackmann = sackmann
 
     def analyze(self, ctx: MatchContext) -> AgentVote:
         # --- Elo probability ---
@@ -138,35 +148,99 @@ class StatisticalAgent:
             sb = pb.get_surface_elo(ctx.surface)
             oa = pa.overall
             ob = pb.overall
-
-            # If player_a is much better on this surface than overall → boost
-            a_surface_bonus = (sa - oa) / 200.0  # Normalized
+            a_surface_bonus = (sa - oa) / 200.0
             b_surface_bonus = (sb - ob) / 200.0
             surface_gap = (a_surface_bonus - b_surface_bonus) * 0.05
 
         prob_a = np.clip(elo_prob + rank_factor + surface_gap, 0.05, 0.95)
 
-        # Confidence based on data availability
+        # === SACKMANN DEEP DATA INTEGRATION ===
+        h2h_factor = 0.0
+        surface_wr_factor = 0.0
+        serve_return_factor = 0.0
+        sackmann_reasoning = ""
+
+        if self.sackmann:
+            try:
+                # --- H2H from 143K matches ---
+                h2h = self.sackmann.get_h2h(ctx.player_a, ctx.player_b)
+                total_h2h = h2h.a_wins + h2h.b_wins
+                if total_h2h >= 3:
+                    h2h_wr = h2h.a_wins / total_h2h
+                    h2h_factor = (h2h_wr - 0.5) * 0.12  # ±6% max from H2H
+                    sackmann_reasoning += f"H2H: {h2h.a_wins}-{h2h.b_wins}. "
+
+                    # Surface-specific H2H
+                    surface_key = ctx.surface.lower()
+                    if surface_key in h2h.surface_records:
+                        sw, sl = h2h.surface_records[surface_key]
+                        if sw + sl >= 2:
+                            surface_h2h_wr = sw / (sw + sl)
+                            h2h_factor += (surface_h2h_wr - 0.5) * 0.06
+                            sackmann_reasoning += f"H2H on {ctx.surface}: {sw}-{sl}. "
+
+                # --- Surface Win Rate from full career ---
+                sr_a = self.sackmann.get_surface_record(ctx.player_a, ctx.surface)
+                sr_b = self.sackmann.get_surface_record(ctx.player_b, ctx.surface)
+                if sr_a and sr_b:
+                    wr_a = sr_a['wins'] / max(1, sr_a['wins'] + sr_a['losses'])
+                    wr_b = sr_b['wins'] / max(1, sr_b['wins'] + sr_b['losses'])
+                    if sr_a['wins'] + sr_a['losses'] >= 20 and sr_b['wins'] + sr_b['losses'] >= 20:
+                        surface_wr_factor = (wr_a - wr_b) * 0.08
+                        sackmann_reasoning += f"{ctx.surface} WR: {wr_a:.0%} vs {wr_b:.0%}. "
+
+                # --- Serve/Return Stats ---
+                profile_a = self.sackmann.get_player(ctx.player_a)
+                profile_b = self.sackmann.get_player(ctx.player_b)
+                if profile_a and profile_b:
+                    spw_a = profile_a.get('avg_1st_serve_won', 0)
+                    spw_b = profile_b.get('avg_1st_serve_won', 0)
+                    rpw_a = profile_a.get('avg_return_won', 0)
+                    rpw_b = profile_b.get('avg_return_won', 0)
+                    if spw_a > 0 and spw_b > 0 and rpw_a > 0 and rpw_b > 0:
+                        # A's serve vs B's return, and vice versa
+                        a_serve_edge = (spw_a - rpw_b) / 100.0  # Normalize percentages
+                        b_serve_edge = (spw_b - rpw_a) / 100.0
+                        serve_return_factor = (a_serve_edge - b_serve_edge) * 0.05
+                        sackmann_reasoning += f"S/R: {spw_a:.0f}% vs {rpw_b:.0f}% ret. "
+
+            except Exception:
+                pass  # Gracefully degrade if Sackmann data is incomplete
+
+        # Combine all factors
+        prob_a = np.clip(
+            elo_prob + rank_factor + surface_gap + h2h_factor + surface_wr_factor + serve_return_factor,
+            0.05, 0.95
+        )
+
+        # Confidence based on data availability (boosted by Sackmann)
         confidence = 0.7
         if pa and pb:
             if pa.matches_played > 100 and pb.matches_played > 100:
-                confidence = 0.9
+                confidence = 0.85
             elif pa.matches_played > 50 and pb.matches_played > 50:
                 confidence = 0.8
+        if self.sackmann and h2h_factor != 0:
+            confidence = min(0.95, confidence + 0.05)  # H2H data boosts confidence
 
         factors = {
             'elo_prob': round(elo_prob, 4),
             'rank_adjustment': round(rank_factor, 4),
             'surface_gap': round(surface_gap, 4),
+            'h2h_factor': round(h2h_factor, 4),
+            'surface_wr_factor': round(surface_wr_factor, 4),
+            'serve_return_factor': round(serve_return_factor, 4),
             'a_overall_elo': pa.overall if pa else 1500,
             'b_overall_elo': pb.overall if pb else 1500,
             'a_surface_elo': pa.get_surface_elo(ctx.surface) if pa else 1500,
             'b_surface_elo': pb.get_surface_elo(ctx.surface) if pb else 1500,
+            'sackmann_enriched': bool(self.sackmann),
         }
 
-        reasoning = (f"Elo: {ctx.player_a} {elo_prob:.1%} vs {ctx.player_b}. "
-                     f"Surface Elo gap: {surface_gap:+.1%}. "
-                     f"Rank factor: {rank_factor:+.1%}.")
+        reasoning = (f"Elo: {ctx.player_a} {elo_prob:.1%}. "
+                     f"Surface gap: {surface_gap:+.1%}. "
+                     f"Rank: {rank_factor:+.1%}. "
+                     f"{sackmann_reasoning}")
 
         return AgentVote(
             agent_name="StatBot-Alpha",
@@ -335,28 +409,26 @@ class MarketMakerAgent:
 class ContrarianAgent:
     """
     Looks for upset potential — fades public favorites.
-    Key: big underdogs with specific edge profiles.
+    Now enhanced with JeffSackmann H2H upset detection.
     Weight: 0.10
     """
     ROLE = "Contrarian Analyst"
     WEIGHT = 0.10
 
+    def __init__(self, sackmann: 'JeffSackmannLoader' = None):
+        self.sackmann = sackmann
+
     def analyze(self, ctx: MatchContext) -> AgentVote:
         factors = {}
         prob_a = 0.5
 
-        # --- Lefty advantage ---
-        # Left-handed players historically cause problems
         factors['handedness'] = 'unknown'
 
         # --- Surface upset patterns ---
-        # Clay is the great equalizer — more upsets
         surface_upset_boost = {'Clay': 0.05, 'Grass': 0.03, 'Hard': 0.0}
         upset_boost = surface_upset_boost.get(ctx.surface, 0)
 
-        # Apply upset boost to the lower-ranked player
         if ctx.rank_a > ctx.rank_b:
-            # Player A is lower ranked — boost their chances
             prob_a += upset_boost
             factors['upset_boost_to'] = ctx.player_a
         elif ctx.rank_b > ctx.rank_a:
@@ -364,7 +436,6 @@ class ContrarianAgent:
             factors['upset_boost_to'] = ctx.player_b
 
         # --- Early round upset bias ---
-        # Upsets more likely in early rounds (R128, R64, R32)
         early_rounds = {'R128': 0.04, 'R64': 0.03, 'R32': 0.02, 'R16': 0.01}
         round_upset = early_rounds.get(ctx.round_name, 0)
 
@@ -374,21 +445,55 @@ class ContrarianAgent:
             prob_a -= round_upset
         factors['round_upset_factor'] = round_upset
 
-        # --- Fatigue-based upset (tired favorite) ---
+        # --- Fatigue-based upset ---
         if ctx.matches_last_14d_a > 6 and ctx.rank_a < ctx.rank_b:
-            # Favorite is tired — underdog value
             prob_a -= 0.03
             factors['tired_favorite'] = ctx.player_a
-
         if ctx.matches_last_14d_b > 6 and ctx.rank_b < ctx.rank_a:
             prob_a += 0.03
             factors['tired_favorite'] = ctx.player_b
 
-        prob_a = np.clip(prob_a, 0.15, 0.85)
-        confidence = 0.5  # Contrarian is inherently uncertain
+        # === SACKMANN: H2H Upset Detection ===
+        h2h_upset_factor = 0.0
+        if self.sackmann:
+            try:
+                h2h = self.sackmann.get_h2h(ctx.player_a, ctx.player_b)
+                total = h2h.a_wins + h2h.b_wins
+                if total >= 3:
+                    # If the lower-ranked player dominates H2H → upset value
+                    if ctx.rank_a > ctx.rank_b and h2h.a_wins > h2h.b_wins:
+                        # Underdog A actually wins H2H → contrarian signal!
+                        h2h_upset_factor = 0.06 * (h2h.a_wins / total)
+                        factors['h2h_upset_signal'] = f"{ctx.player_a} leads H2H {h2h.a_wins}-{h2h.b_wins} as underdog"
+                    elif ctx.rank_b > ctx.rank_a and h2h.b_wins > h2h.a_wins:
+                        h2h_upset_factor = -0.06 * (h2h.b_wins / total)
+                        factors['h2h_upset_signal'] = f"{ctx.player_b} leads H2H {h2h.b_wins}-{h2h.a_wins} as underdog"
 
-        reasoning = (f"Contrarian view: upset boost {upset_boost:.1%} on {ctx.surface}. "
-                     f"Round upset: {round_upset:.1%}.")
+                # Recent form from Sackmann (last 10 matches)
+                form_a = self.sackmann.get_recent_form(ctx.player_a, n=10)
+                form_b = self.sackmann.get_recent_form(ctx.player_b, n=10)
+                if form_a and form_b:
+                    recent_wr_a = sum(1 for m in form_a if m.winner_name and ctx.player_a.lower() in m.winner_name.lower()) / max(1, len(form_a))
+                    recent_wr_b = sum(1 for m in form_b if m.winner_name and ctx.player_b.lower() in m.winner_name.lower()) / max(1, len(form_b))
+                    # If underdog has better recent form → upset value
+                    if ctx.rank_a > ctx.rank_b and recent_wr_a > recent_wr_b:
+                        h2h_upset_factor += 0.03
+                        factors['form_upset'] = f"{ctx.player_a} form {recent_wr_a:.0%} > {recent_wr_b:.0%}"
+                    elif ctx.rank_b > ctx.rank_a and recent_wr_b > recent_wr_a:
+                        h2h_upset_factor -= 0.03
+                        factors['form_upset'] = f"{ctx.player_b} form {recent_wr_b:.0%} > {recent_wr_a:.0%}"
+            except Exception:
+                pass
+
+        prob_a += h2h_upset_factor
+        factors['h2h_upset_factor'] = round(h2h_upset_factor, 4)
+
+        prob_a = np.clip(prob_a, 0.15, 0.85)
+        confidence = 0.5 if not h2h_upset_factor else 0.65  # Higher confidence when H2H data backs it
+
+        reasoning = (f"Contrarian: upset boost {upset_boost:.1%} on {ctx.surface}. "
+                     f"Round: {round_upset:.1%}. "
+                     f"H2H upset: {h2h_upset_factor:+.1%}.")
 
         return AgentVote(
             agent_name="ContrarianBot-Delta",
@@ -497,7 +602,7 @@ class TennisSwarm:
         print(f"{result.player_a}: {result.prob_a:.1%} | Action: {result.recommended_action}")
     """
 
-    def __init__(self, elo_engine: TennisEloEngine = None):
+    def __init__(self, elo_engine: TennisEloEngine = None, sackmann_loader: 'JeffSackmannLoader' = None):
         if elo_engine is None:
             data_dir = str(Path(__file__).parent.parent / "data" / "tennis" / "tennis_atp")
             elo_engine = TennisEloEngine(data_dir)
@@ -506,12 +611,23 @@ class TennisSwarm:
         self.elo_engine = elo_engine
         self.kelly = KellyCriterion(bankroll=5000)
 
-        # Initialize agents
+        # === Load JeffSackmann data (143K matches, 132K players) ===
+        self.sackmann = sackmann_loader
+        if self.sackmann is None and SACKMANN_AVAILABLE:
+            try:
+                self.sackmann = JeffSackmannLoader()
+                self.sackmann.load_all(start_year=2015)  # Recent data for speed
+                print(f"  🎾 Sackmann: {len(self.sackmann.matches)} matches, {len(self.sackmann.players)} players")
+            except Exception as e:
+                print(f"  ⚠️  Sackmann load failed: {e} (continuing with Elo only)")
+                self.sackmann = None
+
+        # Initialize agents WITH Sackmann injection
         self.agents = [
-            StatisticalAgent(elo_engine),
+            StatisticalAgent(elo_engine, sackmann=self.sackmann),
             PsychologyAgent(),
             MarketMakerAgent(),
-            ContrarianAgent(),
+            ContrarianAgent(sackmann=self.sackmann),
             NewsScoutAgent(),
         ]
 
@@ -620,30 +736,43 @@ class TennisSwarm:
         pb = self.elo_engine.get_player(ctx.player_b)
 
         if pa and pa.matches_played > 100:
-            score += 0.25
+            score += 0.20
         elif pa and pa.matches_played > 30:
-            score += 0.15
+            score += 0.10
         else:
-            score += 0.05
+            score += 0.03
 
         if pb and pb.matches_played > 100:
-            score += 0.25
+            score += 0.20
         elif pb and pb.matches_played > 30:
-            score += 0.15
+            score += 0.10
         else:
-            score += 0.05
+            score += 0.03
 
         # Odds available
         if ctx.odds_a and ctx.odds_b:
-            score += 0.25
+            score += 0.20
 
         # Recent form data
         if ctx.recent_wins_a > 0 and ctx.recent_wins_b > 0:
-            score += 0.15
+            score += 0.10
 
         # Rankings available
         if ctx.rank_a > 0 and ctx.rank_b > 0:
             score += 0.10
+
+        # === Sackmann data bonus ===
+        if self.sackmann:
+            try:
+                h2h = self.sackmann.get_h2h(ctx.player_a, ctx.player_b)
+                if h2h.a_wins + h2h.b_wins >= 1:
+                    score += 0.10  # H2H data available
+                profile_a = self.sackmann.get_player(ctx.player_a)
+                profile_b = self.sackmann.get_player(ctx.player_b)
+                if profile_a and profile_b:
+                    score += 0.10  # Full profiles available
+            except Exception:
+                pass
 
         return min(1.0, score)
 

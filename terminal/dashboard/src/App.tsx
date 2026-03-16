@@ -568,57 +568,98 @@ function App() {
 
   return (
     <div className="app">
+      {/* Dynamic Background Elements */}
+      <div className="bg-orb orb-1"></div>
+      <div className="bg-orb orb-2"></div>
+      <div className="bg-orb orb-3"></div>
+
       <header className="header">
         <div className="header-left">
-          <div>
-            <div className="logo">🐡 NEMOFISH</div>
-            <div className="logo-sub">God View Terminal</div>
+          <div className="logo-container">
+            <div className="logo-icon">🐡🎾</div>
+            <div>
+              <div className="logo">NEMOFISH<span className="logo-highlight"> TENNIS</span></div>
+              <div className="logo-sub">God View Terminal • Powered by MiroFish Swarm</div>
+            </div>
           </div>
         </div>
         <div className="header-right">
           <span className={`api-status ${apiConnected ? 'connected' : 'offline'}`}>
-            {apiConnected ? '🟢 API' : '🔴 DEMO'}
+            {apiConnected ? '🟢 API SYNCED' : '🔴 DEMO MODE'}
             {apiConnected && liveSource && ` (${liveSource})`}
           </span>
           {apiConnected && liveTotal > 0 && (
-            <span className="match-count">{liveTotal} matches</span>
+            <span className="match-count">{liveTotal} matches scanned</span>
           )}
-          <span className="mode-badge paper">PAPER</span>
+          <span className="mode-badge paper">PAPER TRADING</span>
           <span className="clock">{time.toLocaleString('en-US', { hour12: false })}</span>
         </div>
       </header>
 
       <main className="dashboard">
-        {/* KPIs */}
-        <div className="kpi-row">
-          <KpiCard label="Bankroll"
-            value={kpi.bankroll.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-            change={`${totalReturn}%`} color="green" prefix="$" />
-          <KpiCard label="BTC Equivalent" value={kpi.btcEquivalent.toFixed(6)} color="amber" prefix="₿" />
-          <KpiCard label="Daily P&L"
-            value={Math.abs(kpi.dailyPnl).toFixed(2)}
-            color={kpi.dailyPnl >= 0 ? 'green' : 'red'}
-            prefix={kpi.dailyPnl >= 0 ? '+$' : '-$'} />
-          <KpiCard label="Win Rate" value={kpi.winRate.toFixed(1)} color="blue" suffix="%" />
-          <KpiCard label="ROI" value={kpi.roi.toFixed(1)} color="purple" prefix="+" suffix="%" />
-          <KpiCard label="Max Drawdown" value={kpi.maxDrawdown.toFixed(1)}
-            color={kpi.maxDrawdown > 10 ? 'red' : 'green'} suffix="%" />
+        {/* Row 1: Player Profile / Swarm Insight & KPIs */}
+        <div className="top-row">
+          <div className="card profile-card">
+            <div className="card-title">🔍 Swarm Active Profile Search</div>
+            <div className="profile-content">
+              <img src="https://ui-avatars.com/api/?name=Jannik+Sinner&background=0D8ABC&color=fff&size=64" alt="Player" className="profile-img" />
+              <div className="profile-details">
+                <div className="profile-name">Jannik Sinner 🇮🇹</div>
+                <div className="profile-stats">
+                  <span>#1 ATP</span>
+                  <span> • </span>
+                  <span>Win Rate: 79% (Hard)</span>
+                </div>
+                <div className="profile-tags">
+                  <span className="tag green">Aggressive L-Baseline</span>
+                  <span className="tag blue">Elite Returner</span>
+                </div>
+              </div>
+              <div className="profile-h2h">
+                <div className="h2h-title">H2H vs Alcaraz</div>
+                <div className="h2h-score">4 - 6</div>
+                <div className="h2h-sub">Sackmann DB Insight</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="kpi-grid">
+            <KpiCard label="Bankroll Engine" value={kpi.bankroll.toLocaleString('en-US', { minimumFractionDigits: 2 })} change={`${totalReturn}%`} color="green" prefix="$" />
+            <KpiCard label="Daily Delta" value={Math.abs(kpi.dailyPnl).toFixed(2)} color={kpi.dailyPnl >= 0 ? 'green' : 'red'} prefix={kpi.dailyPnl >= 0 ? '+$' : '-$'} />
+            <KpiCard label="Swarm Win Rate" value={kpi.winRate.toFixed(1)} color="blue" suffix="%" />
+            <KpiCard label="Risk vs Reward (ROI)" value={kpi.roi.toFixed(1)} color="amber" prefix="+" suffix="%" />
+          </div>
         </div>
 
         {/* Row 2: Heatmap + Signals */}
-        <AgentHeatmap signals={signals} />
-        <SignalsList signals={signals} />
+        <div className="middle-row">
+          <AgentHeatmap signals={signals} />
+          <SignalsList signals={signals} />
+        </div>
 
-        {/* Row 3: LIVE FEED + RANKINGS */}
-        <LiveEventFeed matches={liveMatches} source={liveSource} />
-        <RankingsPanel rankings={rankings} />
-
-        {/* Row 4: MARKET REACTION + NEWS */}
-        <MarketReaction movements={oddsMovements} />
-        <NewsFeed news={news} />
-
-        {/* Row 5: JOURNAL */}
-        <TradeJournal trades={trades} />
+        {/* Row 3: Live Feeds & Markets & Rankings */}
+        <div className="bottom-row">
+          <div className="col-1">
+             <LiveEventFeed matches={liveMatches} source={liveSource} />
+             <RankingsPanel rankings={rankings} />
+          </div>
+          <div className="col-2">
+             <MarketReaction movements={oddsMovements} />
+             <TradeJournal trades={trades} />
+          </div>
+          <div className="col-3">
+             <NewsFeed news={news} />
+             <div className="card sackmann-stats">
+               <div className="card-title">🎾 JeffSackmann Data Engine</div>
+               <div className="sackmann-data">
+                 <div className="db-stat"><span className="db-icon">📚</span> 143,530 Matches Loaded</div>
+                 <div className="db-stat"><span className="db-icon">👤</span> 132,494 Player Profiles</div>
+                 <div className="db-stat"><span className="db-icon">📍</span> Shot-by-Shot Matrix Active</div>
+                 <div className="db-stat"><span className="db-icon">🧮</span> Live Probability Alg Sync</div>
+               </div>
+             </div>
+          </div>
+        </div>
       </main>
     </div>
   )
