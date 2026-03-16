@@ -68,6 +68,7 @@ class TennisNameResolver:
         
         Input examples:
             "C. Dolehide", "N. Djokovic", "J. Sinner", "Coco Gauff"
+            "Alcaraz C.", "Sinner J.", "Djokovic N."  ← tennis-data.co.uk format
         
         Returns the best matching full name, or the input unchanged if no match.
         """
@@ -93,10 +94,15 @@ class TennisNameResolver:
             self._cache[cache_key] = clean
             return clean
 
-        # Extract surname and first part
-        # Handle "C. Dolehide" → first_part="C.", surname="Dolehide"
-        # Handle "Van de Zandschulp" → need multi-word surname
-        # Handle "C. H. Tseng" → multiple initials
+        # Detect format: "Alcaraz C." (reversed, tennis-data.co.uk) vs "C. Alcaraz" (normal)
+        last_part = parts[-1].rstrip('.')
+        first_part = parts[0].rstrip('.')
+        
+        if len(last_part) <= 2 and last_part[0].isupper():
+            # Reversed format: "Alcaraz C." → surname is parts[0:-1], initial is last
+            return self._resolve_reversed(clean, parts, cache_key)
+
+        # Normal format: "C. Dolehide" → first_part="C.", surname="Dolehide"
         surname = parts[-1].lower()
         first_parts = parts[:-1]
 
@@ -155,6 +161,97 @@ class TennisNameResolver:
         # Give up — return original
         self._cache[cache_key] = clean
         return clean
+
+    def _resolve_reversed(self, clean: str, parts: list, cache_key: str) -> str:
+        """
+        Resolve reversed format: "Alcaraz C." or "De Minaur A." or "Auger-Aliassime F."
+        
+        Last part is the initial (e.g. "C."), everything before is the surname.
+        """
+        initial = parts[-1].rstrip('.')[0].upper()
+        surname_parts = parts[:-1]
+        
+        # Try different surname constructions (handles multi-word surnames)
+        # "De Minaur A." → surname="de minaur" or just "minaur"
+        # "Van De Zandschulp B." → surname="zandschulp" 
+        # "Auger-Aliassime F." → surname="auger-aliassime"
+        
+        candidates = set()
+        
+        # Strategy 1: Last word of surname parts  
+        last_surname = surname_parts[-1].lower()
+        if last_surname in self._by_surname:
+            candidates.update(self._by_surname[last_surname])
+        
+        # Strategy 2: Full surname joined
+        full_surname = " ".join(surname_parts).lower()
+        for stored_surname, names in self._by_surname.items():
+            if stored_surname == last_surname:
+                continue
+            # Check if any stored candidate has the full surname in their name
+            for name in names:
+                name_lower = name.lower()
+                if full_surname in name_lower:
+                    candidates.add(name)
+        
+        # Strategy 3: Fuzzy match on surname
+        if not candidates:
+            for stored_surname, names in self._by_surname.items():
+                if self._surname_fuzzy_match(last_surname, stored_surname):
+                    candidates.update(names)
+        
+        # Strategy 4: Hyphenated surnames
+        if not candidates and '-' in last_surname:
+            # "Auger-Aliassime" → try both parts
+            for part in last_surname.split('-'):
+                if part in self._by_surname:
+                    candidates.update(self._by_surname[part])
+        
+        if candidates:
+            # Filter by first initial  
+            initial_matches = []
+            for full_name in candidates:
+                full_parts = full_name.split()
+                if full_parts and full_parts[0][0].upper() == initial:
+                    initial_matches.append(full_name)
+            
+            if len(initial_matches) == 1:
+                result = initial_matches[0]
+                self._cache[cache_key] = result
+                return result
+            elif len(initial_matches) > 1:
+                # Score by surname similarity
+                best = max(initial_matches,
+                          key=lambda x: SequenceMatcher(
+                              None, full_surname, x.lower()).ratio())
+                self._cache[cache_key] = best
+                return best
+            
+            # No initial match but only one candidate
+            if len(candidates) == 1:
+                result = next(iter(candidates))
+                self._cache[cache_key] = result
+                return result
+        
+        # Fallback: return original
+        self._cache[cache_key] = clean
+        return clean
+
+    def resolve_bulk(self, names: list) -> dict:
+        """Resolve a list of names. Returns dict of original → resolved."""
+        return {name: self.resolve(name) for name in names}
+
+    def get_match_stats(self, names: list) -> dict:
+        """Get stats on how many names were resolved vs unresolved."""
+        resolved = 0
+        unresolved = 0
+        for name in names:
+            result = self.resolve(name)
+            if result != name:
+                resolved += 1
+            else:
+                unresolved += 1
+        return {"resolved": resolved, "unresolved": unresolved, "total": len(names)}
 
     @staticmethod
     def _extract_initial(part: str) -> Optional[str]:

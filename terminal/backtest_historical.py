@@ -219,7 +219,7 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
     total_bet_correct = 0
     total_pnl = 0.0
     total_wagered = 0.0
-    bets_by_edge = {"large": [], "medium": [], "small": []}
+    bets_by_edge = {}
 
     for i, match in enumerate(test_matches):
         # Random player assignment (prevent winner bias)
@@ -296,13 +296,36 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
             if predicted_winner == "A":
                 model_edge = prediction.prob_a - implied_a
                 our_odds = odds_a
+                our_implied = implied_a
             else:
                 model_edge = prediction.prob_b - implied_b
                 our_odds = odds_b
+                our_implied = implied_b
 
-            # Place bet if edge > 3%
-            if model_edge >= 0.03:
-                bet_size = 100.0  # Flat $100 bets for simplicity
+            # === STRATEGY: Value Confirmation ===
+            # Only bet when:
+            # 1. Model agrees with market favorite (both pick same player)
+            # 2. No rookies involved
+            # 3. Model probability > threshold (confident pick)
+            
+            market_fav = "A" if odds_a < odds_b else "B"
+            model_agrees_with_market = (predicted_winner == market_fav)
+            model_prob = max(prediction.prob_a, prediction.prob_b)
+            
+            should_bet = False
+            bet_strategy = ""
+            
+            if model_agrees_with_market and model_prob >= 0.55 and not has_rookie:
+                # Confirmation bet: model + market agree on favorite, high confidence
+                should_bet = True
+                bet_strategy = "confirm"
+            elif model_edge >= 0.03 and model_edge < 0.10 and not has_rookie:
+                # Small edge bet: model finds slight value, not extreme contrarian
+                should_bet = True
+                bet_strategy = "small_edge"
+            
+            if should_bet:
+                bet_size = 100.0
                 total_bet_count += 1
                 total_wagered += bet_size
 
@@ -320,13 +343,10 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200):
                 total_pnl += bet_pnl
                 bet_result = "WON" if bet_won else "LOST"
 
-                # Categorize by edge size
-                if model_edge >= 0.10:
-                    bets_by_edge["large"].append(bet_pnl)
-                elif model_edge >= 0.06:
-                    bets_by_edge["medium"].append(bet_pnl)
-                else:
-                    bets_by_edge["small"].append(bet_pnl)
+                # Categorize by strategy
+                if bet_strategy not in bets_by_edge:
+                    bets_by_edge[bet_strategy] = []
+                bets_by_edge[bet_strategy].append(bet_pnl)
 
         # Display
         prob_display = prediction.prob_a if predicted_winner == "A" else prediction.prob_b

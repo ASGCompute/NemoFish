@@ -13,6 +13,7 @@ import sys
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
+from typing import Optional
 
 
 DATA_DIR = Path(__file__).parent.parent / "data" / "tennis" / "tennis_data_uk"
@@ -69,23 +70,66 @@ def download_data(year: int) -> Path:
         return None
 
 
-def expand_name(abbreviated: str) -> str:
+# Global name resolver — loaded once, used for all conversions
+_name_resolver = None
+
+def _get_resolver():
+    """Build name resolver from Elo DB (lazy-loaded, cached)."""
+    global _name_resolver
+    if _name_resolver is not None:
+        return _name_resolver
+    
+    try:
+        import sys
+        terminal_dir = str(Path(__file__).parent.parent)
+        if terminal_dir not in sys.path:
+            sys.path.insert(0, terminal_dir)
+        
+        from feeds.name_resolver import TennisNameResolver
+        from models.tennis_elo import TennisEloEngine
+        
+        data_dir = str(Path(__file__).parent.parent / "data" / "tennis" / "tennis_atp")
+        engine = TennisEloEngine(data_dir)
+        engine.load_and_process(start_year=2000, end_year=2024)
+        
+        resolver = TennisNameResolver()
+        for name in engine.ratings:
+            resolver.add_player(name)
+        
+        _name_resolver = resolver
+        print(f"  🔗 Name resolver loaded: {resolver.player_count} players")
+        return resolver
+    except Exception as e:
+        print(f"  ⚠ Name resolver unavailable: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+
+def expand_name(abbreviated: str, resolver=None) -> str:
     """
     Convert abbreviated name (e.g., 'Sinner J.') to full format ('Jannik Sinner').
-    Since tennis-data.co.uk uses 'Lastname F.' format, we keep the name as-is
-    for matching but also create lookup keys.
+    Uses TennisNameResolver to bridge tennis-data.co.uk 'Lastname F.' format
+    to JeffSackmann 'Firstname Lastname' format.
     """
     if not abbreviated or pd.isna(abbreviated):
         return str(abbreviated)
-    return str(abbreviated).strip()
+    name = str(abbreviated).strip()
+    if resolver:
+        return resolver.resolve(name)
+    return name
 
 
-def convert_to_sackmann_format(df: pd.DataFrame, year: int) -> pd.DataFrame:
+def convert_to_sackmann_format(df: pd.DataFrame, year: int, resolver=None) -> pd.DataFrame:
     """
     Convert tennis-data.co.uk format to JeffSackmann-compatible format
     so our Elo engine can process it natively.
+    Uses name resolver to convert 'Alcaraz C.' → 'Carlos Alcaraz'.
     """
     rows = []
+    resolved_count = 0
+    total_names = 0
+    
     for _, row in df.iterrows():
         try:
             date = pd.to_datetime(row.get("Date"))
@@ -98,8 +142,17 @@ def convert_to_sackmann_format(df: pd.DataFrame, year: int) -> pd.DataFrame:
         level = LEVEL_MAP.get(series, "B")
         round_name = ROUND_MAP.get(row.get("Round", ""), row.get("Round", ""))
 
-        winner = expand_name(row.get("Winner"))
-        loser = expand_name(row.get("Loser"))
+        winner_raw = row.get("Winner", "")
+        loser_raw = row.get("Loser", "")
+        winner = expand_name(winner_raw, resolver)
+        loser = expand_name(loser_raw, resolver)
+        
+        # Track resolution stats
+        total_names += 2
+        if winner != str(winner_raw).strip():
+            resolved_count += 1
+        if loser != str(loser_raw).strip():
+            resolved_count += 1
 
         if not winner or winner == "nan" or not loser or loser == "nan":
             continue
@@ -131,6 +184,9 @@ def convert_to_sackmann_format(df: pd.DataFrame, year: int) -> pd.DataFrame:
         }
         rows.append(sackmann_row)
 
+    if total_names > 0:
+        print(f"  🔗 Names resolved: {resolved_count}/{total_names} ({resolved_count/total_names*100:.0f}%)")
+    
     return pd.DataFrame(rows)
 
 
@@ -146,7 +202,8 @@ def load_year(year: int) -> pd.DataFrame:
 
     try:
         df = pd.read_excel(xlsx_path, engine="openpyxl")
-        result = convert_to_sackmann_format(df, year)
+        resolver = _get_resolver()
+        result = convert_to_sackmann_format(df, year, resolver)
         print(f"  📊 {year}: {len(result)} matches loaded (with odds)")
         return result
     except Exception as e:
