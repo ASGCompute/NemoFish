@@ -603,6 +603,59 @@ class TennisXGBoostModel:
             'n_test': len(test_X),
         }
 
+    # --- Player Data Lookup ---
+
+    def _ensure_sackmann_loader(self):
+        """Lazy-load Sackmann data for player lookups."""
+        if not hasattr(self, '_sackmann_loader') or self._sackmann_loader is None:
+            try:
+                from feeds.sackmann_loader import JeffSackmannLoader
+                self._sackmann_loader = JeffSackmannLoader()
+                self._sackmann_loader.load_all(start_year=2000)
+                print(f"[predict_match] Sackmann loader ready: {len(self._sackmann_loader.players)} players")
+            except Exception as e:
+                print(f"[predict_match] Sackmann loader failed: {e}")
+                self._sackmann_loader = None
+
+    def _get_player_info(self, name: str) -> dict:
+        """
+        Get real player data (age, height, hand, rank, points) from Sackmann.
+        Falls back to sensible defaults if player not found.
+        """
+        defaults = {
+            'age': 25.0, 'ht': 183, 'hand': 'R',
+            'rank': 100, 'rank_points': 1000, 'seed': None,
+        }
+
+        self._ensure_sackmann_loader()
+        if self._sackmann_loader is None:
+            return defaults
+
+        profile = self._sackmann_loader.get_player(name)
+        if profile is None:
+            print(f"[predict_match] Player not found: {name}, using defaults")
+            return defaults
+
+        # Compute age from birth_date
+        age = defaults['age']
+        if profile.birth_date:
+            try:
+                dob_str = str(profile.birth_date)
+                if len(dob_str) == 8:  # YYYYMMDD format
+                    dob = datetime(int(dob_str[:4]), int(dob_str[4:6]), int(dob_str[6:8]))
+                    age = (datetime.now() - dob).days / 365.25
+            except (ValueError, TypeError):
+                pass
+
+        return {
+            'age': round(age, 1),
+            'ht': profile.height_cm if profile.height_cm > 0 else defaults['ht'],
+            'hand': profile.hand if profile.hand in ('R', 'L') else defaults['hand'],
+            'rank': profile.current_rank if profile.current_rank < 9999 else defaults['rank'],
+            'rank_points': profile.current_points if profile.current_points > 0 else defaults['rank_points'],
+            'seed': profile.current_rank if profile.current_rank <= 32 else None,
+        }
+
     def predict_match(
         self,
         player_a: str,
@@ -613,21 +666,28 @@ class TennisXGBoostModel:
     ) -> dict:
         """
         Predict win probability for player_a vs player_b.
-        Requires model to be trained first.
+        Uses real player data from Sackmann DB (age, height, hand, rank, points).
+        Requires model to be trained or loaded first.
         """
         if self.model is None:
             return {"error": "Model not trained. Call train() first."}
 
-        # Build a dummy row for feature extraction
+        # Get real player data from Sackmann
+        info_a = self._get_player_info(player_a)
+        info_b = self._get_player_info(player_b)
+
+        # Build row with real player data for feature extraction
         dummy = pd.Series({
             'winner_name': player_a, 'loser_name': player_b,
             'surface': surface, 'tourney_level': tourney_level,
             'round': round_name,
-            'winner_age': 25, 'loser_age': 25,
-            'winner_ht': 185, 'loser_ht': 183,
-            'winner_hand': 'R', 'loser_hand': 'R',
-            'winner_rank': 1, 'loser_rank': 5,
-            'winner_rank_points': 10000, 'loser_rank_points': 5000,
+            'winner_age': info_a['age'], 'loser_age': info_b['age'],
+            'winner_ht': info_a['ht'], 'loser_ht': info_b['ht'],
+            'winner_hand': info_a['hand'], 'loser_hand': info_b['hand'],
+            'winner_rank': info_a['rank'], 'loser_rank': info_b['rank'],
+            'winner_rank_points': info_a['rank_points'],
+            'loser_rank_points': info_b['rank_points'],
+            'winner_seed': info_a['seed'], 'loser_seed': info_b['seed'],
         })
 
         feat = self._extract_features_for_match(dummy, player_a, player_b)
@@ -645,6 +705,8 @@ class TennisXGBoostModel:
             'player_a': player_a,
             'player_b': player_b,
             'surface': surface,
+            'player_a_info': info_a,
+            'player_b_info': info_b,
             'xgb_prob_a': round(float(prob_a), 4),
             'elo_prob_a': round(float(elo_prob), 4),
             'ensemble_prob_a': round(float(0.6 * prob_a + 0.4 * elo_prob), 4),

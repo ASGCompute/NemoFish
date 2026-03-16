@@ -213,7 +213,10 @@ class JeffSackmannLoader:
                 
                 key = full.lower()
                 self.players[key] = profile
-                self.player_by_id[pid] = profile
+                self.player_by_id[f"{tour}_{pid}"] = profile
+                # Also store without prefix for backwards compat, but tour-prefixed wins
+                if pid not in self.player_by_id:
+                    self.player_by_id[pid] = profile
 
     def _load_matches(self, repo: str, prefix: str, start_year: int, tour: str) -> int:
         """Load match result CSVs for a date range."""
@@ -311,6 +314,11 @@ class JeffSackmannLoader:
                     
                     if pid in self.player_by_id:
                         p = self.player_by_id[pid]
+                    elif f"{tour}_{pid}" in self.player_by_id:
+                        p = self.player_by_id[f"{tour}_{pid}"]
+                    else:
+                        p = None
+                    if p:
                         p.current_rank = rank
                         p.current_points = pts
                         self.rankings[p.full_name.lower()] = {"rank": rank, "points": pts}
