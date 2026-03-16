@@ -1,0 +1,69 @@
+# NemoFish Terminal — Money Generator Platform
+# Configuration
+
+project:
+  name: "NemoFish-Terminal"
+  version: "0.1.0"
+  description: "Multi-agent prediction platform for sports arbitrage"
+
+# --- Bankroll & Risk Management ---
+bankroll:
+  initial_usd: 5000
+  kelly_fraction: 0.25       # Quarter Kelly (conservative)
+  min_edge_percent: 3.0      # Don't bet below 3% edge
+  max_bet_percent: 5.0       # Max 5% of bankroll per bet
+  daily_loss_limit: 20.0     # Stop at 20% daily loss
+  min_bet_usd: 5.0
+
+# --- Data Sources ---
+data:
+  tennis:
+    sackmann_dir: "data/tennis/tennis_atp"
+    start_year: 2000
+    elo_blend_weight: 0.6    # 60% surface Elo, 40% overall
+  hockey:
+    nhl_api_base: "https://api-web.nhle.com/v1"
+    seasons: ["20242025", "20252026"]
+  polymarket:
+    clob_url: "https://clob.polymarket.com"
+    gamma_url: "https://gamma-api.polymarket.com"
+
+# --- Models ---
+models:
+  tennis_xgboost:
+    n_estimators: 500
+    max_depth: 6
+    learning_rate: 0.05
+    min_edge_threshold: 0.06  # 6% threshold for tennis
+  hockey_xg:
+    features: ["xGF", "xGA", "PP%", "PK%", "GSAx", "B2B", "rest_days"]
+    min_edge_threshold: 0.04  # 4% threshold for hockey
+
+# --- Swarm (Phase 3) ---
+swarm:
+  llm_provider: "deepseek"    # deepseek-r1 for analysis
+  llm_model: "deepseek-reasoner"
+  fallback_model: "qwen-2.5"  # For parsing/UI
+  tennis_agents: 500
+  hockey_agents: 500
+  simulation_rounds: 50
+  consensus_threshold: 0.08   # Min 8% edge from swarm
+
+# --- Execution (Phase 4) ---
+execution:
+  platforms:
+    - name: "polymarket"
+      enabled: true
+      paper_trading: true     # Start with paper trading
+    - name: "pinnacle"
+      enabled: false          # Requires B2B API access
+  max_concurrent_bets: 10
+  order_type: "limit"         # limit or market
+
+# --- API Keys (set via environment variables) ---
+# POLYMARKET_API_KEY=
+# POLYMARKET_API_SECRET=
+# POLYMARKET_PASSPHRASE=
+# DEEPSEEK_API_KEY=
+# TWITTER_BEARER_TOKEN=
+# RAPIDAPI_KEY=
