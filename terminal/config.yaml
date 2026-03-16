@@ -41,13 +41,11 @@ models:
 
 # --- Swarm (Phase 3) ---
 swarm:
-  llm_provider: "deepseek"    # deepseek-r1 for analysis
-  llm_model: "deepseek-reasoner"
-  fallback_model: "qwen-2.5"  # For parsing/UI
-  tennis_agents: 500
-  hockey_agents: 500
-  simulation_rounds: 50
-  consensus_threshold: 0.08   # Min 8% edge from swarm
+  llm_provider: "nvidia-nim"   # NVIDIA NIM (OpenAI-compatible)
+  llm_model: "deepseek-ai/deepseek-v3.2"  # 685B reasoning LLM
+  fallback_model: "qwen/qwen3.5-32b"      # Faster model for parsing
+  tennis_agents: 6              # 6-agent swarm (Statistical, Psych, Market, Contrarian, News, MiroFish)
+  consensus_threshold: 0.08     # Min 8% edge from swarm
 
 # --- Execution (Phase 4) ---
 execution:
