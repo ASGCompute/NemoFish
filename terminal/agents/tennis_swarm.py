@@ -578,6 +578,147 @@ class NewsScoutAgent:
         return 0.4
 
 
+# === MiroFish LLM Agent ===
+
+class MiroFishAgent:
+    """
+    MiroFish — LLM-powered qualitative analysis agent.
+    
+    Uses DeepSeek v3.2 (or configured LLM) for:
+    1. News/sentiment signals that stats don't capture
+    2. Motivation / "tanking" detection (top player on small tourney)
+    3. Reasoning validation when statistical agents disagree
+    4. Edge case evaluation (returning from injury, surface switch)
+    
+    Weight: 0.10 (qualitative complement to pure statistics)
+    Falls back to neutral 0.50 if LLM is unavailable.
+    """
+    ROLE = "MiroFish LLM"
+    WEIGHT = 0.10
+
+    def __init__(self):
+        self.client = None
+        self.model = None
+        self._init_client()
+
+    def _init_client(self):
+        """Initialize LLM client from environment."""
+        try:
+            import os
+            from dotenv import load_dotenv
+            from pathlib import Path
+            load_dotenv(Path(__file__).parent.parent / ".env")
+            
+            api_key = os.getenv("LLM_API_KEY")
+            base_url = os.getenv("LLM_BASE_URL")
+            self.model = os.getenv("LLM_MODEL_NAME", "deepseek-ai/deepseek-v3.2")
+            
+            if api_key and base_url:
+                try:
+                    from openai import OpenAI
+                    self.client = OpenAI(api_key=api_key, base_url=base_url)
+                except ImportError:
+                    self.client = None
+        except Exception:
+            self.client = None
+
+    def analyze(self, ctx: MatchContext) -> AgentVote:
+        """
+        Ask MiroFish LLM to analyze qualitative factors.
+        Falls back to neutral vote if LLM unavailable.
+        """
+        if not self.client:
+            return self._neutral_vote(ctx, "LLM unavailable")
+
+        try:
+            prompt = self._build_prompt(ctx)
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": (
+                        "You are MiroFish, a tennis betting analysis AI. "
+                        "Analyze qualitative factors that pure statistics miss: "
+                        "motivation, injuries, schedule fatigue, surface transitions, "
+                        "pressure situations, and form trajectories. "
+                        "Respond ONLY with valid JSON: "
+                        "{\"prob_a\": 0.XX, \"confidence\": 0.X, \"reasoning\": \"...\"}"
+                    )},
+                    {"role": "user", "content": prompt},
+                ],
+                max_tokens=300,
+                temperature=0.3,
+            )
+
+            text = response.choices[0].message.content.strip()
+            
+            # Parse JSON response
+            # Handle markdown code blocks
+            if "```" in text:
+                text = text.split("```")[1]
+                if text.startswith("json"):
+                    text = text[4:]
+                text = text.strip()
+            
+            data = json.loads(text)
+            prob_a = max(0.1, min(0.9, float(data.get("prob_a", 0.5))))
+            confidence = max(0.1, min(1.0, float(data.get("confidence", 0.5))))
+            reasoning = data.get("reasoning", "LLM analysis")
+
+            return AgentVote(
+                agent_name="MiroFish-LLM",
+                agent_role=self.ROLE,
+                prob_a=prob_a,
+                confidence=confidence,
+                reasoning=f"🐡 {reasoning[:200]}",
+                factors={"source": "mirofish_llm", "model": self.model or "unknown"},
+            )
+
+        except Exception as e:
+            return self._neutral_vote(ctx, f"LLM error: {str(e)[:80]}")
+
+    def _build_prompt(self, ctx: MatchContext) -> str:
+        """Build analysis prompt with match context."""
+        parts = [
+            f"Match: {ctx.player_a} vs {ctx.player_b}",
+            f"Surface: {ctx.surface} | Tournament: {ctx.tourney_name} ({ctx.tourney_level})",
+            f"Round: {ctx.round_name} | Date: {ctx.date}",
+            f"Rankings: #{ctx.rank_a} vs #{ctx.rank_b}",
+        ]
+
+        if ctx.odds_a and ctx.odds_b:
+            parts.append(f"Market odds: {ctx.odds_a:.2f} vs {ctx.odds_b:.2f}")
+
+        if ctx.age_a and ctx.age_b:
+            parts.append(f"Ages: {ctx.age_a:.1f} vs {ctx.age_b:.1f}")
+
+        if ctx.days_since_last_match_a is not None:
+            parts.append(
+                f"Rest: A={ctx.days_since_last_match_a}d "
+                f"({ctx.matches_last_14d_a} matches/14d), "
+                f"B={ctx.days_since_last_match_b}d "
+                f"({ctx.matches_last_14d_b} matches/14d)"
+            )
+
+        parts.append(
+            "\nAnalyze qualitative factors: motivation level, injuries, "
+            "schedule fatigue, surface affinity, mental state, and any "
+            "edge the market might miss. Give prob_a (0.1-0.9) and confidence (0.1-1.0)."
+        )
+
+        return "\n".join(parts)
+
+    def _neutral_vote(self, ctx: MatchContext, reason: str) -> AgentVote:
+        """Return neutral vote when LLM is unavailable."""
+        return AgentVote(
+            agent_name="MiroFish-LLM",
+            agent_role=self.ROLE,
+            prob_a=0.5,
+            confidence=0.3,  # Low confidence = minimal swarm impact
+            reasoning=f"🐡 Neutral ({reason})",
+            factors={"source": "mirofish_fallback"},
+        )
+
+
 # === Consensus Engine ===
 
 class TennisSwarm:
@@ -608,7 +749,7 @@ class TennisSwarm:
             elo_engine = TennisEloEngine(data_dir)
             elo_engine.load_and_process(start_year=2000)
 
-        self.elo_engine = elo_engine
+        self.elo = elo_engine
         self.kelly = KellyCriterion(bankroll=5000)
 
         # === Load JeffSackmann data (143K matches, 132K players) ===
@@ -622,21 +763,26 @@ class TennisSwarm:
                 print(f"  ⚠️  Sackmann load failed: {e} (continuing with Elo only)")
                 self.sackmann = None
 
-        # Initialize agents WITH Sackmann injection
+        # Initialize agents WITH Sackmann injection + MiroFish LLM
         self.agents = [
             StatisticalAgent(elo_engine, sackmann=self.sackmann),
             PsychologyAgent(),
             MarketMakerAgent(),
             ContrarianAgent(sackmann=self.sackmann),
             NewsScoutAgent(),
+            MiroFishAgent(),  # 🐡 LLM qualitative analysis
         ]
 
+        # Weights rescaled to include MiroFish at 0.10
+        # Original: Stat=0.35, Psych=0.20, Market=0.20, Contrarian=0.10, News=0.15
+        # Rescaled by 0.9: each original weight * 0.9
         self.weights = {
-            "Statistical Analyst": 0.35,
-            "Behavioral Psychologist": 0.20,
-            "Market Maker": 0.20,
-            "Contrarian Analyst": 0.10,
-            "News Scout": 0.15,
+            "Statistical Analyst": 0.32,
+            "Behavioral Psychologist": 0.18,
+            "Market Maker": 0.18,
+            "Contrarian Analyst": 0.09,
+            "News Scout": 0.13,
+            "MiroFish LLM": 0.10,         # 🐡 qualitative edge
         }
 
     def predict(self, ctx: MatchContext) -> SwarmConsensus:
@@ -732,8 +878,8 @@ class TennisSwarm:
         score = 0.0
 
         # Elo data available
-        pa = self.elo_engine.get_player(ctx.player_a)
-        pb = self.elo_engine.get_player(ctx.player_b)
+        pa = self.elo.get_player(ctx.player_a)
+        pb = self.elo.get_player(ctx.player_b)
 
         if pa and pa.matches_played > 100:
             score += 0.20
