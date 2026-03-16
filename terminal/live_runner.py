@@ -32,6 +32,7 @@ from feeds.api_tennis import ApiTennisClient
 from feeds.sportradar_tennis import SportradarTennisClient
 from feeds.polymarket import PolymarketClient
 from feeds.name_resolver import TennisNameResolver
+from feeds.odds_api import OddsAPIClient
 from agents.tennis_swarm import TennisSwarm, MatchContext
 from execution.polymarket_live import PolymarketTrader
 from execution.risk_manager import RiskManager
@@ -451,6 +452,13 @@ def main():
         resolver.load_from_sackmann(swarm.sackmann)
     print(f"   ✅ Name resolver ({resolver.player_count:,} players)")
     
+    # Real-time odds from The Odds API
+    odds_client = OddsAPIClient()
+    if odds_client.api_key:
+        print(f"   ✅ Odds API client (key: {odds_client.api_key[:8]}...)")
+    else:
+        print("   ⚠️  Odds API not configured (set ODDS_API_KEY for real odds)")
+    
     # === RUN PIPELINE ===
     
     fixtures = step_1_fetch_fixtures(tennis_client)
@@ -460,6 +468,23 @@ def main():
         return
     
     rankings = step_2_enrich_rankings(sportradar_client)
+    
+    # Step 2B: Fetch real-time odds
+    live_odds = {}
+    if odds_client.api_key:
+        print("\n📈 STEP 2B: Fetching real-time odds...")
+        try:
+            odds_list = odds_client.get_tennis_odds()
+            for o in odds_list:
+                # Index by lowercase player names pair
+                key = tuple(sorted([o.home_player.lower(), o.away_player.lower()]))
+                live_odds[key] = o
+            print(f"   Found odds for {len(live_odds)} matches")
+            if odds_list:
+                odds_client.save_odds_snapshot(odds_list)
+        except Exception as e:
+            print(f"   ⚠️  Odds API error: {e}")
+    
     pm_markets = step_3_search_polymarket(pm_read)
     predictions = step_4_run_swarm(swarm, fixtures, rankings, resolver=resolver)
     
