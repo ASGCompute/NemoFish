@@ -1,0 +1,94 @@
+{
+  "bets": [
+    {
+      "pick": "Roman Andres Burruchaga",
+      "odds": 9.0,
+      "prob": 0.474,
+      "edge": 0.3633,
+      "bet_usd": 1.0,
+      "home": "Roman Andres Burruchaga",
+      "away": "Arthur Fery",
+      "elo_a": "1452",
+      "elo_b": "1502"
+    },
+    {
+      "pick": "Moez Echargui",
+      "odds": 5.1,
+      "prob": 0.454,
+      "edge": 0.2574,
+      "bet_usd": 1.0,
+      "home": "Ignacio Buse",
+      "away": "Moez Echargui",
+      "elo_a": "1511",
+      "elo_b": "1454"
+    },
+    {
+      "pick": "Alex Bolt",
+      "odds": 2.8,
+      "prob": 0.538,
+      "edge": 0.1812,
+      "bet_usd": 1.0,
+      "home": "Alex Bolt",
+      "away": "Sho Shimabukuro",
+      "elo_a": "1469",
+      "elo_b": "1443"
+    },
+    {
+      "pick": "Leandro Riedi",
+      "odds": 2.42,
+      "prob": 0.54,
+      "edge": 0.1272,
+      "bet_usd": 1.0,
+      "home": "Yannick Hanfmann",
+      "away": "Leandro Riedi",
+      "elo_a": "1568",
+      "elo_b": "1548"
+    },
+    {
+      "pick": "Nikoloz Basilashvili",
+      "odds": 3.0,
+      "prob": 0.516,
+      "edge": 0.1829,
+      "bet_usd": 1.0,
+      "home": "Patrick Kypson",
+      "away": "Nikoloz Basilashvili",
+      "elo_a": "1426",
+      "elo_b": "1428"
+    },
+    {
+      "pick": "Dane Sweeny",
+      "odds": 3.25,
+      "prob": 0.534,
+      "edge": 0.2259,
+      "bet_usd": 1.0,
+      "home": "Dane Sweeny",
+      "away": "Rinky Hijikata",
+      "elo_a": "1503",
+      "elo_b": "1486"
+    },
+    {
+      "pick": "Chris Rodesch",
+      "odds": 2.45,
+      "prob": 0.557,
+      "edge": 0.1484,
+      "bet_usd": 1.0,
+      "home": "Adam Walton",
+      "away": "Chris Rodesch",
+      "elo_a": "1446",
+      "elo_b": "1469"
+    },
+    {
+      "pick": "Nicolas Jarry",
+      "odds": 2.76,
+      "prob": 0.497,
+      "edge": 0.1348,
+      "bet_usd": 1.0,
+      "home": "Mattia Bellucci",
+      "away": "Nicolas Jarry",
+      "elo_a": "1445",
+      "elo_b": "1444"
+    }
+  ],
+  "date": "2026-03-16",
+  "bankroll": 20
+}
