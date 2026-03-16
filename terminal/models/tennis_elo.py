@@ -1,14 +1,17 @@
 """
-Surface-Adjusted Elo Rating System for Tennis
-==============================================
+Surface-Adjusted Weighted Elo (WElo) Rating System for Tennis
+=================================================================
 Computes dynamic Elo ratings per surface (Clay, Grass, Hard, Indoor)
-plus overall Elo. Key insight: the gap between Overall Elo and Surface Elo
-reveals blind spots in bookmaker pricing.
+plus overall Elo. Uses **margin-weighted** updates (WElo) where dominant
+wins (6-0 6-0) give more credit than close wins (7-6 7-6).
 
-Based on JeffSackmann data (95K+ ATP matches since 1968).
+Based on:
+  - JeffSackmann data (95K+ ATP matches since 1968)
+  - Angelini et al. 2022 — WElo with margin of victory (Tier 1, ROI 3.56%)
 """
 
 import math
+import re
 import pandas as pd
 import numpy as np
 from pathlib import Path
@@ -123,6 +126,71 @@ class TennisEloEngine:
             base_k *= 1.5
         return base_k
 
+    @staticmethod
+    def _parse_score_margin(score: str) -> float:
+        """
+        Parse tennis score into a WElo margin weight.
+        
+        WElo formula (Angelini et al. 2022):
+          margin = (sets_won / total_sets) * (games_won / total_games)
+        
+        Examples:
+          "6-0 6-0"     → 1.0 * 1.0  = 1.00 (dominant)
+          "6-3 6-2"     → 1.0 * 0.71 = 0.71
+          "7-6 7-6"     → 1.0 * 0.52 = 0.52 (close)
+          "6-4 4-6 7-5" → 0.67 * 0.53 = 0.35 (close 3-setter)
+          "6-0 6-0 6-0" → 1.0 * 1.0  = 1.00 (dominant Bo5)
+          
+        Returns 1.0 (standard Elo) if score cannot be parsed.
+        """
+        if not score or not isinstance(score, str):
+            return 1.0
+        
+        try:
+            sets_won = 0
+            sets_lost = 0
+            games_won = 0
+            games_lost = 0
+            
+            # Split into sets, handle tiebreak notation like "7-6(5)"
+            for set_score in score.strip().split():
+                # Remove tiebreak details and retirement markers
+                clean = re.sub(r'\([^)]*\)', '', set_score).strip()
+                if not clean or '-' not in clean:
+                    continue
+                    
+                parts = clean.split('-')
+                if len(parts) != 2:
+                    continue
+                
+                try:
+                    g_w = int(parts[0])
+                    g_l = int(parts[1])
+                except ValueError:
+                    continue
+                
+                games_won += g_w
+                games_lost += g_l
+                
+                if g_w > g_l:
+                    sets_won += 1
+                else:
+                    sets_lost += 1
+            
+            total_sets = sets_won + sets_lost
+            total_games = games_won + games_lost
+            
+            if total_sets == 0 or total_games == 0:
+                return 1.0
+            
+            set_ratio = sets_won / total_sets
+            game_ratio = games_won / total_games
+            
+            return set_ratio * game_ratio
+            
+        except Exception:
+            return 1.0
+
     def update_elo(
         self,
         winner_name: str,
@@ -130,25 +198,35 @@ class TennisEloEngine:
         surface: str,
         tourney_level: str,
         match_date: str,
+        score: str = None,
     ):
         """
-        Update Elo ratings after a single match result.
+        Update Elo ratings after a single match result (WElo).
         Updates BOTH overall and surface-specific ratings.
+        
+        WElo: Uses margin of victory to weight the update.
+        Dominant wins (6-0 6-0) produce larger rating changes
+        than close wins (7-6 7-6). Falls back to standard Elo
+        if score is not available.
         """
         winner = self._get_or_create(winner_name)
         loser = self._get_or_create(loser_name)
 
-        # --- Overall Elo ---
+        # WElo margin weight (Angelini et al. 2022)
+        margin = self._parse_score_margin(score) if score else 1.0
+
+        # --- Overall Elo (WElo) ---
         k_w = self._get_k_factor(tourney_level, winner.matches_played)
         k_l = self._get_k_factor(tourney_level, loser.matches_played)
 
         exp_w = self.expected_score(winner.overall, loser.overall)
         exp_l = 1.0 - exp_w
 
-        winner.overall += k_w * (1.0 - exp_w)
-        loser.overall += k_l * (0.0 - exp_l)
+        # WElo: actual score = margin (not 1.0)
+        winner.overall += k_w * (margin - exp_w)
+        loser.overall += k_l * ((1.0 - margin) - exp_l)
 
-        # --- Surface-Specific Elo ---
+        # --- Surface-Specific Elo (also WElo) ---
         if surface in ("Hard", "Clay", "Grass", "Carpet", "Indoor"):
             w_surf = winner.get_surface_elo(surface)
             l_surf = loser.get_surface_elo(surface)
@@ -157,8 +235,8 @@ class TennisEloEngine:
 
             # Surface K is slightly higher to adapt faster to surface form
             k_surf = self._get_k_factor(tourney_level, winner.matches_played) * 1.1
-            winner.set_surface_elo(surface, w_surf + k_surf * (1.0 - exp_ws))
-            loser.set_surface_elo(surface, l_surf + k_surf * (0.0 - (1.0 - exp_ws)))
+            winner.set_surface_elo(surface, w_surf + k_surf * (margin - exp_ws))
+            loser.set_surface_elo(surface, l_surf + k_surf * ((1.0 - margin) - (1.0 - exp_ws)))
 
         # Update metadata
         winner.matches_played += 1
@@ -238,7 +316,9 @@ class TennisEloEngine:
             if pd.isna(winner) or pd.isna(loser):
                 continue
 
-            self.update_elo(winner, loser, surface, level, date_str)
+            # Pass score for WElo margin weighting
+            score = str(row.get("score", "")) if pd.notna(row.get("score")) else None
+            self.update_elo(winner, loser, surface, level, date_str, score=score)
 
         print(f"Ratings computed for {len(self.ratings):,} players.")
 

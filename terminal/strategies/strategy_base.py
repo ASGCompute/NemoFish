@@ -56,6 +56,9 @@ class MatchInput:
 class BettingStrategy(ABC):
     """Abstract base class for all betting strategies."""
 
+    # Default: 25% Kelly (industry standard, per Angelini et al.)
+    kelly_fraction: float = 0.25
+
     @property
     @abstractmethod
     def name(self) -> str:
@@ -90,6 +93,38 @@ class BettingStrategy(ABC):
     def compute_edge(self, model_prob: float, implied_prob: float) -> float:
         """Model edge = model_prob - implied_prob."""
         return model_prob - implied_prob
+
+    def compute_kelly(self, model_prob: float, odds: float, 
+                      bankroll: float = 1000.0) -> float:
+        """
+        Compute Fractional Kelly bet size.
+        
+        Full Kelly = (p * odds - 1) / (odds - 1)
+        Fractional Kelly = kelly_fraction * Full Kelly * bankroll
+        
+        Industry standard: 25% Kelly (↓4x drawdown, preserves growth).
+        
+        Args:
+            model_prob: Our estimated probability of winning
+            odds: Decimal odds offered
+            bankroll: Current bankroll (default $1000)
+            
+        Returns:
+            Recommended bet size in dollars (0 if no edge)
+        """
+        if odds <= 1.0 or model_prob <= 0:
+            return 0.0
+        
+        # Full Kelly criterion
+        q = 1.0 - model_prob
+        b = odds - 1.0  # net odds (profit per $1)
+        full_kelly = (model_prob * b - q) / b
+        
+        if full_kelly <= 0:
+            return 0.0  # No edge → no bet
+        
+        # Fractional Kelly (25% default)
+        return round(self.kelly_fraction * full_kelly * bankroll, 2)
 
     def __repr__(self):
         return f"<{self.__class__.__name__}: {self.name}>"
