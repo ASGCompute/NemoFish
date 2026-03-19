@@ -26,6 +26,28 @@ This project began as a fork of [**MiroFish**](https://github.com/666ghj/MiroFis
 
 ---
 
+## 📊 Scale & Data Coverage
+
+<div align="center">
+
+| Metric | Value |
+|:-------|------:|
+| **Historical matches analyzed** | **971,320** |
+| **Unique players profiled** | **33,962** |
+| **Tournaments covered** | **9,201** |
+| **Years of ATP data** | **1968 – 2026** (57 seasons) |
+| **Surfaces modeled** | Hard · Clay · Grass · Carpet |
+| **Live data feeds** | 4 providers (api-tennis, Sportradar, The Odds API, Polymarket) |
+| **AI agents in swarm** | 6 specialized reasoning agents |
+| **Features per match** | 47 (ELO, surface form, H2H, momentum, odds, news) |
+| **Codebase** | 30,000+ lines across 160 modules |
+
+</div>
+
+The system ingests nearly **1 million historical matches** to build surface-weighted ELO ratings and train XGBoost probability models via walk-forward validation. At runtime, the 6-agent swarm overlays real-time signals (live odds movement, injury news, scheduling fatigue) on top of the statistical baseline to generate final consensus predictions.
+
+---
+
 ## What We Built
 
 | Layer | Description | Key Components |
