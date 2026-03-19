@@ -922,6 +922,60 @@ class TennisSwarm:
 
         return min(1.0, score)
 
+    def apply_scenario_overlay(
+        self,
+        consensus: 'SwarmConsensus',
+        signals: 'Any',
+    ) -> 'SwarmConsensus':
+        """
+        Apply NemoFish scenario overlay to an existing SwarmConsensus.
+        Returns a NEW SwarmConsensus with bounded adjustments.
+
+        This is OPT-IN — not called from predict(). Called from scenario_runner.
+
+        Args:
+            consensus: Baseline SwarmConsensus from predict()
+            signals: ScenarioSignals from scenario simulation
+
+        Returns:
+            New SwarmConsensus with adjusted probabilities, confidence, and action.
+        """
+        try:
+            from intelligence.scenario_overlay import ScenarioOverlay
+
+            overlay = ScenarioOverlay(max_prob_adjustment=0.03)
+            result = overlay.apply(
+                signals=signals,
+                baseline_prob_a=consensus.prob_a,
+                baseline_prob_b=consensus.prob_b,
+                baseline_confidence=consensus.confidence,
+                baseline_action=consensus.recommended_action,
+                player_a=consensus.player_a,
+                player_b=consensus.player_b,
+            )
+
+            # Build adjusted consensus
+            adjusted = SwarmConsensus(
+                player_a=consensus.player_a,
+                player_b=consensus.player_b,
+                surface=consensus.surface,
+                prob_a=result.adjusted_prob_a,
+                prob_b=result.adjusted_prob_b,
+                confidence=result.adjusted_confidence,
+                edge_vs_market=consensus.edge_vs_market,
+                recommended_action=result.adjusted_action,
+                kelly_bet_size=consensus.kelly_bet_size,
+                agent_votes=consensus.agent_votes,
+                reasoning_summary=consensus.reasoning_summary +
+                    f"\n[NemoFish Overlay] {result.explanation}",
+                data_quality_score=consensus.data_quality_score,
+            )
+            return adjusted
+
+        except Exception as e:
+            # Fail-closed: return original consensus unchanged
+            return consensus
+
     def predict_and_display(self, ctx: MatchContext) -> SwarmConsensus:
         """Predict and pretty-print the results."""
         result = self.predict(ctx)

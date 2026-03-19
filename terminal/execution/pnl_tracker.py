@@ -49,7 +49,7 @@ class PnLTracker:
     Persistent P&L tracker with analytics.
     
     Usage:
-        tracker = PnLTracker(initial_bankroll=5000)
+        tracker = PnLTracker(initial_bankroll=20)
         tracker.record_trade(trade)
         tracker.display_dashboard()
         tracker.save()
@@ -57,7 +57,7 @@ class PnLTracker:
 
     def __init__(
         self,
-        initial_bankroll: float = 5000.0,
+        initial_bankroll: float = 20.0,    # Must match config.yaml bankroll.initial_usd
         data_dir: str = None,
         btc_price: float = 71754.0,  # Current BTC price for conversion
     ):

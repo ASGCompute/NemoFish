@@ -71,7 +71,7 @@ class RiskManager:
     Central risk management engine.
 
     Usage:
-        risk = RiskManager(bankroll=5000)
+        risk = RiskManager(bankroll=20)
         signal = TradeSignal(...)
         decision = risk.evaluate(signal)
         if decision.approved:
@@ -80,7 +80,7 @@ class RiskManager:
 
     def __init__(
         self,
-        bankroll: float = 5000.0,
+        bankroll: float = 20.0,          # Must match config.yaml bankroll.initial_usd
         max_bet_pct: float = 0.05,         # 5% max per bet
         daily_loss_limit_pct: float = 0.20, # 20% daily stop
         max_exposure_pct: float = 0.30,     # 30% max total exposure

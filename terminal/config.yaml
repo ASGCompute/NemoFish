@@ -8,12 +8,12 @@ project:
 
 # --- Bankroll & Risk Management ---
 bankroll:
-  initial_usd: 5000
+  initial_usd: 20               # $20 bankroll — single source of truth
   kelly_fraction: 0.25       # Quarter Kelly (conservative)
   min_edge_percent: 3.0      # Don't bet below 3% edge
   max_bet_percent: 5.0       # Max 5% of bankroll per bet
   daily_loss_limit: 20.0     # Stop at 20% daily loss
-  min_bet_usd: 5.0
+  min_bet_usd: 1.0
 
 # --- Data Sources ---
 data:

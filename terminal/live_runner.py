@@ -61,39 +61,95 @@ from agents.tennis_swarm import TennisSwarm, MatchContext
 from execution.polymarket_live import PolymarketTrader, Market
 from execution.risk_manager import RiskManager
 from execution.pnl_tracker import PnLTracker
-from strategies import (
-    ATPConfidenceStrategy, ValueConfirmationStrategy,
-    EdgeThresholdStrategy, KellyStrategy
-)
-from strategies.skemp_value import (
-    SkempValueOnlyStrategy, SkempPredictedWinValueStrategy
-)
+from strategies import STRATEGY_REGISTRY as _FULL_REGISTRY
 from strategies.strategy_base import MatchInput
 
-# Strategy registry — maps CLI names to strategy instances
-STRATEGY_REGISTRY = {
-    'atp_confidence_5': ATPConfidenceStrategy(top_pct=0.05),
-    'atp_confidence_10': ATPConfidenceStrategy(top_pct=0.10),
-    'value_confirmation': ValueConfirmationStrategy(),
-    'edge_3pct': EdgeThresholdStrategy(min_edge=0.03),
-    'edge_5pct': EdgeThresholdStrategy(min_edge=0.05),
-    'kelly_quarter': KellyStrategy(kelly_fraction=0.25),
-    'skemp_value': SkempValueOnlyStrategy(),
-    'skemp_predict_value': SkempPredictedWinValueStrategy(),
-}
+# Build CLI-compatible instance map from unified registry
+STRATEGY_REGISTRY = {name: entry['instance'] for name, entry in _FULL_REGISTRY.items()}
 
 # Default strategy set — only proven profitable strategies
 DEFAULT_STRATEGIES = ['atp_confidence_5']
 
-# === Canary Go-Live Rules ===
-CANARY_MAX_STAKE = 1.0          # $1 max per bet in live
-CANARY_MAX_DAILY = 4.0          # $4 total daily exposure in live
+# === Execution Classes ===
+from dataclasses import dataclass as _dc, field as _field
+
+@_dc
+class ExecutionClass:
+    """Defines rules for each execution mode."""
+    name: str
+    label: str
+    max_stake: float
+    max_daily: float
+    model_required: bool
+    trader_mode: str   # "PAPER" or "LIVE"
+    description: str
+
+EXEC_INFRA_SMOKE = ExecutionClass(
+    name="INFRA_SMOKE", label="SMOKE_TEST",
+    max_stake=1.0, max_daily=1.0,
+    model_required=False, trader_mode="PAPER",
+    description="Infrastructure canary — $1 fixed, no model, h2h only",
+)
+EXEC_PAPER_MODEL = ExecutionClass(
+    name="PAPER_MODEL", label="PAPER",
+    max_stake=5.0, max_daily=20.0,
+    model_required=True, trader_mode="PAPER",
+    description="Swarm-gated paper trading — full pipeline, no real money",
+)
+EXEC_LIVE_CANARY = ExecutionClass(
+    name="LIVE_CANARY", label="LIVE_CANARY",
+    max_stake=1.0, max_daily=4.0,
+    model_required=True, trader_mode="LIVE",
+    description="Live canary — $1/bet max, $4/day cap, swarm-gated",
+)
+EXEC_LIVE_FULL = ExecutionClass(
+    name="LIVE_FULL", label="LIVE_FULL",
+    max_stake=5.0, max_daily=20.0,
+    model_required=True, trader_mode="LIVE",
+    description="Full live — model-gated, Kelly sizing, all strategies",
+)
+
+EXEC_CLASSES = {
+    "INFRA_SMOKE": EXEC_INFRA_SMOKE,
+    "PAPER_MODEL": EXEC_PAPER_MODEL,
+    "LIVE_CANARY": EXEC_LIVE_CANARY,
+    "LIVE_FULL": EXEC_LIVE_FULL,
+}
+
+# === Source of Truth — loaded from config.yaml ===
+_CONFIG_PATH = ROOT / "config.yaml"
+def _load_bankroll() -> float:
+    """Load bankroll from config.yaml (single source of truth)."""
+    if _CONFIG_PATH.exists():
+        try:
+            import yaml
+            cfg = yaml.safe_load(_CONFIG_PATH.read_text())
+            return float(cfg.get("bankroll", {}).get("initial_usd", 20.0))
+        except ImportError:
+            # Fallback: parse initial_usd from YAML without pyyaml
+            for line in _CONFIG_PATH.read_text().splitlines():
+                stripped = line.strip()
+                if stripped.startswith("initial_usd:"):
+                    val = stripped.split(":")[1].strip().split("#")[0].strip()
+                    try:
+                        return float(val)
+                    except ValueError:
+                        pass
+        except Exception:
+            pass
+    return 20.0
+
+BANKROLL = _load_bankroll()
+
+# === Canary Go-Live Rules (derived from execution class) ===
+CANARY_MAX_STAKE = EXEC_LIVE_CANARY.max_stake
+CANARY_MAX_DAILY = EXEC_LIVE_CANARY.max_daily
 CANARY_MAX_CONCURRENT = 1       # 1 live order at a time
 
 # === Config ===
 MIN_EDGE_THRESHOLD = 0.03       # 3% minimum edge to place bet
-MAX_BET_PER_MATCH = 50.0        # Max $50 per position (paper)
-MAX_DAILY_EXPOSURE = 200.0      # Max $200 total daily (paper)
+MAX_BET_PER_MATCH = 5.0         # Max $5 per position (paper) — 25% of bankroll
+MAX_DAILY_EXPOSURE = BANKROLL   # Max daily = BANKROLL
 CONFIDENCE_MULTIPLIER = {
     "ELITE": 1.0,
     "HIGH": 0.75,
@@ -102,10 +158,12 @@ CONFIDENCE_MULTIPLIER = {
 }
 
 
-def banner():
+def banner(exec_class: ExecutionClass = EXEC_PAPER_MODEL):
     print("═" * 65)
     print("  🐡 NEMOFISH — LIVE EXECUTION PIPELINE")
     print(f"  {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"  Bankroll: ${BANKROLL:.0f}")
+    print(f"  Execution: {exec_class.name} — {exec_class.description}")
     print("═" * 65)
 
 
@@ -320,17 +378,44 @@ def step_4_run_swarm(swarm, fixtures, rankings, live_odds, resolver=None):
     predictions = []
 
     for fix in fixtures:
+        # Determine tour for gender-aware resolution
+        tour = "WTA" if "wta" in fix.event_type.lower() else "ATP"
+
         # Resolve abbreviated names to full canonical names
-        player_a = resolver.resolve(fix.player_a) if resolver else fix.player_a
-        player_b = resolver.resolve(fix.player_b) if resolver else fix.player_b
+        if resolver:
+            res_a = resolver.resolve(fix.player_a, tour=tour)
+            res_b = resolver.resolve(fix.player_b, tour=tour)
+            player_a, conf_a = res_a.name, res_a.confidence
+            player_b, conf_b = res_b.name, res_b.confidence
+
+            # FAIL-CLOSED: skip match if either player is ambiguous/unresolved
+            if conf_a in ('AMBIGUOUS', 'UNRESOLVED') or conf_b in ('AMBIGUOUS', 'UNRESOLVED'):
+                bad_parts = []
+                if conf_a in ('AMBIGUOUS', 'UNRESOLVED'):
+                    bad_parts.append(f"{fix.player_a} [{conf_a}]")
+                if conf_b in ('AMBIGUOUS', 'UNRESOLVED'):
+                    bad_parts.append(f"{fix.player_b} [{conf_b}]")
+                print(f"   ❌ UNRESOLVED_PLAYER: {', '.join(bad_parts)} — skipping match")
+                predictions.append({
+                    "match": f"{fix.player_a} vs {fix.player_b}",
+                    "tournament": fix.tournament,
+                    "recommended_action": "SKIP",
+                    "reason": f"UNRESOLVED_PLAYER: {', '.join(bad_parts)}",
+                    "edge": None,
+                })
+                continue
+        else:
+            player_a = fix.player_a
+            player_b = fix.player_b
+            conf_a = conf_b = 'EXACT'
 
         # Show resolution if name changed
         if player_a != fix.player_a or player_b != fix.player_b:
             resolved_parts = []
             if player_a != fix.player_a:
-                resolved_parts.append(f"{fix.player_a} → {player_a}")
+                resolved_parts.append(f"{fix.player_a} → {player_a} [{conf_a}]")
             if player_b != fix.player_b:
-                resolved_parts.append(f"{fix.player_b} → {player_b}")
+                resolved_parts.append(f"{fix.player_b} → {player_b} [{conf_b}]")
             print(f"   🔗 Name resolved: {', '.join(resolved_parts)}")
 
         # Lookup rankings — NO silent defaults
@@ -452,14 +537,21 @@ def step_4_run_swarm(swarm, fixtures, rankings, live_odds, resolver=None):
         except Exception as e:
             print(f"   ⚠️  Swarm error on {player_a} vs {player_b}: {e}")
 
-    # Summary
-    bets = [p for p in predictions if p["prediction"].recommended_action != "SKIP"]
+    # Summary — handle both normal predictions and UNRESOLVED_PLAYER dicts
+    def _is_bet(p):
+        if "prediction" in p:
+            return p["prediction"].recommended_action != "SKIP"
+        return p.get("recommended_action") != "SKIP"
+    
+    unresolved = [p for p in predictions if p.get("reason", "").startswith("UNRESOLVED_PLAYER")]
+    bets = [p for p in predictions if _is_bet(p)]
     with_odds = [p for p in predictions if p.get("odds_source", "NO_ODDS") != "NO_ODDS"]
     print(f"\n   ━━━ Swarm Summary ━━━")
     print(f"   Analyzed: {len(predictions)} matches")
     print(f"   With real odds: {len(with_odds)}")
     print(f"   BET signals: {len(bets)}")
-    print(f"   SKIP signals: {len(predictions) - len(bets)}")
+    print(f"   SKIP signals: {len(predictions) - len(bets) - len(unresolved)}")
+    print(f"   UNRESOLVED_PLAYER: {len(unresolved)} (fail-closed)")
 
     return predictions
 
@@ -477,6 +569,11 @@ def step_4b_filter_strategies(predictions, strategy_names):
     strategy_signals = []
 
     for pred_data in predictions:
+        # Skip UNRESOLVED_PLAYER entries — no prediction to filter
+        if 'prediction' not in pred_data:
+            strategy_signals.append(pred_data)
+            continue
+
         pred = pred_data['prediction']
         fix = pred_data['fixture']
         ctx = pred_data['context']
@@ -546,7 +643,9 @@ def step_5_execute(trader, predictions, pm_events, pm_trader_markets, scan_only=
     mode_str = "LIVE 🔴" if is_live else trader.mode
     print(f"\n💰 STEP 5: Execution ({mode_str}){'  [SCAN ONLY]' if scan_only else ''}")
 
-    bets = [p for p in predictions if p["prediction"].recommended_action != "SKIP"]
+    # Filter out UNRESOLVED_PLAYER entries (they have no 'prediction' key)
+    modeled = [p for p in predictions if "prediction" in p]
+    bets = [p for p in modeled if p["prediction"].recommended_action != "SKIP"]
 
     if not bets:
         print("   No actionable signals — all SKIP")
@@ -671,23 +770,213 @@ def step_5_execute(trader, predictions, pm_events, pm_trader_markets, scan_only=
     return results
 
 
+def smoke_test(pm_client, trader, scan_only=False, match_selector=None, condition_id=None):
+    """
+    Infrastructure canary: $1 bet on a specific h2h tennis match market.
+    
+    Requirements:
+      - Must be a head-to-head match market ("Will X beat Y?")
+      - No outright/futures ("Will X win tournament?")
+      - Price must be in (0.01, 0.99) — no dead/resolved markets
+      - Must specify --smoke-match "Player A vs Player B" or --smoke-condition <id>
+    
+    Bypasses swarm, strategy, and odds enrichment.
+    Labels bet as SMOKE_TEST in journal.
+    """
+    print("\n🔧 SMOKE TEST — Infrastructure Canary")
+    print("═" * 65)
+    print("  Purpose: Verify order path works end-to-end")
+    print("  Amount:  $1.00 (fixed)")
+    print("  Label:   SMOKE_TEST (not model-driven)")
+    print("  Filter:  h2h match markets only, price in (0.01, 0.99)")
+    print("═" * 65)
+
+    if not match_selector and not condition_id:
+        print("\n   ❌ Must specify --smoke-match 'Player A vs Player B' or --smoke-condition <id>")
+        print("   Example: --smoke --smoke-match 'Djokovic vs Alcaraz'")
+        return
+
+    # Search Polymarket for tennis h2h markets
+    print("\n📡 Finding h2h tennis match markets...")
+    events = pm_client.find_tennis_markets()
+    h2h_keywords = ["beat", "win against", "defeat", " vs ", " v. ", " to win"]
+    outright_keywords = ["winner", "champion", "win the", "to win 20", "grand slam", "tournament"]
+
+    h2h_markets = []
+    for event in events:
+        for m in event.markets:
+            q = m.question.lower() if m.question else ""
+            # Filter: must look like h2h, not outright
+            is_h2h = any(kw in q for kw in h2h_keywords)
+            is_outright = any(kw in q for kw in outright_keywords)
+            # Price sanity
+            price_ok = (0.01 < m.outcome_yes_price < 0.99) if m.outcome_yes_price else False
+            # Active with tokens
+            has_tokens = bool(m.condition_id and m.token_id_yes and m.token_id_no)
+            
+            if has_tokens and price_ok and (is_h2h and not is_outright):
+                h2h_markets.append({
+                    "event_title": event.title,
+                    "question": m.question,
+                    "condition_id": m.condition_id,
+                    "yes_price": m.outcome_yes_price,
+                    "no_price": m.outcome_no_price,
+                    "volume": m.volume or 0,
+                    "liquidity": m.liquidity or 0,
+                    "token_yes": m.token_id_yes,
+                    "token_no": m.token_id_no,
+                })
+
+    print(f"   Found {len(h2h_markets)} h2h match markets (filtered from {sum(len(e.markets) for e in events)} total)")
+
+    if not h2h_markets:
+        print("   ❌ No qualifying h2h match markets found")
+        print("   Markets must be: h2h match, price in (0.01,0.99), with valid tokens")
+        return
+
+    # Select target market
+    target = None
+
+    if condition_id:
+        for m in h2h_markets:
+            if m["condition_id"] == condition_id:
+                target = m
+                break
+        if not target:
+            print(f"   ❌ Condition ID {condition_id} not found in h2h markets")
+            print("   Available h2h markets:")
+            for m in sorted(h2h_markets, key=lambda x: -x["volume"])[:10]:
+                print(f"     {m['question']} (vol=${m['volume']:,.0f}, cid={m['condition_id'][:20]}...)")
+            return
+
+    elif match_selector:
+        # Fuzzy match on player names from --smoke-match "Player A vs Player B"
+        selector_lower = match_selector.lower().replace(" vs ", " ").replace(" v ", " ")
+        selector_parts = [p.strip() for p in selector_lower.split()]
+        
+        scored = []
+        for m in h2h_markets:
+            q_lower = m["question"].lower()
+            # Count how many selector words appear in the question
+            hits = sum(1 for p in selector_parts if p in q_lower)
+            if hits >= len(selector_parts) * 0.5:  # At least half the words match
+                scored.append((hits, m))
+        
+        scored.sort(key=lambda x: -x[0])
+        if scored:
+            target = scored[0][1]
+        else:
+            print(f"   ❌ No h2h market matching '{match_selector}'")
+            print("   Available h2h markets:")
+            for m in sorted(h2h_markets, key=lambda x: -x["volume"])[:10]:
+                print(f"     {m['question']} (vol=${m['volume']:,.0f})")
+            return
+
+    print(f"\n   🎯 Target: {target['event_title']}")
+    print(f"      Question: {target['question']}")
+    print(f"      YES price: {target['yes_price']:.2%}")
+    print(f"      NO price:  {target['no_price']:.2%}")
+    print(f"      Volume: ${target['volume']:,.0f}")
+    print(f"      Condition: {target['condition_id'][:30]}...")
+
+    if scan_only:
+        print(f"\n   📋 SCAN ONLY — would place $1.00 YES at {target['yes_price']:.4f}")
+        print("   ✅ Smoke test preview complete. Use --smoke --live to execute.")
+        return
+
+    # Place $1 bet (paper mode)
+    print(f"\n   💵 Placing $1.00 YES at {target['yes_price']:.4f} (PAPER)...")
+
+    # Construct a Market object for the trader
+    from execution.polymarket_live import Market
+    smoke_market = Market(
+        condition_id=target["condition_id"],
+        question=target["question"],
+        yes_price=target["yes_price"],
+        no_price=target["no_price"],
+        volume=target["volume"],
+        liquidity=target["liquidity"],
+        active=True,
+        token_yes=target["token_yes"],
+        token_no=target["token_no"],
+        event_title=target["event_title"],
+    )
+
+    result = trader.place_bet(
+        market=smoke_market,
+        side="YES",
+        amount_usd=1.0,
+        price=target["yes_price"],
+    )
+
+    if result.success:
+        print(f"   ✅ SMOKE TEST SUCCESS")
+        print(f"      Order ID: {result.order_id}")
+        print(f"      Status: {result.status}")
+    else:
+        print(f"   ❌ SMOKE TEST FAILED: {result.error}")
+
+
 def main():
     parser = argparse.ArgumentParser(description="NemoFish Live Execution Pipeline")
     parser.add_argument("--live", action="store_true", help="Enable LIVE trading (real $$$)")
     parser.add_argument("--scan-only", action="store_true", help="Scan only, no execution")
+    parser.add_argument("--smoke", action="store_true",
+                        help="Infra canary: $1 bet on h2h match market, no model")
+    parser.add_argument("--smoke-match", type=str, default=None,
+                        help="Player names for smoke target (e.g. 'Djokovic vs Alcaraz')")
+    parser.add_argument("--smoke-condition", type=str, default=None,
+                        help="Polymarket condition_id for smoke target")
+    parser.add_argument("--with-strategies", action="store_true",
+                        help="Opt-in: apply strategy filter after swarm (default: swarm-only)")
     parser.add_argument("--strategies", nargs="+", default=DEFAULT_STRATEGIES,
                         choices=list(STRATEGY_REGISTRY.keys()),
-                        help=f"Strategies to use (default: {DEFAULT_STRATEGIES})")
-    parser.add_argument("--no-strategy-filter", action="store_true",
-                        help="Skip strategy filtering, use swarm signals directly")
+                        help=f"Strategies (only with --with-strategies)")
     args = parser.parse_args()
 
     mode = "LIVE" if args.live else "PAPER"
-    banner()
+
+    # Resolve execution class
+    if args.smoke:
+        exec_class = EXEC_INFRA_SMOKE
+    elif args.live and getattr(args, 'full', False):
+        exec_class = EXEC_LIVE_FULL
+    elif args.live:
+        exec_class = EXEC_LIVE_CANARY
+    else:
+        exec_class = EXEC_PAPER_MODEL
+
+    # === GO-LIVE GATE ===
+    # LIVE_CANARY and LIVE_FULL require at least 1 live-approved strategy
+    if exec_class.trader_mode == "LIVE":
+        from strategies import get_live_approved, get_by_status
+        approved = get_live_approved()
+        validated = get_by_status('validated')
+        if not approved:
+            print("\n" + "═" * 60)
+            print("  ❌ GO-LIVE GATE: BLOCKED")
+            print("  " + "─" * 56)
+            print(f"  No live-approved strategies found.")
+            if validated:
+                names = [n for n, _ in validated]
+                print(f"  Validated (need founder sign-off): {', '.join(names)}")
+            else:
+                print(f"  No validated strategies either — run backtest first.")
+            print(f"\n  To proceed:")
+            print(f"    1. python3 backtest_historical.py --n 200 --year 2026")
+            print(f"    2. Review results, promote to live-approved")
+            print(f"    3. Rerun with --live")
+            print("═" * 60)
+            sys.exit(1)
+
+    banner(exec_class)
     print(f"  Mode: {mode}")
-    print(f"  Strategies: {', '.join(args.strategies)}")
-    if args.live:
-        print(f"  🔴 CANARY RULES: ${CANARY_MAX_STAKE}/bet, ${CANARY_MAX_DAILY}/day, {CANARY_MAX_CONCURRENT} concurrent")
+    if args.with_strategies:
+        print(f"  Strategies: {', '.join(args.strategies)}")
+    else:
+        print(f"  Gate: swarm-only (use --with-strategies to add strategy filter)")
+    if exec_class.trader_mode == "LIVE":
+        print(f"  🔴 LIMITS: ${exec_class.max_stake}/bet, ${exec_class.max_daily}/day, {CANARY_MAX_CONCURRENT} concurrent")
 
     # Create run artifact directory
     run_dir = _ensure_run_dir()
@@ -711,10 +1000,18 @@ def main():
     pm_read = PolymarketClient()
     print("   ✅ Polymarket reader")
 
-    trader = PolymarketTrader(mode=mode)
-    print(f"   ✅ Polymarket trader ({mode})")
+    trader = PolymarketTrader(mode=mode, bankroll=BANKROLL)
+    print(f"   ✅ Polymarket trader ({mode}, bankroll=${BANKROLL:.0f})")
     print(f"      API Key: {'✅ ' + trader.api_key[:12] + '...' if trader.api_key else '❌ Not set'}")
     print(f"      Wallet:  {'✅ ' + trader.wallet[:12] + '...' if trader.wallet else '❌ Not set'}")
+
+    # === SMOKE TEST: intercept early ===
+    if args.smoke:
+        smoke_test(pm_read, trader,
+                   scan_only=args.scan_only,
+                   match_selector=args.smoke_match,
+                   condition_id=args.smoke_condition)
+        return
 
     print("   🧠 Loading swarm (Elo engine from Sackmann data)...")
     swarm = TennisSwarm()
@@ -738,11 +1035,38 @@ def main():
 
     fixtures = step_1_fetch_fixtures(tennis_client)
 
+    # Fixture provider resilience: fallback to Odds API
+    if fixtures is None and odds_client.api_key:
+        print("\n🔄 FALLBACK: Trying Odds API for fixtures...")
+        try:
+            odds_matches = odds_client.get_tennis_odds()
+            if odds_matches:
+                from dataclasses import dataclass as _dc
+                # Convert Odds API matches to fixture-like objects
+                fixtures = []
+                for o in odds_matches:
+                    class _FallbackFixture:
+                        pass
+                    f = _FallbackFixture()
+                    f.player_a = o.home_player
+                    f.player_b = o.away_player
+                    f.tournament = o.sport
+                    f.round_name = ""
+                    f.date = datetime.now().strftime("%Y-%m-%d")
+                    f.time = ""
+                    f.event_key = ""
+                    f.event_type = "atp singles"  # Odds API already filtered
+                    fixtures.append(f)
+                print(f"   ✅ Fallback: {len(fixtures)} matches from Odds API")
+        except Exception as e:
+            print(f"   ❌ Odds API fallback also failed: {e}")
+            fixtures = None
+
     if fixtures is None:
-        print("\n❌ FAIL-CLOSED: Fixture source failed. Pipeline aborted.")
+        print("\n❌ FAIL-CLOSED: All fixture sources failed. Pipeline aborted.")
         _save_artifact(run_dir, "run_summary", {
             "status": "ABORTED",
-            "reason": "fixture_source_failed",
+            "reason": "all_fixture_sources_failed",
             "timestamp": datetime.now().isoformat(),
         })
         return
@@ -805,23 +1129,34 @@ def main():
 
     predictions = step_4_run_swarm(swarm, fixtures, rankings, live_odds, resolver=resolver)
 
-    # Step 4B: Strategy filter
-    if not args.no_strategy_filter:
+    # Step 4B: Strategy filter (opt-in only)
+    if args.with_strategies:
         predictions = step_4b_filter_strategies(predictions, args.strategies)
+    else:
+        print("\n🎲 STEP 4B: Skipped (swarm-only gate — use --with-strategies to enable)")
 
-    # Save risk decisions
-    _save_artifact(run_dir, "risk_decisions", [
-        {"match": f"{p['fixture'].player_a} vs {p['fixture'].player_b}",
-         "action": p["prediction"].recommended_action,
-         "prob_a": p["prediction"].prob_a,
-         "prob_b": p["prediction"].prob_b,
-         "edge": p["prediction"].edge_vs_market,
-         "confidence": p["prediction"].confidence,
-         "kelly": p["prediction"].kelly_bet_size,
-         "odds_source": p.get("odds_source", "NO_ODDS"),
-         "data_quality": p["prediction"].data_quality_score}
-        for p in predictions
-    ])
+    # Save risk decisions — handle both modeled and UNRESOLVED entries
+    def _to_risk_dict(p):
+        if "prediction" in p:
+            return {
+                "match": f"{p['fixture'].player_a} vs {p['fixture'].player_b}",
+                "action": p["prediction"].recommended_action,
+                "prob_a": p["prediction"].prob_a,
+                "prob_b": p["prediction"].prob_b,
+                "edge": p["prediction"].edge_vs_market,
+                "confidence": p["prediction"].confidence,
+                "kelly": p["prediction"].kelly_bet_size,
+                "odds_source": p.get("odds_source", "NO_ODDS"),
+                "data_quality": p["prediction"].data_quality_score,
+            }
+        else:
+            # UNRESOLVED_PLAYER entry
+            return {
+                "match": p.get("match", "unknown"),
+                "action": "SKIP",
+                "reason": p.get("reason", "UNRESOLVED_PLAYER"),
+            }
+    _save_artifact(run_dir, "risk_decisions", [_to_risk_dict(p) for p in predictions])
 
     results = step_5_execute(
         trader, predictions, pm_events, pm_trader_markets,

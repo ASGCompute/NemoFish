@@ -4,17 +4,28 @@ Tennis Player Name Resolver
 Bridges abbreviated names from api-tennis.com ("C. Dolehide")
 to full names used in Elo/JeffSackmann databases ("Catherine Dolehide").
 
+Fail-closed policy:
+  - If resolution is ambiguous (multiple candidates after tour filter),
+    returns AMBIGUOUS confidence → match must be skipped.
+  - If no match found at all, returns UNRESOLVED confidence.
+
 Strategy:
-  1. Exact match (fastest)
-  2. Last-name match + first initial check
-  3. Fuzzy match (Levenshtein) on surname
+  1. Known aliases (hardcoded corrections)
+  2. Exact match (fastest)
+  3. Last-name match + first initial check + tour/gender filtering
+  4. Fuzzy match (Levenshtein) on surname — only if unique result
 
 Works with both Elo engine player names and JeffSackmann player DB.
 """
 
-from typing import Dict, Optional, Tuple, Set
+from collections import namedtuple
+
+from typing import Dict, Optional, Set
 from difflib import SequenceMatcher
 import re
+
+# Confidence levels for resolution results
+ResolveResult = namedtuple('ResolveResult', ['name', 'confidence'])
 
 
 class TennisNameResolver:
@@ -23,12 +34,35 @@ class TennisNameResolver:
     
     Usage:
         resolver = TennisNameResolver()
-        resolver.load_from_elo(elo_engine)      # Load known players from Elo DB
-        resolver.load_from_sackmann(sackmann)    # Load from JeffSackmann (132K players)
+        resolver.load_from_elo(elo_engine)
         
-        full = resolver.resolve("C. Dolehide")   # → "Catherine Dolehide"
-        full = resolver.resolve("N. Djokovic")   # → "Novak Djokovic"
+        full = resolver.resolve("C. Dolehide")                    # → "Catherine Dolehide"
+        full = resolver.resolve("M. Stakusic", tour="WTA")        # → prefers female player
     """
+
+    # Known aliases: abbreviation patterns that cause wrong matches.
+    # Maps lowercased abbrev → correct full name.
+    _KNOWN_ALIASES = {
+        "storm hunter": "Storm Hunter",
+        "s. hunter": "Storm Hunter",
+    }
+
+    # Gender classification for tour-aware disambiguation.
+    # Built from Sackmann data or manually seeded.
+    # tour_key: "atp" = male, "wta" = female
+    _FEMALE_NAMES = {
+        "storm hunter", "mia stakusic", "ella seidel", "susan bandecchi",
+        "linda fruhvirtova", "robin sramkova", "martina trevisan",
+        "kaja juvan", "catherine dolehide", "donna vekic",
+        "bianca andreescu", "coco gauff", "iga swiatek",
+        "aryna sabalenka", "elena rybakina", "maria timofeeva",
+        "jil teichmann", "venus williams", "ajla tomljanovic",
+        "kamilla rakhimova", "oksana selekhmeteva",
+        "leolia jeanjean", "madison brengle", "ashlyn krueger",
+        "caty mcnally", "katie volynets", "priscilla hon",
+        "victoria jimenez kasintseva", "reese brantmeier",
+        "yue yuan", "varvara lepchenko",
+    }
 
     def __init__(self):
         # surname_lower → set of full names
@@ -37,9 +71,11 @@ class TennisNameResolver:
         self._canonical: Dict[str, str] = {}
         # Cache resolved lookups
         self._cache: Dict[str, str] = {}
+        # Gender hints: full_name_lower → "M" | "F" | None
+        self._gender: Dict[str, str] = {}
 
-    def add_player(self, full_name: str):
-        """Register a player name."""
+    def add_player(self, full_name: str, gender: str = None):
+        """Register a player name with optional gender hint ('M' or 'F')."""
         if not full_name or len(full_name) < 2:
             return
         self._canonical[full_name.lower()] = full_name
@@ -49,6 +85,11 @@ class TennisNameResolver:
             if surname not in self._by_surname:
                 self._by_surname[surname] = set()
             self._by_surname[surname].add(full_name)
+        # Store gender hint
+        if gender:
+            self._gender[full_name.lower()] = gender.upper()
+        elif full_name.lower() in self._FEMALE_NAMES:
+            self._gender[full_name.lower()] = "F"
 
     def load_from_elo(self, elo_engine):
         """Load all player names from TennisEloEngine."""
@@ -62,27 +103,34 @@ class TennisNameResolver:
             for name in sackmann_loader.players:
                 self.add_player(name)
 
-    def resolve(self, abbrev_name: str) -> str:
+    def resolve(self, abbrev_name: str, tour: str = None) -> ResolveResult:
         """
         Resolve an abbreviated name to its full canonical form.
         
-        Input examples:
-            "C. Dolehide", "N. Djokovic", "J. Sinner", "Coco Gauff"
-            "Alcaraz C.", "Sinner J.", "Djokovic N."  ← tennis-data.co.uk format
+        Args:
+            abbrev_name: e.g. "C. Dolehide", "Alcaraz C.", "Coco Gauff"
+            tour: optional "ATP" or "WTA" for gender-aware disambiguation
         
-        Returns the best matching full name, or the input unchanged if no match.
+        Returns ResolveResult(name, confidence):
+          - EXACT/ALIAS/UNIQUE → safe to use
+          - AMBIGUOUS/UNRESOLVED → match should be skipped (fail-closed)
         """
         if not abbrev_name:
-            return abbrev_name
+            return ResolveResult(abbrev_name, 'UNRESOLVED')
 
-        # Check cache
-        cache_key = abbrev_name.lower().strip()
+        # Check known aliases first
+        alias_key = abbrev_name.lower().strip()
+        if alias_key in self._KNOWN_ALIASES:
+            return ResolveResult(self._KNOWN_ALIASES[alias_key], 'ALIAS')
+
+        # Check cache (include tour in key for gender-dependent results)
+        cache_key = f"{alias_key}|{tour or ''}" 
         if cache_key in self._cache:
             return self._cache[cache_key]
 
         # 1. Exact match
-        if cache_key in self._canonical:
-            result = self._canonical[cache_key]
+        if alias_key in self._canonical:
+            result = ResolveResult(self._canonical[alias_key], 'EXACT')
             self._cache[cache_key] = result
             return result
 
@@ -91,16 +139,17 @@ class TennisNameResolver:
         parts = clean.split()
 
         if len(parts) < 2:
-            self._cache[cache_key] = clean
-            return clean
+            result = ResolveResult(clean, 'UNRESOLVED')
+            self._cache[cache_key] = result
+            return result
 
-        # Detect format: "Alcaraz C." (reversed, tennis-data.co.uk) vs "C. Alcaraz" (normal)
+        # Detect format: "Alcaraz C." (reversed) vs "C. Alcaraz" (normal)
         last_part = parts[-1].rstrip('.')
         first_part = parts[0].rstrip('.')
         
         if len(last_part) <= 2 and last_part[0].isupper():
             # Reversed format: "Alcaraz C." → surname is parts[0:-1], initial is last
-            return self._resolve_reversed(clean, parts, cache_key)
+            return self._resolve_reversed(clean, parts, cache_key, tour)
 
         # Normal format: "C. Dolehide" → first_part="C.", surname="Dolehide"
         surname = parts[-1].lower()
@@ -128,53 +177,65 @@ class TennisNameResolver:
                         if cand_initial == first_initial.upper():
                             initial_matches.append(full)
                 
+                # Apply tour/gender filter when ambiguous
+                initial_matches = self._filter_by_tour(initial_matches, tour)
+                
                 if len(initial_matches) == 1:
-                    result = initial_matches[0]
+                    result = ResolveResult(initial_matches[0], 'UNIQUE')
                     self._cache[cache_key] = result
                     return result
                 elif len(initial_matches) > 1:
-                    # Multiple matches with same initial — use string similarity
-                    best = max(initial_matches, 
-                             key=lambda x: SequenceMatcher(None, clean.lower(), x.lower()).ratio())
-                    self._cache[cache_key] = best
-                    return best
+                    # FAIL-CLOSED: ambiguous — multiple candidates survive
+                    result = ResolveResult(clean, 'AMBIGUOUS')
+                    self._cache[cache_key] = result
+                    return result
 
             # If no initial match but only one candidate for surname
-            if len(candidates) == 1:
-                result = next(iter(candidates))
+            filtered = self._filter_by_tour(list(candidates), tour)
+            if len(filtered) == 1:
+                result = ResolveResult(filtered[0], 'UNIQUE')
+                self._cache[cache_key] = result
+                return result
+            elif len(filtered) > 1:
+                result = ResolveResult(clean, 'AMBIGUOUS')
                 self._cache[cache_key] = result
                 return result
 
         # 3. Fuzzy match across all names (expensive, only used as fallback)
         best_match = None
         best_ratio = 0.0
+        second_ratio = 0.0
         for canonical_lower, canonical in self._canonical.items():
-            ratio = SequenceMatcher(None, cache_key, canonical_lower).ratio()
+            ratio = SequenceMatcher(None, alias_key, canonical_lower).ratio()
             if ratio > best_ratio and ratio > 0.6:
+                second_ratio = best_ratio
                 best_ratio = ratio
                 best_match = canonical
+            elif ratio > second_ratio:
+                second_ratio = ratio
 
-        if best_match:
-            self._cache[cache_key] = best_match
-            return best_match
+        # Only accept fuzzy match if clearly dominant (>0.1 gap to second)
+        if best_match and (best_ratio - second_ratio) > 0.1:
+            result = ResolveResult(best_match, 'UNIQUE')
+            self._cache[cache_key] = result
+            return result
+        elif best_match:
+            # Too close to call — AMBIGUOUS
+            result = ResolveResult(clean, 'AMBIGUOUS')
+            self._cache[cache_key] = result
+            return result
 
-        # Give up — return original
-        self._cache[cache_key] = clean
-        return clean
+        # FAIL-CLOSED: nothing found
+        result = ResolveResult(clean, 'UNRESOLVED')
+        self._cache[cache_key] = result
+        return result
 
-    def _resolve_reversed(self, clean: str, parts: list, cache_key: str) -> str:
+    def _resolve_reversed(self, clean: str, parts: list, cache_key: str, tour: str = None) -> ResolveResult:
         """
-        Resolve reversed format: "Alcaraz C." or "De Minaur A." or "Auger-Aliassime F."
-        
-        Last part is the initial (e.g. "C."), everything before is the surname.
+        Resolve reversed format: "Alcaraz C." or "De Minaur A."
         """
         initial = parts[-1].rstrip('.')[0].upper()
         surname_parts = parts[:-1]
-        
-        # Try different surname constructions (handles multi-word surnames)
-        # "De Minaur A." → surname="de minaur" or just "minaur"
-        # "Van De Zandschulp B." → surname="zandschulp" 
-        # "Auger-Aliassime F." → surname="auger-aliassime"
         
         candidates = set()
         
@@ -188,7 +249,6 @@ class TennisNameResolver:
         for stored_surname, names in self._by_surname.items():
             if stored_surname == last_surname:
                 continue
-            # Check if any stored candidate has the full surname in their name
             for name in names:
                 name_lower = name.lower()
                 if full_surname in name_lower:
@@ -202,7 +262,6 @@ class TennisNameResolver:
         
         # Strategy 4: Hyphenated surnames
         if not candidates and '-' in last_surname:
-            # "Auger-Aliassime" → try both parts
             for part in last_surname.split('-'):
                 if part in self._by_surname:
                     candidates.update(self._by_surname[part])
@@ -215,43 +274,53 @@ class TennisNameResolver:
                 if full_parts and full_parts[0][0].upper() == initial:
                     initial_matches.append(full_name)
             
+            # Apply tour/gender filter
+            initial_matches = self._filter_by_tour(initial_matches, tour)
+            
             if len(initial_matches) == 1:
-                result = initial_matches[0]
+                result = ResolveResult(initial_matches[0], 'UNIQUE')
                 self._cache[cache_key] = result
                 return result
             elif len(initial_matches) > 1:
-                # Score by surname similarity
-                best = max(initial_matches,
-                          key=lambda x: SequenceMatcher(
-                              None, full_surname, x.lower()).ratio())
-                self._cache[cache_key] = best
-                return best
+                # FAIL-CLOSED: ambiguous
+                result = ResolveResult(clean, 'AMBIGUOUS')
+                self._cache[cache_key] = result
+                return result
             
             # No initial match but only one candidate
-            if len(candidates) == 1:
-                result = next(iter(candidates))
+            filtered = self._filter_by_tour(list(candidates), tour)
+            if len(filtered) == 1:
+                result = ResolveResult(filtered[0], 'UNIQUE')
+                self._cache[cache_key] = result
+                return result
+            elif len(filtered) > 1:
+                result = ResolveResult(clean, 'AMBIGUOUS')
                 self._cache[cache_key] = result
                 return result
         
-        # Fallback: return original
-        self._cache[cache_key] = clean
-        return clean
+        # Fallback: UNRESOLVED
+        result = ResolveResult(clean, 'UNRESOLVED')
+        self._cache[cache_key] = result
+        return result
 
-    def resolve_bulk(self, names: list) -> dict:
-        """Resolve a list of names. Returns dict of original → resolved."""
-        return {name: self.resolve(name) for name in names}
+    def resolve_bulk(self, names: list, tour: str = None) -> dict:
+        """Resolve a list of names. Returns dict of original → ResolveResult."""
+        return {name: self.resolve(name, tour=tour) for name in names}
 
-    def get_match_stats(self, names: list) -> dict:
+    def get_match_stats(self, names: list, tour: str = None) -> dict:
         """Get stats on how many names were resolved vs unresolved."""
         resolved = 0
         unresolved = 0
+        ambiguous = 0
         for name in names:
-            result = self.resolve(name)
-            if result != name:
+            result = self.resolve(name, tour=tour)
+            if result.confidence in ('EXACT', 'ALIAS', 'UNIQUE'):
                 resolved += 1
+            elif result.confidence == 'AMBIGUOUS':
+                ambiguous += 1
             else:
                 unresolved += 1
-        return {"resolved": resolved, "unresolved": unresolved, "total": len(names)}
+        return {"resolved": resolved, "unresolved": unresolved, "ambiguous": ambiguous, "total": len(names)}
 
     @staticmethod
     def _extract_initial(part: str) -> Optional[str]:
@@ -260,6 +329,29 @@ class TennisNameResolver:
         if clean:
             return clean[0]
         return None
+
+    def _filter_by_tour(self, candidates: list, tour: str = None) -> list:
+        """Filter candidates by tour/gender when ambiguous.
+        
+        ATP → prefer male players, WTA → prefer female players.
+        Only filters when there are multiple candidates and tour is specified.
+        """
+        if not tour or len(candidates) <= 1:
+            return candidates
+        
+        expected_gender = "M" if "atp" in tour.lower() else "F"
+        
+        filtered = []
+        for name in candidates:
+            gender = self._gender.get(name.lower())
+            if gender is None:
+                # Unknown gender — keep (don't filter out)
+                filtered.append(name)
+            elif gender == expected_gender:
+                filtered.append(name)
+        
+        # If filtering removed everything, return original candidates
+        return filtered if filtered else candidates
 
     @staticmethod
     def _surname_fuzzy_match(a: str, b: str) -> bool:

@@ -59,6 +59,33 @@ class BettingStrategy(ABC):
     # Default: 25% Kelly (industry standard, per Angelini et al.)
     kelly_fraction: float = 0.25
 
+    # Validation status: "research" → "validated" → "live-approved"
+    # - research: untested or negative ROI in backtest
+    # - validated: positive ROI in backtest with N > 50 samples
+    # - live-approved: validated + founder sign-off for live execution
+    _status: str = "research"
+    _backtest_roi: float = 0.0
+    _backtest_samples: int = 0
+
+    @property
+    def status(self) -> str:
+        return self._status
+
+    @property
+    def backtest_roi(self) -> float:
+        return self._backtest_roi
+
+    @property
+    def backtest_samples(self) -> int:
+        return self._backtest_samples
+
+    def set_validation(self, status: str, roi: float = 0.0, samples: int = 0):
+        """Set validation status from backtest results."""
+        assert status in ("research", "validated", "live-approved")
+        self._status = status
+        self._backtest_roi = roi
+        self._backtest_samples = samples
+
     @property
     @abstractmethod
     def name(self) -> str:

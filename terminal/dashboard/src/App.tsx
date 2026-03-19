@@ -5,6 +5,45 @@ import {
   LineChart, Line, Legend, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis,
   ReferenceLine
 } from 'recharts'
+import Sidebar from './components/Sidebar'
+import type { TabId } from './components/Sidebar'
+import MatchWorkspace from './components/MatchWorkspace'
+import GraphPanel from './components/GraphPanel'
+import SimulationCards from './components/SimulationCards'
+import ReportView from './components/ReportView'
+import TomorrowSlate from './components/TomorrowSlate'
+import React from 'react'
+
+// === Error Boundary to prevent black screen crashes ===
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props)
+    this.state = { hasError: false, error: null }
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '2rem', color: '#f87171', background: '#0a0f1c', minHeight: '100vh', fontFamily: 'monospace' }}>
+          <h2>⚠️ Dashboard render error</h2>
+          <pre style={{ color: '#94a3b8', fontSize: '13px', whiteSpace: 'pre-wrap' }}>
+            {this.state.error?.message}\n{this.state.error?.stack}
+          </pre>
+          <button
+            onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload() }}
+            style={{ marginTop: '1rem', padding: '8px 20px', background: '#0ea5e9', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '14px' }}
+          >🔄 Reload</button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 // === Types ===
 interface KpiData {
@@ -137,109 +176,17 @@ async function fetchAPI<T>(path: string): Promise<T | null> {
   }
 }
 
-// === Demo Data (fallback when API is not running) ===
-const DEMO_KPI: KpiData = {
-  bankroll: 10198.88, totalPnl: 198.88, winRate: 66.7, totalBets: 3,
-  activePositions: 0, maxDrawdown: 2.4, btcEquivalent: 0.142137,
-  dailyPnl: 198.88, roi: 29.3, sharpe: 0.32,
+// === Empty State Defaults (no demo data — real data from API) ===
+const EMPTY_KPI: KpiData = {
+  bankroll: 20.0, totalPnl: 0, winRate: 0, totalBets: 0,
+  activePositions: 0, maxDrawdown: 0, btcEquivalent: 0,
+  dailyPnl: 0, roi: 0, sharpe: 0,
 }
 
-const DEMO_SIGNALS: BetSignal[] = [
-  {
-    id: 'NF-A3CC6A25', match: 'Djokovic vs Alcaraz', playerA: 'Novak Djokovic',
-    playerB: 'Carlos Alcaraz', pick: 'Novak Djokovic', odds: 2.40, edge: 0.138,
-    betSize: 250, confidence: 'LOW', action: 'BET', surface: 'Hard', round: 'QF',
-    modelProb: 0.552,
-    agents: [
-      { agentName: 'StatBot', role: 'Statistical', probA: 0.68, confidence: 0.9 },
-      { agentName: 'PsychBot', role: 'Psychology', probA: 0.48, confidence: 0.6 },
-      { agentName: 'MarketBot', role: 'Market', probA: 0.40, confidence: 0.8 },
-      { agentName: 'ContrarianBot', role: 'Contrarian', probA: 0.50, confidence: 0.5 },
-      { agentName: 'NewsBot', role: 'News', probA: 0.50, confidence: 0.5 },
-    ],
-  },
-  {
-    id: 'NF-3513D00B', match: 'Medvedev vs de Minaur', playerA: 'Daniil Medvedev',
-    playerB: 'Alex de Minaur', pick: 'Daniil Medvedev', odds: 1.80, edge: 0.120,
-    betSize: 250, confidence: 'LOW', action: 'BET', surface: 'Hard', round: 'R16',
-    modelProb: 0.675,
-    agents: [
-      { agentName: 'StatBot', role: 'Statistical', probA: 0.93, confidence: 0.9 },
-      { agentName: 'PsychBot', role: 'Psychology', probA: 0.52, confidence: 0.6 },
-      { agentName: 'MarketBot', role: 'Market', probA: 0.54, confidence: 0.8 },
-      { agentName: 'ContrarianBot', role: 'Contrarian', probA: 0.49, confidence: 0.5 },
-      { agentName: 'NewsBot', role: 'News', probA: 0.50, confidence: 0.5 },
-    ],
-  },
-  {
-    id: 'NF-36A012DD', match: 'Sinner vs Alcaraz', playerA: 'Jannik Sinner',
-    playerB: 'Carlos Alcaraz', pick: 'Jannik Sinner', odds: 1.55, edge: 0.051,
-    betSize: 179.79, confidence: 'HIGH', action: 'BET', surface: 'Hard', round: 'F',
-    modelProb: 0.693,
-    agents: [
-      { agentName: 'StatBot', role: 'Statistical', probA: 0.87, confidence: 0.9 },
-      { agentName: 'PsychBot', role: 'Psychology', probA: 0.55, confidence: 0.6 },
-      { agentName: 'MarketBot', role: 'Market', probA: 0.62, confidence: 0.8 },
-      { agentName: 'ContrarianBot', role: 'Contrarian', probA: 0.50, confidence: 0.5 },
-      { agentName: 'NewsBot', role: 'News', probA: 0.50, confidence: 0.5 },
-    ],
-  },
-]
-
-const DEMO_NEWS: NewsItem[] = [
-  { title: 'Sinner enters Miami Open as top seed, targeting back-to-back titles', source: 'ATP Tour',
-    url: '', published: '2026-03-16T10:00Z', category: 'preview', sentiment: 'positive', players: ['Sinner'] },
-  { title: 'Djokovic hints at reduced schedule, Miami appearance uncertain', source: 'Tennis365',
-    url: '', published: '2026-03-16T08:00Z', category: 'injury', sentiment: 'negative', players: ['Djokovic'] },
-  { title: 'Alcaraz adjusting to new racquet setup ahead of hard court swing', source: 'ESPN',
-    url: '', published: '2026-03-15T22:00Z', category: 'preview', sentiment: 'neutral', players: ['Alcaraz'] },
-  { title: "Medvedev: 'Hard courts are my territory, I'm ready to fight'", source: 'Reuters',
-    url: '', published: '2026-03-15T18:00Z', category: 'preview', sentiment: 'positive', players: ['Medvedev'] },
-  { title: 'Fritz withdraws from doubles to focus on singles campaign', source: 'Tennis Channel',
-    url: '', published: '2026-03-15T15:00Z', category: 'news', sentiment: 'neutral', players: ['Fritz'] },
-  { title: "BREAKING: De Minaur nursing wrist discomfort, training limited", source: 'Tennis AU',
-    url: '', published: '2026-03-15T09:00Z', category: 'injury', sentiment: 'negative', players: ['de Minaur'] },
-]
-
-const DEMO_ODDS: OddsMovement[] = [
-  { match_id: 'd1', player_a: 'Sinner', player_b: 'Shelton', odds_a_open: 1.22, odds_b_open: 4.80,
-    odds_a_current: 1.18, odds_b_current: 5.50, movement_a: -0.04, movement_b: 0.70 },
-  { match_id: 'd2', player_a: 'Alcaraz', player_b: 'Hurkacz', odds_a_open: 1.40, odds_b_open: 3.10,
-    odds_a_current: 1.35, odds_b_current: 3.40, movement_a: -0.05, movement_b: 0.30 },
-  { match_id: 'd5', player_a: 'Djokovic', player_b: 'Tiafoe', odds_a_open: 1.15, odds_b_open: 6.50,
-    odds_a_current: 1.12, odds_b_current: 7.00, movement_a: -0.03, movement_b: 0.50 },
-  { match_id: 'd4', player_a: 'Medvedev', player_b: 'Paul', odds_a_open: 1.70, odds_b_open: 2.20,
-    odds_a_current: 1.65, odds_b_current: 2.30, movement_a: -0.05, movement_b: 0.10 },
-]
-
-const DEMO_TRADES: Trade[] = [
-  { id: 'NF-A3CC6A25', timestamp: '2026-03-16 00:43', match: 'Djokovic vs Alcaraz', pick: 'Novak Djokovic', odds: 2.40, edge: 0.138, betSize: 250, won: true, pnl: 350, confidence: 'LOW', sport: 'tennis' },
-  { id: 'NF-36A012DD', timestamp: '2026-03-16 00:43', match: 'Sinner vs Alcaraz', pick: 'Jannik Sinner', odds: 1.55, edge: 0.051, betSize: 179.79, won: true, pnl: 98.88, confidence: 'HIGH', sport: 'tennis' },
-  { id: 'NF-3513D00B', timestamp: '2026-03-16 00:43', match: 'Medvedev vs de Minaur', pick: 'Daniil Medvedev', odds: 1.80, edge: 0.120, betSize: 250, won: false, pnl: -250, confidence: 'LOW', sport: 'tennis' },
-]
-
-// === Strategy Demo Data (from backtest results) ===
-const DEMO_STRATEGIES: StrategyResult[] = [
-  { name: 'ATPConfidence(top5%)', source: 'ATPBetting', bets: 7, wins: 1, winRate: 14.3, wagered: 700, pnl: 354, roi: 50.6, maxDrawdown: 300, sharpe: 0.137, avgPnlPerBet: 50.6, color: '#ccff00',
-    pnlCurve: [0, -100, -200, -300, -200, -100, 354] },
-  { name: 'ValueConfirmation', source: 'NemoFish', bets: 108, wins: 81, winRate: 75.0, wagered: 10800, pnl: -129, roi: -1.2, maxDrawdown: 720, sharpe: -0.020, avgPnlPerBet: -1.2, color: '#0ea5e9',
-    pnlCurve: Array.from({length: 20}, (_, i) => Math.sin(i * 0.5) * 300 + (i > 15 ? -200 : 100) - i * 6) },
-  { name: 'ATPConfidence(top10%)', source: 'ATPBetting', bets: 15, wins: 2, winRate: 13.3, wagered: 1500, pnl: -66, roi: -4.4, maxDrawdown: 500, sharpe: -0.016, avgPnlPerBet: -4.4, color: '#22c55e',
-    pnlCurve: Array.from({length: 15}, (_, i) => Math.sin(i * 0.7) * 200 - i * 4) },
-  { name: 'SkempPredictWin+Value', source: 'skemp15', bets: 49, wins: 24, winRate: 49.0, wagered: 4900, pnl: -579, roi: -11.8, maxDrawdown: 1198, sharpe: -0.128, avgPnlPerBet: -11.8, color: '#06b6d4',
-    pnlCurve: Array.from({length: 20}, (_, i) => Math.sin(i * 0.4) * 400 - i * 30) },
-  { name: 'Edge(5%-20%)', source: 'NemoFish', bets: 23, wins: 10, winRate: 43.5, wagered: 2300, pnl: -410, roi: -17.8, maxDrawdown: 845, sharpe: -0.187, avgPnlPerBet: -17.8, color: '#d97706',
-    pnlCurve: Array.from({length: 15}, (_, i) => -i * 28 + Math.sin(i) * 100) },
-  { name: 'Edge(3%-30%)', source: 'NemoFish', bets: 35, wins: 15, winRate: 42.9, wagered: 3500, pnl: -691, roi: -19.7, maxDrawdown: 1022, sharpe: -0.208, avgPnlPerBet: -19.7, color: '#f59e0b',
-    pnlCurve: Array.from({length: 18}, (_, i) => -i * 38 + Math.sin(i * 0.6) * 150) },
-  { name: 'Kelly(¼)', source: 'NemoFish', bets: 36, wins: 15, winRate: 41.7, wagered: 6617, pnl: -1415, roi: -21.4, maxDrawdown: 1887, sharpe: -0.213, avgPnlPerBet: -39.3, color: '#c084fc',
-    pnlCurve: Array.from({length: 18}, (_, i) => -i * 78 + Math.sin(i * 0.8) * 300) },
-  { name: 'SkempInverse', source: 'skemp15', bets: 25, wins: 7, winRate: 28.0, wagered: 2500, pnl: -542, roi: -21.7, maxDrawdown: 743, sharpe: -0.169, avgPnlPerBet: -21.7, color: '#f97316',
-    pnlCurve: Array.from({length: 15}, (_, i) => -i * 36 + Math.sin(i * 1.2) * 150) },
-  { name: 'SkempValue', source: 'skemp15', bets: 128, wins: 39, winRate: 30.5, wagered: 12800, pnl: -3321, roi: -25.9, maxDrawdown: 3605, sharpe: -0.188, avgPnlPerBet: -25.9, color: '#ef4444',
-    pnlCurve: Array.from({length: 25}, (_, i) => -i * 132 + Math.sin(i * 0.3) * 500) },
-  { name: 'ATPConfidence(top15%)', source: 'ATPBetting', bets: 22, wins: 2, winRate: 9.1, wagered: 2200, pnl: -766, roi: -34.8, maxDrawdown: 920, sharpe: -0.152, avgPnlPerBet: -34.8, color: '#065f46',
-    pnlCurve: Array.from({length: 15}, (_, i) => -i * 51 + Math.sin(i * 0.9) * 100) },
+// Strategy palette for auto-coloring API results
+const STRATEGY_COLORS = [
+  '#ccff00', '#0ea5e9', '#22c55e', '#06b6d4', '#d97706',
+  '#f59e0b', '#c084fc', '#f97316', '#ef4444', '#065f46',
 ]
 
 // === Components ===
@@ -306,8 +253,11 @@ function AgentHeatmap({ signals }: { signals: BetSignal[] }) {
 function SignalsList({ signals }: { signals: BetSignal[] }) {
   return (
     <div className="card signals">
-      <div className="card-title">⚡ Bet Signals — Miami Open 2026</div>
+      <div className="card-title">⚡ Bet Signals</div>
       <div className="signal-list">
+        {signals.length === 0 && (
+          <div className="empty-state">No signals — run <code>live_runner.py</code></div>
+        )}
         {signals.map(s => (
           <div key={s.id} className={`signal-item ${s.action === 'BET' ? 'bet' : 'skip'}`}>
             <div className="signal-pick">
@@ -522,44 +472,53 @@ function TradeJournal({ trades }: { trades: Trade[] }) {
   return (
     <div className="card journal">
       <div className="card-title">📋 Trade Journal</div>
-      <table className="journal-table">
-        <thead>
-          <tr>
-            <th>ID</th><th>Time</th><th>Match</th><th>Pick</th>
-            <th>Odds</th><th>Edge</th><th>Size</th><th>Conf</th>
-            <th>Result</th><th>P&L</th>
-          </tr>
-        </thead>
-        <tbody>
-          {trades.map(t => (
-            <tr key={t.id}>
-              <td className="mono muted">{t.id}</td>
-              <td className="mono small">{t.timestamp}</td>
-              <td>{t.match}</td>
-              <td className="bold">{t.pick}</td>
-              <td className="mono">{t.odds.toFixed(2)}</td>
-              <td className="mono green">+{(t.edge * 100).toFixed(1)}%</td>
-              <td className="mono">${t.betSize.toFixed(0)}</td>
-              <td><Badge level={t.confidence} /></td>
-              <td>{t.won === null ? <span className="status-open">OPEN</span> :
-                   t.won ? <span className="status-won">✅ WON</span> :
-                   <span className="status-lost">❌ LOST</span>}</td>
-              <td className={t.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}>
-                {t.pnl >= 0 ? '+' : ''}${t.pnl.toFixed(2)}
-              </td>
+      {trades.length === 0 ? (
+        <div className="empty-state">No trades yet — canary bets will appear here</div>
+      ) : (
+        <table className="journal-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Time</th><th>Match</th><th>Pick</th>
+              <th>Odds</th><th>Edge</th><th>Size</th><th>Conf</th>
+              <th>Result</th><th>P&L</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {trades.map(t => (
+              <tr key={t.id}>
+                <td className="mono muted">{t.id}</td>
+                <td className="mono small">{t.timestamp}</td>
+                <td>{t.match}</td>
+                <td className="bold">{t.pick}</td>
+                <td className="mono">{t.odds.toFixed(2)}</td>
+                <td className="mono green">+{(t.edge * 100).toFixed(1)}%</td>
+                <td className="mono">${t.betSize.toFixed(0)}</td>
+                <td><Badge level={t.confidence} /></td>
+                <td>{t.won === null ? <span className="status-open">OPEN</span> :
+                     t.won ? <span className="status-won">✅ WON</span> :
+                     <span className="status-lost">❌ LOST</span>}</td>
+                <td className={t.pnl >= 0 ? 'pnl-positive' : 'pnl-negative'}>
+                  {t.pnl >= 0 ? '+' : ''}${t.pnl.toFixed(2)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   )
 }
 
 // === STRATEGY COMPARISON COMPONENT ===
-function StrategyComparison() {
+function StrategyComparison({ strategies }: { strategies: StrategyResult[] }) {
   const [activeStrategies, setActiveStrategies] = useState<Set<string>>(
-    new Set(DEMO_STRATEGIES.map(s => s.name))
+    new Set(strategies.map(s => s.name))
   )
+
+  // Update active set when strategies change from API
+  useEffect(() => {
+    setActiveStrategies(new Set(strategies.map(s => s.name)))
+  }, [strategies])
   const [sortBy, setSortBy] = useState<'roi' | 'winRate' | 'sharpe' | 'bets'>('roi')
 
   const toggleStrategy = (name: string) => {
@@ -571,8 +530,8 @@ function StrategyComparison() {
   }
 
   const filtered = useMemo(() =>
-    DEMO_STRATEGIES.filter(s => activeStrategies.has(s.name)),
-    [activeStrategies]
+    strategies.filter(s => activeStrategies.has(s.name)),
+    [strategies, activeStrategies]
   )
 
   const sorted = useMemo(() =>
@@ -614,6 +573,26 @@ function StrategyComparison() {
     { metric: 'Safety', ...Object.fromEntries(sorted.slice(0, 5).map(s => [s.name, Math.max(0, 100 - s.maxDrawdown / 40)])) },
   ]
 
+  if (strategies.length === 0) {
+    return (
+      <div className="strategies-page">
+        <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🧪</div>
+          <h3 style={{ color: '#e2e8f0', marginBottom: '0.5rem' }}>No Backtest Results</h3>
+          <p style={{ color: '#94a3b8', fontSize: '0.9rem', maxWidth: 480, margin: '0 auto' }}>
+            Run <code style={{ color: '#ccff00' }}>python3 backtest_historical.py</code> to generate
+            strategy comparison data. Results will appear here automatically.
+          </p>
+          <div style={{ marginTop: '1.5rem', color: '#64748b', fontSize: '0.8rem' }}>
+            7 strategies available: ATPConfidence, ValueConfirmation, EdgeThreshold, Kelly, SkempValue, SkempPredictWin, SkempInverse
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const sources = [...new Set(strategies.map(s => s.source))]
+
   return (
     <div className="strategies-page">
       {/* Strategy Toggle Bar */}
@@ -621,14 +600,14 @@ function StrategyComparison() {
         <div className="toggle-header">
           <span className="toggle-title">📊 Strategy Filter</span>
           <div className="toggle-actions">
-            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.map(s => s.name)))}>All</button>
-            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.filter(s => s.source === 'ATPBetting').map(s => s.name)))}>ATPBetting</button>
-            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.filter(s => s.source === 'skemp15').map(s => s.name)))}>skemp15</button>
-            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(DEMO_STRATEGIES.filter(s => s.source === 'NemoFish').map(s => s.name)))}>NemoFish</button>
+            <button className="toggle-btn" onClick={() => setActiveStrategies(new Set(strategies.map(s => s.name)))}>All</button>
+            {sources.map(src => (
+              <button key={src} className="toggle-btn" onClick={() => setActiveStrategies(new Set(strategies.filter(s => s.source === src).map(s => s.name)))}>{src}</button>
+            ))}
           </div>
         </div>
         <div className="toggle-chips">
-          {DEMO_STRATEGIES.map(s => (
+          {strategies.map(s => (
             <button
               key={s.name}
               className={`strategy-chip ${activeStrategies.has(s.name) ? 'active' : 'inactive'}`}
@@ -653,7 +632,7 @@ function StrategyComparison() {
         <div className="strat-kpi">
           <div className="strat-kpi-label">Active Strategies</div>
           <div className="strat-kpi-value">{filtered.length}</div>
-          <div className="strat-kpi-sub">of {DEMO_STRATEGIES.length} total</div>
+          <div className="strat-kpi-sub">of {strategies.length} total</div>
         </div>
         <div className="strat-kpi">
           <div className="strat-kpi-label">Total Bets Tracked</div>
@@ -783,16 +762,26 @@ function StrategyComparison() {
 // === MAIN APP ===
 function App() {
   const [time, setTime] = useState(new Date())
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'strategies'>('dashboard')
-  const [kpi, setKpi] = useState<KpiData>(DEMO_KPI)
-  const [signals, setSignals] = useState<BetSignal[]>(DEMO_SIGNALS)
-  const [trades, setTrades] = useState<Trade[]>(DEMO_TRADES)
+  const [activeTab, setActiveTab] = useState<TabId>('live')
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [selectedMatchId, setSelectedMatchId] = useState('')
+
+  // Load match list for graph/sim/report tabs
+  useEffect(() => {
+    fetch(`${API_BASE}/api/match/list`)
+      .then(r => r.json())
+      .then(d => { if (d.matches?.length > 0 && !selectedMatchId) setSelectedMatchId(d.matches[0].id) })
+      .catch(() => {})
+  }, [])
+  const [kpi, setKpi] = useState<KpiData>(EMPTY_KPI)
+  const [signals, setSignals] = useState<BetSignal[]>([])
+  const [strategies, setStrategies] = useState<StrategyResult[]>([])
+  const [trades, setTrades] = useState<Trade[]>([])
   const [liveMatches, setLiveMatches] = useState<ApiLiveMatch[]>([])
   const [liveSource, setLiveSource] = useState<string>('')
-  const [liveTotal, setLiveTotal] = useState<number>(0)
   const [rankings, setRankings] = useState<Record<string, RankingEntry[]>>({})
-  const [news, setNews] = useState<NewsItem[]>(DEMO_NEWS)
-  const [oddsMovements, setOddsMovements] = useState<OddsMovement[]>(DEMO_ODDS)
+  const [news, setNews] = useState<NewsItem[]>([])
+  const [oddsMovements, setOddsMovements] = useState<OddsMovement[]>([])
   const [apiConnected, setApiConnected] = useState(false)
 
   // Clock
@@ -803,28 +792,61 @@ function App() {
 
   // API polling
   const pollAPI = useCallback(async () => {
-    const health = await fetchAPI<{ status: string }>('/api/health')
-    if (health?.status === 'ok') {
-      setApiConnected(true)
+    try {
+      const health = await fetchAPI<{ status: string }>('/api/health')
+      if (health?.status === 'ok') {
+        setApiConnected(true)
 
-      const [kpiRes, liveRes, rankingsRes, newsRes, oddsRes] = await Promise.all([
-        fetchAPI<KpiData>('/api/kpi'),
-        fetchAPI<{ matches: ApiLiveMatch[]; source: string; total_count: number; live_count: number }>('/api/live'),
-        fetchAPI<{ rankings: Record<string, RankingEntry[]> }>('/api/rankings'),
-        fetchAPI<{ news: NewsItem[] }>('/api/news'),
-        fetchAPI<{ movements: OddsMovement[] }>('/api/odds'),
-      ])
+        const [kpiRes, liveRes, rankingsRes, newsRes, oddsRes, signalsRes, tradesRes, stratRes] = await Promise.all([
+          fetchAPI<KpiData>('/api/kpi'),
+          fetchAPI<{ matches: ApiLiveMatch[]; source: string; total_count: number; live_count: number }>('/api/live'),
+          fetchAPI<{ rankings: Record<string, RankingEntry[]> }>('/api/rankings'),
+          fetchAPI<{ news: NewsItem[] }>('/api/news'),
+          fetchAPI<{ movements: OddsMovement[] }>('/api/odds'),
+          fetchAPI<{ signals: BetSignal[] }>('/api/signals'),
+          fetchAPI<{ trades: Trade[] }>('/api/trades'),
+          fetchAPI<{ strategies: StrategyResult[] }>('/api/strategies'),
+        ])
 
-      if (kpiRes) setKpi(kpiRes)
-      if (liveRes?.matches) {
-        setLiveMatches(liveRes.matches)
-        setLiveSource(liveRes.source || '')
-        setLiveTotal(liveRes.total_count || liveRes.matches.length)
+        if (kpiRes) setKpi(kpiRes)
+        if (liveRes?.matches) {
+          setLiveMatches(liveRes.matches)
+          setLiveSource(liveRes.source || '')
+        }
+        if (rankingsRes?.rankings) setRankings(rankingsRes.rankings)
+        if (newsRes?.news) setNews(newsRes.news)
+        if (oddsRes?.movements) setOddsMovements(oddsRes.movements)
+        if (signalsRes?.signals) setSignals(signalsRes.signals)
+        if (tradesRes?.trades) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const normalized = (tradesRes.trades as any[]).map((t) => ({
+            id: String(t.id || ''),
+            timestamp: String(t.timestamp || ''),
+            match: String(t.match || ''),
+            pick: String(t.pick || ''),
+            odds: Number(t.odds) || 0,
+            edge: Number(t.edge) || 0,
+            betSize: Number(t.bet_size ?? t.betSize) || 0,
+            won: t.won as boolean | null,
+            pnl: Number(t.pnl) || 0,
+            confidence: String(t.confidence || 'LOW'),
+            sport: String(t.sport || ''),
+          }))
+          setTrades(normalized)
+        }
+        if (stratRes?.strategies) {
+          const colored = stratRes.strategies.map((s, i) => ({
+            ...s,
+            color: s.color || STRATEGY_COLORS[i % STRATEGY_COLORS.length],
+            pnlCurve: s.pnlCurve || [],
+          }))
+          setStrategies(colored)
+        }
+      } else {
+        setApiConnected(false)
       }
-      if (rankingsRes?.rankings) setRankings(rankingsRes.rankings)
-      if (newsRes?.news) setNews(newsRes.news)
-      if (oddsRes?.movements) setOddsMovements(oddsRes.movements)
-    } else {
+    } catch (err) {
+      console.warn('Poll cycle error:', err)
       setApiConnected(false)
     }
   }, [])
@@ -835,118 +857,75 @@ function App() {
     return () => clearInterval(i)
   }, [pollAPI])
 
-  const totalReturn = ((kpi.bankroll / 10000 - 1) * 100).toFixed(1)
+  const totalReturn = kpi.bankroll > 0 ? ((kpi.bankroll / 20 - 1) * 100).toFixed(1) : '0.0'
 
   return (
-    <div className="app">
+    <ErrorBoundary>
+    <div className="app app-with-sidebar">
       {/* Dynamic Background Elements */}
       <div className="bg-orb orb-1"></div>
       <div className="bg-orb orb-2"></div>
       <div className="bg-orb orb-3"></div>
 
-      <header className="header">
-        <div className="header-left">
-          <div className="logo-container">
-            <div className="logo-icon">🐡🎾</div>
-            <div>
-              <div className="logo">NEMOFISH<span className="logo-highlight"> TENNIS</span></div>
-              <div className="logo-sub">God View Terminal • Powered by MiroFish Swarm</div>
+      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} />
+
+      <div className="main-panel">
+        <header className="header">
+          <div className="header-left">
+            <div className="header-title">
+              <span className="header-tab-name">
+                {activeTab === 'live' ? '📡 Live Dashboard' : activeTab === 'workspace' ? '🎯 Match Workspace' : activeTab === 'graph' ? '🕸️ Entity Graph' : activeTab === 'simulation' ? '🧪 Simulation' : activeTab === 'report' ? '📝 Report' : '📊 Research'}
+              </span>
             </div>
           </div>
-          <nav className="nav-tabs">
-            <button className={`nav-tab ${activeTab === 'dashboard' ? 'active' : ''}`} onClick={() => setActiveTab('dashboard')}>
-              📊 Dashboard
-            </button>
-            <button className={`nav-tab ${activeTab === 'strategies' ? 'active' : ''}`} onClick={() => setActiveTab('strategies')}>
-              🧪 Strategies
-            </button>
-          </nav>
-        </div>
-        <div className="header-right">
-          <span className={`api-status ${apiConnected ? 'connected' : 'offline'}`}>
-            {apiConnected ? '🟢 API SYNCED' : '🔴 DEMO MODE'}
-            {apiConnected && liveSource && ` (${liveSource})`}
-          </span>
-          {apiConnected && liveTotal > 0 && (
-            <span className="match-count">{liveTotal} matches scanned</span>
-          )}
-          <span className="mode-badge paper">PAPER TRADING</span>
-          <span className="clock">{time.toLocaleString('en-US', { hour12: false })}</span>
-        </div>
-      </header>
+          <div className="header-right">
+            <span className={`api-status ${apiConnected ? 'connected' : 'offline'}`}>
+              {apiConnected ? '🟢 API' : '🔴 OFFLINE'}
+            </span>
+            <span className="mode-badge paper">PAPER</span>
+            <span className="clock">{time.toLocaleString('en-US', { hour12: false })}</span>
+          </div>
+        </header>
 
-      <main className="dashboard">
-        {activeTab === 'strategies' ? (
-          <StrategyComparison />
-        ) : (
+        <main className="dashboard">
+        {activeTab === 'live' && (
           <>
-            {/* Row 1: Player Profile / Swarm Insight & KPIs */}
-            <div className="top-row">
-              <div className="card profile-card">
-                <div className="card-title">🔍 Swarm Active Profile Search</div>
-                <div className="profile-content">
-                  <img src="https://ui-avatars.com/api/?name=Jannik+Sinner&background=0D8ABC&color=fff&size=64" alt="Player" className="profile-img" />
-                  <div className="profile-details">
-                    <div className="profile-name">Jannik Sinner 🇮🇹</div>
-                    <div className="profile-stats">
-                      <span>#1 ATP</span>
-                      <span> • </span>
-                      <span>Win Rate: 79% (Hard)</span>
-                    </div>
-                    <div className="profile-tags">
-                      <span className="tag green">Aggressive L-Baseline</span>
-                      <span className="tag blue">Elite Returner</span>
-                    </div>
-                  </div>
-                  <div className="profile-h2h">
-                    <div className="h2h-title">H2H vs Alcaraz</div>
-                    <div className="h2h-score">4 - 6</div>
-                    <div className="h2h-sub">Sackmann DB Insight</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="kpi-grid">
-                <KpiCard label="Bankroll Engine" value={kpi.bankroll.toLocaleString('en-US', { minimumFractionDigits: 2 })} change={`${totalReturn}%`} color="green" prefix="$" />
-                <KpiCard label="Daily Delta" value={Math.abs(kpi.dailyPnl).toFixed(2)} color={kpi.dailyPnl >= 0 ? 'green' : 'red'} prefix={kpi.dailyPnl >= 0 ? '+$' : '-$'} />
-                <KpiCard label="Swarm Win Rate" value={kpi.winRate.toFixed(1)} color="blue" suffix="%" />
-                <KpiCard label="Risk vs Reward (ROI)" value={kpi.roi.toFixed(1)} color="amber" prefix="+" suffix="%" />
-              </div>
+            <div className="kpi-grid kpi-grid-4">
+              <KpiCard label="Bankroll" value={kpi.bankroll.toLocaleString('en-US', { minimumFractionDigits: 2 })} change={`${totalReturn}%`} color="green" prefix="$" />
+              <KpiCard label="Daily P&L" value={Math.abs(kpi.dailyPnl).toFixed(2)} color={kpi.dailyPnl >= 0 ? 'green' : 'red'} prefix={kpi.dailyPnl >= 0 ? '+$' : '-$'} />
+              <KpiCard label="Win Rate" value={kpi.winRate.toFixed(1)} color="blue" suffix="%" />
+              <KpiCard label="ROI" value={kpi.roi.toFixed(1)} color="amber" prefix="+" suffix="%" />
             </div>
-
-            {/* Row 2: Heatmap + Signals */}
             <div className="middle-row">
               <AgentHeatmap signals={signals} />
               <SignalsList signals={signals} />
             </div>
-
-            {/* Row 3: Live Feeds & Markets & Rankings */}
             <div className="bottom-row">
               <div className="col-1">
-                 <LiveEventFeed matches={liveMatches} source={liveSource} />
-                 <RankingsPanel rankings={rankings} />
+                <LiveEventFeed matches={liveMatches} source={liveSource} />
+                <RankingsPanel rankings={rankings} />
               </div>
               <div className="col-2">
-                 <MarketReaction movements={oddsMovements} />
-                 <TradeJournal trades={trades} />
+                <MarketReaction movements={oddsMovements} />
+                <TradeJournal trades={trades} />
               </div>
               <div className="col-3">
-                 <NewsFeed news={news} />
-                 <div className="card sackmann-stats">
-                   <div className="card-title">🎾 JeffSackmann Data Engine</div>
-                   <div className="sackmann-data">
-                     <div className="db-stat"><span className="db-icon">📚</span> 143,530 Matches Loaded</div>
-                     <div className="db-stat"><span className="db-icon">👤</span> 132,494 Player Profiles</div>
-                     <div className="db-stat"><span className="db-icon">📍</span> Shot-by-Shot Matrix Active</div>
-                     <div className="db-stat"><span className="db-icon">🧮</span> Live Probability Alg Sync</div>
-                   </div>
-                 </div>
+                <NewsFeed news={news} />
               </div>
             </div>
+            {/* Tomorrow Slate */}
+            <TomorrowSlate onMatchSelect={(id) => { setSelectedMatchId(id); setActiveTab('workspace') }} />
           </>
         )}
-      </main>
+        {activeTab === 'workspace' && <MatchWorkspace externalMatchId={selectedMatchId} />}
+        {activeTab === 'graph' && <GraphPanel matchId={selectedMatchId} />}
+        {activeTab === 'simulation' && <SimulationCards matchId={selectedMatchId} />}
+        {activeTab === 'report' && <ReportView matchId={selectedMatchId} />}
+        {activeTab === 'research' && <StrategyComparison strategies={strategies} />}
+        </main>
+      </div>
     </div>
+    </ErrorBoundary>
   )
 }
 

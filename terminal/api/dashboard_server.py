@@ -84,25 +84,70 @@ class DashboardAPI(BaseHTTPRequestHandler):
             "/api/feed": self._handle_feed,
             "/api/rankings": self._handle_rankings,
             "/api/health": self._handle_health,
+            "/api/strategies": self._handle_strategies,
+            "/api/unresolved": self._handle_unresolved,
+            "/api/slate": self._handle_slate,
+            "/api/slate/status": self._handle_slate_status,
         }
 
         handler = routes.get(path)
         if handler:
             try:
                 handler()
+            except BrokenPipeError:
+                pass  # Browser disconnected, ignore
             except Exception as e:
-                import traceback
-                traceback.print_exc()
-                self._json_response({"error": str(e)}, 500)
+                try:
+                    self._json_response({"error": str(e)}, 500)
+                except BrokenPipeError:
+                    pass
         else:
-            self._json_response({"error": "Not found", "routes": list(routes.keys())}, 404)
+            # Check for parameterized match routes: /api/match/:id/:section
+            if path.startswith("/api/match/"):
+                parts = path.split("/")  # ['', 'api', 'match', id, section]
+                if len(parts) >= 5:
+                    match_id = parts[3]
+                    section = parts[4]
+                    try:
+                        self._handle_match_section(match_id, section)
+                    except Exception as e:
+                        import traceback
+                        traceback.print_exc()
+                        self._json_response({"error": str(e)}, 500)
+                elif len(parts) == 4 and parts[3] == "list":
+                    self._handle_match_list()
+                else:
+                    self._json_response({"error": "Missing section", "usage": "/api/match/:id/:section"}, 400)
+            else:
+                self._json_response({"error": "Not found", "routes": list(routes.keys())}, 404)
 
     def _handle_health(self):
+        """Health check with source availability status."""
+        env_keys = {
+            "API_TENNIS_KEY": bool(os.environ.get("API_TENNIS_KEY")),
+            "SPORTRADAR_API_KEY": bool(os.environ.get("SPORTRADAR_API_KEY")),
+            "ODDS_API_KEY": bool(os.environ.get("ODDS_API_KEY")),
+            "POLYMARKET_API_KEY": bool(os.environ.get("POLYMARKET_API_KEY")),
+            "LLM_API_KEY": bool(os.environ.get("LLM_API_KEY")),
+        }
+        sackmann_path = Path(__file__).parent.parent / "data" / "tennis" / "tennis_atp"
+        sackmann_ok = sackmann_path.exists() and any(sackmann_path.glob("atp_matches_*.csv"))
+        last_run = Path(__file__).parent.parent / "execution" / "last_run.json"
+        last_run_ts = ""
+        if last_run.exists():
+            try:
+                last_run_ts = json.loads(last_run.read_text()).get("timestamp", "")
+            except Exception:
+                pass
+
         self._json_response({
             "status": "ok",
             "service": "NemoFish Dashboard API",
             "timestamp": datetime.now().isoformat(),
             "data_source": "api-tennis.com",
+            "env_keys": env_keys,
+            "sackmann_data": sackmann_ok,
+            "last_run": last_run_ts,
         })
 
     def _handle_kpi(self):
@@ -163,6 +208,68 @@ class DashboardAPI(BaseHTTPRequestHandler):
     def _handle_trades(self):
         trades = [asdict(t) for t in self.__class__.tracker.trades]
         self._json_response({"trades": trades})
+
+    def _handle_strategies(self):
+        """Strategy backtest results from run artifacts."""
+        runs_dir = Path(__file__).parent.parent / "execution" / "runs"
+        strategies = []
+
+        if runs_dir.exists():
+            # Find latest backtest results from any run
+            for run_dir in sorted(runs_dir.iterdir(), reverse=True):
+                backtest_file = run_dir / "backtest_results.json"
+                if backtest_file.exists():
+                    try:
+                        data = json.loads(backtest_file.read_text())
+                        if isinstance(data, list):
+                            strategies = data
+                        elif isinstance(data, dict) and "strategies" in data:
+                            strategies = data["strategies"]
+                        break  # Use latest only
+                    except Exception:
+                        continue
+
+        # Also check root-level backtest output
+        if not strategies:
+            root_backtest = Path(__file__).parent.parent / "backtest_results.json"
+            if root_backtest.exists():
+                try:
+                    data = json.loads(root_backtest.read_text())
+                    if isinstance(data, list):
+                        strategies = data
+                    elif isinstance(data, dict) and "strategies" in data:
+                        strategies = data["strategies"]
+                except Exception:
+                    pass
+
+        self._json_response({
+            "strategies": strategies,
+            "source": "backtest_artifacts" if strategies else "none",
+        })
+
+    def _handle_unresolved(self):
+        """UNRESOLVED_PLAYER entries from the latest run."""
+        unresolved = []
+        runs_dir = Path(__file__).parent.parent / "execution" / "runs"
+
+        if runs_dir.exists():
+            for run_dir in sorted(runs_dir.iterdir(), reverse=True):
+                risk_file = run_dir / "risk_decisions.json"
+                if risk_file.exists():
+                    try:
+                        data = json.loads(risk_file.read_text())
+                        unresolved = [
+                            d for d in data
+                            if d.get("reason", "").startswith("UNRESOLVED_PLAYER")
+                        ]
+                        break
+                    except Exception:
+                        continue
+
+        self._json_response({
+            "unresolved": unresolved,
+            "count": len(unresolved),
+        })
 
     def _handle_live(self):
         """
@@ -329,6 +436,294 @@ class DashboardAPI(BaseHTTPRequestHandler):
         }
         full["source"] = "api-tennis.com + RapidAPI"
         self._json_response(full)
+
+    def _find_match_artifacts(self, match_id: str) -> Dict:
+        """Find scenario artifacts by match slug or ID. Searches slate dirs first."""
+        scenarios_dir = Path(__file__).parent.parent / "output" / "scenarios"
+        if not scenarios_dir.exists():
+            return {}
+
+        artifacts = {}
+
+        # 1. Search latest slate dirs first (newest first)
+        for slate_dir in sorted(scenarios_dir.glob("slate_*"), reverse=True):
+            if not slate_dir.is_dir():
+                continue
+            for f in slate_dir.glob("*.json"):
+                name = f.stem
+                if match_id in name or match_id.replace("-", "_") in name:
+                    for suffix in ["dossier", "signals", "overlay", "report"]:
+                        if name.endswith(f"_{suffix}") and suffix not in artifacts:
+                            artifacts[suffix] = json.loads(f.read_text())
+            if artifacts:
+                return artifacts  # Found in slate, no need to search further
+
+        # 2. Fallback: search loose files in scenarios_dir
+        for f in sorted(scenarios_dir.glob("*.json"), reverse=True):
+            name = f.stem
+            if match_id in name or match_id.replace("-", "_") in name:
+                for suffix in ["dossier", "signals", "overlay", "report"]:
+                    if name.endswith(f"_{suffix}"):
+                        artifacts[suffix] = json.loads(f.read_text())
+                        break
+
+        return artifacts
+
+    def _handle_match_list(self):
+        """List available match scenario artifacts (from slate + individual runs)."""
+        scenarios_dir = Path(__file__).parent.parent / "output" / "scenarios"
+        matches = {}
+
+        if not scenarios_dir.exists():
+            self._json_response({"matches": [], "count": 0})
+            return
+
+        # 1. Load from latest slate summary first
+        latest_slate = scenarios_dir / "latest_slate.json"
+        if latest_slate.exists():
+            try:
+                slate = json.loads(latest_slate.read_text())
+                for m in slate.get("matches", []):
+                    mid = m.get("id", "")
+                    if mid and mid not in matches:
+                        matches[mid] = {
+                            "id": mid,
+                            "label": m.get("label", mid.replace("_", " ")),
+                            "timestamp": slate.get("generated_at", ""),
+                            "source": "slate",
+                        }
+            except Exception:
+                pass
+
+        # 2. Also scan individual report files
+        for f in sorted(scenarios_dir.glob("*_report.json"), reverse=True):
+            name = f.stem.replace("_report", "")
+            parts = name.rsplit("_", 2)
+            if len(parts) >= 3:
+                slug = "_".join(parts[:-2])
+                timestamp = f"{parts[-2]}_{parts[-1]}"
+            else:
+                slug = name
+                timestamp = ""
+
+            if slug not in matches:
+                report = json.loads(f.read_text())
+                label = report.get("match_label", slug.replace("_", " "))
+                matches[slug] = {
+                    "id": slug,
+                    "label": label,
+                    "timestamp": timestamp,
+                    "source": "individual",
+                }
+
+        self._json_response({
+            "matches": list(matches.values()),
+            "count": len(matches),
+        })
+
+    def _handle_match_section(self, match_id: str, section: str):
+        """Handle match-specific data section."""
+        artifacts = self._find_match_artifacts(match_id)
+
+        if section == "overview":
+            dossier = artifacts.get("dossier", {})
+            overlay = artifacts.get("overlay", {})
+            report = artifacts.get("report", {})
+
+            player_a = dossier.get("player_a", {}).get("identity", {})
+            player_b = dossier.get("player_b", {}).get("identity", {})
+            tournament = dossier.get("tournament", {})
+
+            self._json_response({
+                "match": {
+                    "player_a": player_a.get("name", "Unknown"),
+                    "player_b": player_b.get("name", "Unknown"),
+                    "ranking_a": player_a.get("ranking", 999),
+                    "ranking_b": player_b.get("ranking", 999),
+                    "elo_a": player_a.get("elo_overall", 1500),
+                    "elo_b": player_b.get("elo_overall", 1500),
+                    "tournament": tournament.get("tournament_name", ""),
+                    "surface": tournament.get("surface", ""),
+                    "round": tournament.get("round_name", ""),
+                    "level": tournament.get("tournament_level", ""),
+                },
+                "market": {
+                    "odds_a": dossier.get("player_a", {}).get("market_profile", {}).get("implied_prob", None),
+                    "odds_b": dossier.get("player_b", {}).get("market_profile", {}).get("implied_prob", None),
+                },
+                "baseline": {
+                    "prob_a": overlay.get("baseline_prob_a", 0.5),
+                    "prob_b": overlay.get("baseline_prob_b", 0.5),
+                    "confidence": overlay.get("baseline_confidence", "MEDIUM"),
+                },
+                "overlay": {
+                    "prob_a": overlay.get("adjusted_prob_a", 0.5),
+                    "prob_b": overlay.get("adjusted_prob_b", 0.5),
+                    "confidence": overlay.get("adjusted_confidence", "MEDIUM"),
+                    "delta": round(overlay.get("adjusted_prob_a", 0.5) - overlay.get("baseline_prob_a", 0.5), 4),
+                },
+                "decision": {
+                    "action": overlay.get("adjusted_action", "SKIP"),
+                    "skip_escalated": overlay.get("skip_escalated", False),
+                },
+                "data_quality": dossier.get("data_quality", 0),
+                "has_artifacts": bool(artifacts),
+            })
+
+        elif section == "dossier":
+            self._json_response(artifacts.get("dossier", {"error": "No dossier found"}))
+
+        elif section == "scenario":
+            self._json_response({
+                "signals": artifacts.get("signals", {}),
+                "overlay": artifacts.get("overlay", {}),
+            })
+
+        elif section == "graph":
+            dossier = artifacts.get("dossier", {})
+            # Build graph nodes and edges from dossier
+            nodes = []
+            edges = []
+
+            if dossier:
+                pa = dossier.get("player_a", {}).get("identity", {})
+                pb = dossier.get("player_b", {}).get("identity", {})
+                tournament = dossier.get("tournament", {})
+
+                # Player nodes
+                nodes.append({"id": "player_a", "label": pa.get("name", "Player A"), "type": "Player", "group": "player",
+                              "data": {"ranking": pa.get("ranking"), "elo": pa.get("elo_overall")}})
+                nodes.append({"id": "player_b", "label": pb.get("name", "Player B"), "type": "Player", "group": "player",
+                              "data": {"ranking": pb.get("ranking"), "elo": pb.get("elo_overall")}})
+
+                # Tournament node
+                nodes.append({"id": "tournament", "label": tournament.get("tournament_name", "Tournament"),
+                              "type": "Tournament", "group": "context"})
+
+                # Surface node
+                surface = tournament.get("surface", "")
+                if surface:
+                    nodes.append({"id": "surface", "label": surface, "type": "Surface", "group": "context"})
+                    edges.append({"source": "tournament", "target": "surface", "label": "PLAYED_ON"})
+
+                # Match node
+                nodes.append({"id": "match", "label": f"{tournament.get('round_name', 'Match')}",
+                              "type": "Match", "group": "match"})
+
+                # H2H node
+                h2h = dossier.get("h2h", {})
+                if h2h.get("total_matches", 0) > 0:
+                    nodes.append({"id": "h2h", "label": f"H2H: {h2h.get('a_wins', 0)}-{h2h.get('b_wins', 0)}",
+                                  "type": "H2H", "group": "data"})
+                    edges.append({"source": "player_a", "target": "h2h", "label": "H2H_RECORD"})
+                    edges.append({"source": "player_b", "target": "h2h", "label": "H2H_RECORD"})
+
+                # Market node
+                nodes.append({"id": "market", "label": "Market", "type": "Market", "group": "market"})
+
+                # Fatigue nodes
+                phys_a = dossier.get("player_a", {}).get("physical_profile", {})
+                phys_b = dossier.get("player_b", {}).get("physical_profile", {})
+                if phys_a.get("fatigue_score", 0) > 0:
+                    nodes.append({"id": "fatigue_a", "label": f"Fatigue: {phys_a['fatigue_score']:.0%}",
+                                  "type": "Fatigue", "group": "risk"})
+                    edges.append({"source": "player_a", "target": "fatigue_a", "label": "HAS_FATIGUE"})
+                if phys_b.get("fatigue_score", 0) > 0:
+                    nodes.append({"id": "fatigue_b", "label": f"Fatigue: {phys_b['fatigue_score']:.0%}",
+                                  "type": "Fatigue", "group": "risk"})
+                    edges.append({"source": "player_b", "target": "fatigue_b", "label": "HAS_FATIGUE"})
+
+                # Edges
+                edges.append({"source": "player_a", "target": "match", "label": "PLAYS_IN"})
+                edges.append({"source": "player_b", "target": "match", "label": "PLAYS_IN"})
+                edges.append({"source": "match", "target": "tournament", "label": "PART_OF"})
+                edges.append({"source": "market", "target": "match", "label": "PRICES"})
+
+            self._json_response({"nodes": nodes, "edges": edges})
+
+        elif section == "report":
+            self._json_response(artifacts.get("report", {"error": "No report found"}))
+
+        elif section == "decision":
+            overlay = artifacts.get("overlay", {})
+            report = artifacts.get("report", {})
+            self._json_response({
+                "action": overlay.get("adjusted_action", "SKIP"),
+                "baseline_action": overlay.get("baseline_action", "SKIP"),
+                "skip_escalated": overlay.get("skip_escalated", False),
+                "explanation": overlay.get("explanation", ""),
+                "adjustments": overlay.get("adjustments", []),
+                "baseline_prob_a": overlay.get("baseline_prob_a"),
+                "adjusted_prob_a": overlay.get("adjusted_prob_a"),
+                "baseline_confidence": overlay.get("baseline_confidence"),
+                "adjusted_confidence": overlay.get("adjusted_confidence"),
+            })
+
+        else:
+            self._json_response({
+                "error": f"Unknown section: {section}",
+                "available": ["overview", "dossier", "scenario", "graph", "report", "decision"],
+            }, 404)
+
+    # ── Slate API ──────────────────────────────────────────
+
+    def _handle_slate(self):
+        """Return the current slate: tomorrow's matches with predictions."""
+        scenarios_dir = Path(__file__).parent.parent / "output" / "scenarios"
+        latest_path = scenarios_dir / "latest_slate.json"
+
+        if not latest_path.exists():
+            self._json_response({
+                "matches": [],
+                "status": "no_slate",
+                "message": "No slate generated yet. Run slate_runner.py or wait for supervisor.",
+            })
+            return
+
+        try:
+            slate = json.loads(latest_path.read_text())
+            self._json_response(slate)
+        except Exception as e:
+            self._json_response({"error": str(e)}, 500)
+
+    def _handle_slate_status(self):
+        """Return slate runner status metadata."""
+        scenarios_dir = Path(__file__).parent.parent / "output" / "scenarios"
+        latest_path = scenarios_dir / "latest_slate.json"
+
+        status = {
+            "has_slate": latest_path.exists(),
+            "generated_at": None,
+            "date": None,
+            "match_count": 0,
+            "live_candidates": 0,
+            "paper_candidates": 0,
+            "stale": True,
+        }
+
+        if latest_path.exists():
+            try:
+                slate = json.loads(latest_path.read_text())
+                status["generated_at"] = slate.get("generated_at")
+                status["date"] = slate.get("date")
+                status["match_count"] = slate.get("processed", 0)
+                status["live_candidates"] = slate.get("live_candidates", 0)
+                status["paper_candidates"] = slate.get("paper_candidates", 0)
+
+                # Check freshness (< 4 hours = fresh)
+                gen_at = slate.get("generated_at", "")
+                if gen_at:
+                    try:
+                        gen_dt = datetime.fromisoformat(gen_at)
+                        age_hours = (datetime.now() - gen_dt).total_seconds() / 3600
+                        status["stale"] = age_hours > 4
+                        status["age_hours"] = round(age_hours, 1)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+
+        self._json_response(status)
 
     def log_message(self, format, *args):
         pass  # Suppress default logging

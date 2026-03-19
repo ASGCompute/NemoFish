@@ -185,7 +185,7 @@ def get_default_strategies() -> List[BettingStrategy]:
         ATPConfidenceStrategy(top_pct=0.15),
         EdgeThresholdStrategy(min_edge=0.03, max_edge=0.30),
         EdgeThresholdStrategy(min_edge=0.05, max_edge=0.20),
-        KellyStrategy(kelly_fraction=0.25, bankroll=5000),
+        KellyStrategy(kelly_fraction=0.25, bankroll=20),
         # skemp15/Tennis-Betting-Model strategies
         SkempValueOnlyStrategy(),
         SkempPredictedWinValueStrategy(),
@@ -499,6 +499,95 @@ def run_backtest(test_year: int = 2025, n_matches: int = 200, strategies: List[B
             print(f"     Max Drawdown: ${max_dd:,.0f}")
             print(f"     Avg P&L/bet:  ${mean_ret:+,.1f}")
             print(f"     Sharpe Ratio: {sharpe:.3f}")
+
+    # === STEP 8: Save JSON results with validation ===
+    import json as _json
+    from datetime import datetime as _dt
+    from strategies.strategy_validator import validate_strategy
+
+    ts = _dt.now().strftime("%Y%m%d_%H%M%S")
+    run_dir = ROOT / "execution" / "runs" / ts
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    json_results = {
+        "timestamp": _dt.now().isoformat(),
+        "test_year": test_year,
+        "n_matches": len(test_matches),
+        "matches_with_odds": has_odds,
+        "prediction_accuracy": round(accuracy, 1),
+        "strategies": {},
+    }
+
+    for s in strategies:
+        t = strategy_tracker[s.name]
+        if t["bet_count"] > 0 and t["pnl_history"]:
+            import numpy as np
+            pnl_arr = np.array(t["pnl_history"])
+            cumulative = np.cumsum(pnl_arr)
+            peak = np.maximum.accumulate(cumulative)
+            drawdown = peak - cumulative
+            max_dd = float(drawdown.max()) if len(drawdown) > 0 else 0
+            mean_ret = float(pnl_arr.mean())
+            std_ret = float(pnl_arr.std()) if len(pnl_arr) > 1 else 1.0
+            sharpe = mean_ret / std_ret if std_ret > 0 else 0
+            roi = t["total_pnl"] / t["total_wagered"] * 100 if t["total_wagered"] > 0 else 0
+
+            # Validate
+            v = validate_strategy(
+                name=s.name,
+                bets=t["bet_count"],
+                wins=t["bet_correct"],
+                roi=roi,
+                sharpe=sharpe,
+                max_drawdown=max_dd,
+                wagered=t["total_wagered"],
+                pnl=t["total_pnl"],
+            )
+
+            json_results["strategies"][s.name] = {
+                "bets": t["bet_count"],
+                "wins": t["bet_correct"],
+                "win_rate": round(t["bet_correct"] / t["bet_count"] * 100, 1),
+                "wagered": round(t["total_wagered"], 2),
+                "pnl": round(t["total_pnl"], 2),
+                "roi": round(roi, 1),
+                "sharpe": round(sharpe, 3),
+                "max_drawdown": round(max_dd, 2),
+                "avg_pnl_per_bet": round(mean_ret, 2),
+                "validation": {
+                    "passes": v.passes,
+                    "status": v.status,
+                    "fail_reasons": v.fail_reasons,
+                },
+            }
+        else:
+            json_results["strategies"][s.name] = {
+                "bets": 0, "wins": 0, "roi": 0, "sharpe": 0,
+                "max_drawdown": 0, "wagered": 0, "pnl": 0,
+                "validation": {
+                    "passes": False,
+                    "status": "research",
+                    "fail_reasons": ["no_bets"],
+                },
+            }
+
+    results_path = run_dir / "backtest_results.json"
+    results_path.write_text(_json.dumps(json_results, indent=2, default=str))
+    print(f"\n  💾 Results saved: {results_path}")
+
+    # Also save as latest for easy access
+    latest_path = ROOT / "execution" / "backtest_results.json"
+    latest_path.write_text(_json.dumps(json_results, indent=2, default=str))
+    print(f"  💾 Latest copy: {latest_path}")
+
+    # Print validation summary
+    print(f"\n  🔬 VALIDATION SUMMARY")
+    print(f"  {'─' * 50}")
+    for sname, sdata in json_results["strategies"].items():
+        v = sdata["validation"]
+        icon = "✅" if v["passes"] else "❌"
+        reason = f" ({'; '.join(v['fail_reasons'])})" if v['fail_reasons'] else ""
+        print(f"  {icon} {sname}: {v['status']}{reason}")
 
     print(f"\n{'═' * 70}\n")
 

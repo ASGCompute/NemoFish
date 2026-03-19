@@ -108,13 +108,13 @@ class PolymarketTrader:
         )
     """
 
-    def __init__(self, mode: str = "PAPER", api_key: str = None, wallet: str = None):
+    def __init__(self, mode: str = "PAPER", api_key: str = None, wallet: str = None, bankroll: float = 20.0):
         self.mode = mode.upper()  # "PAPER" or "LIVE"
         self.api_key = api_key or API_KEY
         self.wallet = wallet or WALLET
         self.positions: List[Dict] = []
         self.orders: List[Dict] = []
-        self.paper_balance = 500.0  # USDC starting balance for paper
+        self.paper_balance = bankroll  # Uses caller's bankroll
         self.paper_trades: List[Dict] = []
         
         # Journal file

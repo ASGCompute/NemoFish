@@ -1,203 +1,231 @@
 <div align="center">
 
-<img src="./static/image/NemoFish_logo_compressed.jpeg" alt="NemoFish Logo" width="75%"/>
+<img src="./static/image/NemoFish_logo_compressed.jpeg" alt="NemoFish Logo" width="65%"/>
 
-<a href="https://trendshift.io/repositories/16144" target="_blank"><img src="https://trendshift.io/api/badge/repositories/16144" alt="666ghj%2FNemoFish | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+### Swarm Intelligence Engine for Predictive Analytics
 
-简洁通用的群体智能引擎，预测万物
-</br>
-<em>A Simple and Universal Swarm Intelligence Engine, Predicting Anything</em>
+**Multi-agent reasoning · Consensus scoring · Autonomous execution**
 
-<a href="https://www.shanda.com/" target="_blank"><img src="./static/image/shanda_logo.png" alt="666ghj%2NemoFish | Shanda" height="40"/></a>
+[![GitHub Stars](https://img.shields.io/github/stars/ASGCompute/NemoFish?style=flat-square&color=DAA520)](https://github.com/ASGCompute/NemoFish/stargazers)
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue?style=flat-square)](./LICENSE)
+[![ASG Compute](https://img.shields.io/badge/ASG%20Compute-R%26D-000?style=flat-square)](https://asgcompute.com)
 
-[![GitHub Stars](https://img.shields.io/github/stars/666ghj/NemoFish?style=flat-square&color=DAA520)](https://github.com/666ghj/NemoFish/stargazers)
-[![GitHub Watchers](https://img.shields.io/github/watchers/666ghj/NemoFish?style=flat-square)](https://github.com/666ghj/NemoFish/watchers)
-[![GitHub Forks](https://img.shields.io/github/forks/666ghj/NemoFish?style=flat-square)](https://github.com/666ghj/NemoFish/network)
-[![Docker](https://img.shields.io/badge/Docker-Build-2496ED?style=flat-square&logo=docker&logoColor=white)](https://hub.docker.com/)
-[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/666ghj/NemoFish)
-
-[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=flat-square&logo=discord&logoColor=white)](https://discord.com/channels/1469200078932545606/1469201282077163739)
-[![X](https://img.shields.io/badge/X-Follow-000000?style=flat-square&logo=x&logoColor=white)](https://x.com/nemofish_ai)
-[![Instagram](https://img.shields.io/badge/Instagram-Follow-E4405F?style=flat-square&logo=instagram&logoColor=white)](https://www.instagram.com/nemofish_ai/)
-
-[English](./README-EN.md) | [中文文档](./README.md)
+[Quick Start](#-quick-start) · [How It Works](#-how-it-works) · [Dashboard](#-unified-control-room) · [Credits](#-credits)
 
 </div>
 
-## ⚡ 项目概述
+---
 
-**NemoFish** 是一款基于多智能体技术的新一代 AI 预测引擎。通过提取现实世界的种子信息（如突发新闻、政策草案、金融信号），自动构建出高保真的平行数字世界。在此空间内，成千上万个具备独立人格、长期记忆与行为逻辑的智能体进行自由交互与社会演化。你可透过「上帝视角」动态注入变量，精准推演未来走向——**让未来在数字沙盘中预演，助决策在百战模拟后胜出**。
+## Overview
 
-> 你只需：上传种子材料（数据分析报告或者有趣的小说故事），并用自然语言描述预测需求</br>
-> NemoFish 将返回：一份详尽的预测报告，以及一个可深度交互的高保真数字世界
+**NemoFish** is a swarm intelligence platform that coordinates multiple AI agents to generate probabilistic forecasts for competitive sports events. Each agent brings a different analytical lens — statistical modeling, psychological profiling, market signal analysis, scenario simulation — and they reach consensus through weighted voting. The system then scores opportunities by expected value and can execute positions on prediction markets autonomously.
 
-### 我们的愿景
+This project began as a fork of [**MiroFish**](https://github.com/666ghj/MiroFish), an open-source multi-agent simulation engine developed by the CAMEL-AI research community. We extended MiroFish with a full-stack sports analytics pipeline and a unified control room for real-time monitoring.
 
-NemoFish 致力于打造映射现实的群体智能镜像，通过捕捉个体互动引发的群体涌现，突破传统预测的局限：
+> **An R&D project by [ASG Compute](https://asgcompute.com)** — exploring whether coordinated multi-agent reasoning can identify inefficiencies in prediction markets.
 
-- **于宏观**：我们是决策者的预演实验室，让政策与公关在零风险中试错
-- **于微观**：我们是个人用户的创意沙盘，无论是推演小说结局还是探索脑洞，皆可有趣、好玩、触手可及
+---
 
-从严肃预测到趣味仿真，我们让每一个如果都能看见结果，让预测万物成为可能。
+## What We Built
 
-## 🌐 在线体验
+| Layer | Description | Key Components |
+|-------|-------------|----------------|
+| **Data Ingestion** | Real-time feeds from 4+ providers | api-tennis.com, Sportradar, The Odds API, Polymarket |
+| **Quantitative Models** | Surface-weighted ELO, XGBoost probability engine | Walk-forward validation, head-to-head analysis |
+| **Agent Swarm** | 6 specialized reasoning agents | Statistical, Psychological, Market, Contrarian, News, MiroFish (LLM) |
+| **Consensus Engine** | Weighted vote aggregation with edge scoring | Configurable thresholds, data quality gates |
+| **Execution Pipeline** | Kelly criterion position sizing, risk management | Polymarket CLOB integration, PnL tracking |
+| **Control Room** | Unified real-time dashboard | Live scores, odds movement, tomorrow's slate, trade journal |
 
-欢迎访问在线 Demo 演示环境，体验我们为你准备的一次关于热点舆情事件的推演预测：[nemofish-live-demo](https://666ghj.github.io/nemofish-demo/)
+---
 
-## 📸 系统截图
+## 📸 Unified Control Room
 
 <div align="center">
 <table>
 <tr>
-<td><img src="./static/image/Screenshot/运行截图1.png" alt="截图1" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图2.png" alt="截图2" width="100%"/></td>
+<td><img src="./static/image/dashboard/live_dashboard.png" alt="Live Dashboard" width="100%"/></td>
 </tr>
 <tr>
-<td><img src="./static/image/Screenshot/运行截图3.png" alt="截图3" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图4.png" alt="截图4" width="100%"/></td>
+<td><em>KPIs, live event feed, odds movement tracking, agent consensus heatmap</em></td>
 </tr>
 <tr>
-<td><img src="./static/image/Screenshot/运行截图5.png" alt="截图5" width="100%"/></td>
-<td><img src="./static/image/Screenshot/运行截图6.png" alt="截图6" width="100%"/></td>
+<td><img src="./static/image/dashboard/tomorrow_slate.png" alt="Tomorrow's Slate" width="100%"/></td>
+</tr>
+<tr>
+<td><em>Tomorrow's slate — win probabilities, edge calculations, and data quality scores per match</em></td>
 </tr>
 </table>
 </div>
 
-## 🎬 演示视频
+---
 
-### 1. 武汉大学舆情推演预测 + NemoFish项目讲解
+## 🏗 How It Works
 
-<div align="center">
-<a href="https://www.bilibili.com/video/BV1VYBsBHEMY/" target="_blank"><img src="./static/image/武大模拟演示封面.png" alt="NemoFish Demo Video" width="75%"/></a>
+```
+  DATA FEEDS                         INTELLIGENCE                      OUTPUT
+  ──────────                         ────────────                      ──────
 
-点击图片查看使用微舆BettaFish生成的《武大舆情报告》进行预测的完整演示视频
-</div>
+  api-tennis.com ──┐
+  sportradar     ──┤   ┌──────────────────────┐   ┌─────────────┐
+  the-odds-api   ──┼──▶│   6-AGENT SWARM      │──▶│  CONSENSUS  │
+  polymarket     ──┤   │                      │   │   ENGINE    │
+  news feeds     ──┘   │  ELO · XGBoost       │   │             │
+                       │  Psych · Market       │   │  Edge ≥ 3%? │
+                       │  Contrarian · LLM     │   │  DQ check?  │
+                       └──────────────────────┘   └──────┬──────┘
+                                                         │
+                                                         ▼
+                                                  ┌─────────────┐
+                                                  │  EXECUTION   │
+                                                  │              │
+                                                  │ Kelly sizing │
+                                                  │ Risk limits  │
+                                                  │ CLOB orders  │
+                                                  └──────┬──────┘
+                                                         │
+                                                         ▼
+                                                  ┌─────────────┐
+                                                  │  DASHBOARD   │
+                                                  │              │
+                                                  │ Live scores  │
+                                                  │ Odds tracker │
+                                                  │ Trade journal│
+                                                  └─────────────┘
+```
 
-### 2. 《红楼梦》失传结局推演预测
+**Pipeline flow:** Every cycle, the system ingests live data → builds a match dossier → runs each agent independently → aggregates into a consensus score → filters by minimum edge and data quality → sizes the position via fractional Kelly criterion → executes on prediction markets → tracks performance.
 
-<div align="center">
-<a href="https://www.bilibili.com/video/BV1cPk3BBExq" target="_blank"><img src="./static/image/红楼梦模拟推演封面.jpg" alt="NemoFish Demo Video" width="75%"/></a>
+---
 
-点击图片查看基于《红楼梦》前80回数十万字，NemoFish深度预测失传结局
-</div>
+## 🧠 The Agent Swarm
 
-> **金融方向推演预测**、**时政要闻推演预测**等示例陆续更新中...
+Six agents analyze each match independently before voting:
 
-## 🔄 工作流程
+| Agent | Analytical Focus | Data Sources |
+|-------|-----------------|--------------|
+| 📊 **Statistical** | Surface-weighted ELO, recent form, head-to-head record | Sackmann historical data, api-tennis |
+| 🧠 **Psychological** | Momentum, pressure response, fatigue patterns | Recent match sequences, scheduling |
+| 💹 **Market** | Line movement, sharp money indicators | The Odds API, Polymarket orderbook |
+| 🔄 **Contrarian** | Public bias detection, mean reversion | Reverse market signals |
+| 📰 **News** | Injury reports, fitness status, travel burden | RapidAPI news feed |
+| 🐡 **MiroFish** | LLM scenario simulation, qualitative reasoning | DeepSeek V3.2 via NVIDIA NIM |
 
-1. **图谱构建**：现实种子提取 & 个体与群体记忆注入 & GraphRAG构建
-2. **环境搭建**：实体关系抽取 & 人设生成 & 环境配置Agent注入仿真参数
-3. **开始模拟**：双平台并行模拟 & 自动解析预测需求 & 动态更新时序记忆
-4. **报告生成**：ReportAgent拥有丰富的工具集与模拟后环境进行深度交互
-5. **深度互动**：与模拟世界中的任意一位进行对话 & 与ReportAgent进行对话
+Agents vote independently. The consensus engine applies calibrated weights and only surfaces opportunities above configurable thresholds (default: ≥3% edge, ≥35% data quality).
 
-## 🚀 快速开始
+---
 
-### 一、源码部署（推荐）
+## 🚀 Quick Start
 
-#### 前置要求
+### Prerequisites
 
-| 工具 | 版本要求 | 说明 | 安装检查 |
-|------|---------|------|---------|
-| **Node.js** | 18+ | 前端运行环境，包含 npm | `node -v` |
-| **Python** | ≥3.11, ≤3.12 | 后端运行环境 | `python --version` |
-| **uv** | 最新版 | Python 包管理器 | `uv --version` |
+| Tool | Version | Check |
+|------|---------|-------|
+| **Node.js** | 18+ | `node -v` |
+| **Python** | ≥3.11 | `python --version` |
+| **uv** | latest | `uv --version` |
 
-#### 1. 配置环境变量
+### 1. Clone & Configure
 
 ```bash
-# 复制示例配置文件
+git clone https://github.com/ASGCompute/NemoFish.git
+cd NemoFish
 cp .env.example .env
-
-# 编辑 .env 文件，填入必要的 API 密钥
+# Edit .env — add your API keys
 ```
 
-**必需的环境变量：**
-
-```env
-# LLM API配置（支持 OpenAI SDK 格式的任意 LLM API）
-# 推荐使用阿里百炼平台qwen-plus模型：https://bailian.console.aliyun.com/
-# 注意消耗较大，可先进行小于40轮的模拟尝试
-LLM_API_KEY=your_api_key
-LLM_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
-LLM_MODEL_NAME=qwen-plus
-
-# Zep Cloud 配置
-# 每月免费额度即可支撑简单使用：https://app.getzep.com/
-ZEP_API_KEY=your_zep_api_key
-```
-
-#### 2. 安装依赖
+### 2. Install
 
 ```bash
-# 一键安装所有依赖（根目录 + 前端 + 后端）
 npm run setup:all
 ```
 
-或者分步安装：
+### 3. Run the Simulation Engine (MiroFish Core)
 
 ```bash
-# 安装 Node 依赖（根目录 + 前端）
-npm run setup
-
-# 安装 Python 依赖（后端，自动创建虚拟环境）
-npm run setup:backend
-```
-
-#### 3. 启动服务
-
-```bash
-# 同时启动前后端（在项目根目录执行）
 npm run dev
+# Frontend → http://localhost:3000
+# Backend  → http://localhost:5001
 ```
 
-**服务地址：**
-- 前端：`http://localhost:3000`
-- 后端 API：`http://localhost:5001`
-
-**单独启动：**
+### 4. Run the Sports Prediction Terminal
 
 ```bash
-npm run backend   # 仅启动后端
-npm run frontend  # 仅启动前端
+# API server
+cd terminal && python api/dashboard_server.py &
+
+# Dashboard UI
+cd terminal/dashboard && npm run dev
+# Open http://localhost:5173
+
+# Generate predictions for tomorrow's matches
+python intelligence/slate_runner.py --dry-run
 ```
 
-### 二、Docker 部署
+See [`.env.example`](./.env.example) for the full list of required API keys.
 
-```bash
-# 1. 配置环境变量（同源码部署）
-cp .env.example .env
+---
 
-# 2. 拉取镜像并启动
-docker compose up -d
+## 📁 Project Structure
+
+```
+NemoFish/
+├── frontend/           # MiroFish simulation UI (Vue 3)
+├── backend/            # MiroFish simulation engine (Python/CAMEL-AI)
+├── terminal/           # Sports prediction terminal (our extension)
+│   ├── agents/         # 6-agent swarm logic
+│   ├── api/            # Dashboard REST API
+│   ├── dashboard/      # Unified control room (React + Vite)
+│   ├── execution/      # Position sizing & market execution
+│   ├── feeds/          # Live data ingestion
+│   ├── intelligence/   # Slate runner, scenario engine, dossier builder
+│   ├── models/         # ELO engine, XGBoost classifiers
+│   └── strategies/     # Kelly criterion, value confirmation
+├── .env.example        # Environment variable template
+└── docker-compose.yml  # Docker deployment
 ```
 
-默认会读取根目录下的 `.env`，并映射端口 `3000（前端）/5001（后端）`
+---
 
-> 在 `docker-compose.yml` 中已通过注释提供加速镜像地址，可按需替换
+## ⚙️ Configuration
 
-## 📬 更多交流
+System parameters are defined in [`terminal/config.yaml`](./terminal/config.yaml):
+
+```yaml
+bankroll:
+  initial_usd: 20
+  kelly_fraction: 0.25      # Quarter Kelly (conservative)
+  min_edge_percent: 3.0     # Minimum edge to act
+  max_bet_percent: 5.0      # Maximum position size
+
+swarm:
+  tennis_agents: 6
+  consensus_threshold: 0.08 # Minimum edge from agent consensus
+
+execution:
+  paper_trading: true       # Paper mode by default
+```
+
+---
+
+## 🙏 Credits
+
+**NemoFish** is built on top of [**MiroFish**](https://github.com/666ghj/MiroFish) by [@666ghj](https://github.com/666ghj), backed by [Shanda Group](https://www.shanda.com/). The core simulation engine is powered by [OASIS](https://github.com/camel-ai/oasis) from the CAMEL-AI research community.
+
+We extended MiroFish with a quantitative sports analytics pipeline, a multi-agent prediction swarm, and a live execution layer with a unified control room. All credit for the original simulation framework goes to the MiroFish team.
+
+---
+
+## 📄 License
+
+GPL-3.0 — consistent with the upstream MiroFish project. See [LICENSE](./LICENSE).
+
+---
 
 <div align="center">
-<img src="./static/image/QQ群.png" alt="QQ交流群" width="60%"/>
+
+**An [ASG Compute](https://asgcompute.com) Research Project**
+
+*If you find this useful, give it a ⭐*
+
 </div>
-
-&nbsp;
-
-NemoFish团队长期招募全职/实习，如果你对多Agent应用感兴趣，欢迎投递简历至：**nemofish@shanda.com**
-
-## 📄 致谢
-
-**NemoFish 得到了盛大集团的战略支持和孵化！**
-
-NemoFish 的仿真引擎由 **[OASIS](https://github.com/camel-ai/oasis)** 驱动，我们衷心感谢 CAMEL-AI 团队的开源贡献！
-
-## 📈 项目统计
-
-<a href="https://www.star-history.com/#666ghj/NemoFish&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=666ghj/NemoFish&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=666ghj/NemoFish&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=666ghj/NemoFish&type=date&legend=top-left" />
- </picture>
-</a>
